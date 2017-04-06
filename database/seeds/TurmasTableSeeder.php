@@ -9,8 +9,7 @@ class TurmasTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         factory(\App\Turma::class,10)->create();
     }
 }

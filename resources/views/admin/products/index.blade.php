@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('master')
+@section('title', 'Produtos')
 
 @section('content')
     <div class="container">
@@ -10,7 +11,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.products.create') }}" class="btn btn-default">
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-raised btn-success">
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
                         </div>

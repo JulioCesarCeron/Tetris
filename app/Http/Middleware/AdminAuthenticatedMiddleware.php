@@ -19,6 +19,10 @@ class AdminAuthenticatedMiddleware
             return $next($request);
         }
 
+        if(Auth::check() && Auth::user()->isProfessor()) {
+            return redirect('/professor');
+        }
+
         return redirect('/login');
     }
 }

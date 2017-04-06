@@ -44,3 +44,4 @@ $factory->define(App\Turma::class, function (Faker\Generator $faker) {
         'turma' => $turma,
     ];
 });
+

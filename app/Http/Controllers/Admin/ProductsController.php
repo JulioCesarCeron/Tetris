@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Forms\ProductForm;
 use App\Product;
+use App\Forms\ProductForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Kris\LaravelFormBuilder\FormBuilder;
@@ -15,8 +15,7 @@ class ProductsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         $products = Product::paginate(5);
         return view('admin.products.index',compact('products'));
     }
@@ -67,8 +66,7 @@ class ProductsController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
-    {
+    public function edit(Product $product) {
         $form = \FormBuilder::create(ProductForm::class, [
             'method' => 'PUT',
             'url'    => route('admin.products.update', ['id' => $product->id]),
@@ -85,8 +83,7 @@ class ProductsController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(FormBuilder $formBuilder, Product $product)
-    {
+    public function update(FormBuilder $formBuilder, Product $product) {
         $form = $formBuilder->create(ProductForm::class);
         $product->fill($form->getFieldValues());
         $product->save();
@@ -99,8 +96,7 @@ class ProductsController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
-    {
+    public function destroy(Product $product) {
         $product->delete();
         return redirect()->route('admin.products.index');
     }

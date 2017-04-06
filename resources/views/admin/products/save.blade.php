@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('master')
+@section('title', 'Salvar novo Produto')
 
 @section('content')
     <div class="container">

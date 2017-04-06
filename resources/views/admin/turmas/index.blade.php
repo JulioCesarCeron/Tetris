@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('master')
+@section('title', 'Turmas')
 
 @section('content')
     <div class="container">
@@ -10,7 +11,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.turmas.create') }}" class="btn btn-default">
+                            <a href="{{ route('admin.turmas.create') }}" class="btn btn-raised btn-success">
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
                         </div>
@@ -18,7 +19,7 @@
                     <br/>
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table table-bordered">
+                            <table class="table ">
                                 <thead>
                                 <tr>
                                     <th style="width: 10px;">#</th>
@@ -30,8 +31,12 @@
                                 <tbody>
                                 @foreach($turmas as $turma)
                                     <tr>
-                                        <td>{{ $turma->id  }}</td>
-                                        <td>{{ $turma->turma }}</td>
+                                        <td>{{ $turma->id    }}</td>
+                                        <td>
+                                            <a href="{!! action('TurmasController@show', $turma->id) !!}">
+                                                {{ $turma->turma }}
+                                            </a>
+                                        </td>
                                         <td>{{ $turma->serie }}</td>
                                         <td>
                                             <a href="{{ route('admin.turmas.edit',['id' => $turma->id]) }}">
@@ -40,7 +45,13 @@
                                             <a href="{{ route('admin.turmas.destroy', ['id' => $turma->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turma-delete-form-{$turma->id}').submit();"}}">
                                                 <span class="glyphicon glyphicon-remove"></span>
                                             </a>
-                                            
+                                            {!! 
+                                                form(\FormBuilder::plain([
+                                                    'id'     => "turma-delete-form-{$turma->id}",
+                                                    'method' => 'DELETE',
+                                                    'url'    => route('admin.turmas.destroy',['id' => $turma->id])
+                                                ]));
+                                            !!}
                                         </td>
                                     </tr>
                                 @endforeach
