@@ -12,7 +12,13 @@ class TurmaAluno extends Model {
     	'user_id', 'turma_id'
     ];
 
-    public function turmaAlunos(){
+    public function turmas() {
     	return $this->belongsTo('App\Turma');
     }
+
+    public function usersAlunos() {
+    	return $this->belongsTo('App\User', 'id');
+    }
+
+
 }

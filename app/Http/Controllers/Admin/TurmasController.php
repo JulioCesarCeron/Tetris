@@ -61,7 +61,9 @@ class TurmasController extends Controller {
      */
     public function show($id) {
         $turma  = Turma::find($id);
-        $alunos = $turma->alunos()->get();
+        $alunos = $turma->users()->get();
+        // var_dump($alunos);
+        // die();
         return view('admin.turmas.turma-alunos.show', compact('turma','alunos')); 
     }
 

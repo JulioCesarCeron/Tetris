@@ -20,7 +20,7 @@
 		@foreach($alunos as $aluno)
 		   <div class="well well bs-component">
 		       <div class="content">
-		           {!! $aluno->user_id !!}
+		           {!! $aluno->name !!} || {!! $aluno->email !!}
 		       </div>
 		   </div>
 		@endforeach

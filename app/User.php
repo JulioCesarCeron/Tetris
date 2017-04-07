@@ -56,4 +56,13 @@ class User extends Authenticatable
         return $this->type === 'aluno' ? true : false; 
     }
 
+
+    public function turmaAlunos() {
+        return $this->belongsTo('App\TurmaAluno');
+    }
+
+    public function turma() {
+        return $this->belongsToMany('App\Turma', 'turma_alunos', 'user_id', 'turma_id');
+    }
+
 }
