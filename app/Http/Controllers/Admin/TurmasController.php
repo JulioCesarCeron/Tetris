@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Turma;
+use App\TurmaAluno;
 use App\Forms\TurmaForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -61,10 +62,11 @@ class TurmasController extends Controller {
      */
     public function show($id) {
         $turma  = Turma::find($id);
-        $alunos = $turma->users()->get();
-        // var_dump($alunos);
+        $turmaAlunos = TurmaAluno::where('turma_id', $id)->get();
+        // var_dump($turmaAlunos);
         // die();
-        return view('admin.turmas.turma-alunos.show', compact('turma','alunos')); 
+        $alunos = $turma->users()->get();
+        return view('admin.turmas.turma-alunos.show', compact('turma','alunos','turmaAlunos')); 
     }
 
     /**

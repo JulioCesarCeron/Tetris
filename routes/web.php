@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], fun
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
 	Route::resource('products', 'Admin\ProductsController');
 	Route::resource('turmas', 'Admin\TurmasController');
+	Route::resource('turma-alunos', 'Admin\TurmaAlunosController');
 	Route::resource('users', 'Admin\UsersController');
 
 	Route::get('/turmas/{id?}', 'TurmasController@show');

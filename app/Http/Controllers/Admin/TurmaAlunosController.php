@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Turma;
 use App\TurmaAluno;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controllers\Admin\TurmasControllers;
 
 class TurmaAlunosController extends Controller
 {
@@ -83,8 +85,9 @@ class TurmaAlunosController extends Controller
      * @param  \App\TurmaAluno  $turmaAluno
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TurmaAluno $turmaAluno)
-    {
-        //
+    public function destroy(TurmaAluno $turmaAluno) {
+        $turmaAluno->delete();
+        //return redirect('/admin/turmas')->with('status', "aluno Removido " . $turma->id . " id da turma!");
+        return redirect()->action('TurmasController@show', ['id' => $turmaAluno->turma_id])->with('status', "Aluno Removido!");
     }
 }
