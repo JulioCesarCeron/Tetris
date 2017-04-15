@@ -40,7 +40,7 @@
                                     <tr>
                                         <td>{{ $turma->id    }}</td>
                                         <td>
-                                            <a href="{!! action('TurmasController@show', $turma->id) !!}">
+                                            <a href="{!! route('admin.turma-alunos.show', [ 'id' => $turma->id]) !!}">
                                                 {{ $turma->turma }}
                                             </a>
                                         </td>

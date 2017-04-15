@@ -31,28 +31,32 @@ Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], fun
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
 	Route::resource('products', 'Admin\ProductsController');
 	Route::resource('turmas', 'Admin\TurmasController');
-	Route::resource('turma-alunos', 'Admin\TurmaAlunosController');
+	Route::resource('turmas', 'Admin\TurmasController', ['parameters' => ['turmas' => 'turma']]);
 	Route::resource('users', 'Admin\UsersController');
-
-	Route::get('/turmas/{id?}', 'TurmasController@show');
-
 });
 
+	
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin/turmas'], function(){
 	Route::resource('turma-alunos', 'Admin\TurmaAlunosController');
+	Route::get('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adiciona');
+	Route::post('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adicionaStore');
 });
 
 
-// Route::get('sendemail', function () {
-//     $data = array(
-//         'name' => "Learning Laravel",
-//     );
-//     Mail::send('emails.welcome', $data, function ($message) {
-//         $message->from('julio.ceorn@gmail.com', 'Learning Laravel');
-//         $message->to('julio.ceorn@gmail.com')->subject('Learning Laravel test email');
-//     });
-//     return "Your email has been sent successfully";
-// });
+
+/** TESTAR ENVIO DE EMAIL
+Route::get('sendemail', function () {
+    $data = array(
+        'name' => "Learning Laravel",
+    );
+    Mail::send('emails.welcome', $data, function ($message) {
+        $message->from('julio.ceorn@gmail.com', 'Learning Laravel');
+        $message->to('julio.ceorn@gmail.com')->subject('Learning Laravel test email');
+    });
+    return "Your email has been sent successfully";
+});
+*/
+
 
 
 

@@ -31,7 +31,7 @@ class TurmasController extends Controller {
             'url' => route('admin.turmas.store')
         ]);
         $title = "Nova Turma";
-        return view('admin.turmas.create', compact('form', 'title'));
+        return view('admin.turmas.save', compact('form', 'title'));
     }
 
     /**
@@ -47,9 +47,6 @@ class TurmasController extends Controller {
             return redirect()->back()->withErrors($form->getErrors())->withInput();
         }
 
-        // Or automatically redirect on error. This will throw an HttpResponseException with redirect
-       // $form->redirectIfNotValid();
-
         Turma::create($form->getFieldValues());
         return redirect()->route('admin.turmas.index');
     }
@@ -61,12 +58,7 @@ class TurmasController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        $turma  = Turma::find($id);
-        $turmaAlunos = TurmaAluno::where('turma_id', $id)->get();
-        // var_dump($turmaAlunos);
-        // die();
-        $alunos = $turma->users()->get();
-        return view('admin.turmas.turma-alunos.show', compact('turma','alunos','turmaAlunos')); 
+
     }
 
     /**

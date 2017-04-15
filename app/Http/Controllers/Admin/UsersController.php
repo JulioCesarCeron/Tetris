@@ -26,8 +26,6 @@ class UsersController extends Controller
         return compact('users');
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      *

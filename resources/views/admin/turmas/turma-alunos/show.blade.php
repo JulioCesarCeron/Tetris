@@ -7,24 +7,26 @@
 		    <div class="content">
 		        <h2 class="header"> Turma: {!! $turma->turma !!}</h2>
 		         <h2 class="header"> Serie: {!! $turma->serie !!}</h2>
-		    </div>
-			<a href="" class="btn btn-info">Edit</a>
-			<form method="post" action="" class="pull-left">
-			    <input type="hidden" name="_token" value="{!! csrf_token() !!}">
-			        <div>
-			            <button type="submit" class="btn btn-warning">Delete</button>
-			        </div>
-			</form>
-
+		    </div>           
+            
+            @php
+                $turma_id = $turma->id;
+            @endphp
+			<a href="{{ route('admin.turma-alunos.create') }}" class="btn btn-info">Aluno
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
 			
-			@if (session('status'))
-			    <div class="alert alert-success">
-			        {{ session('status') }}
-			    </div>
-			@endif
+			
 
 
 		</div>
+        
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
 		<div class="well well bs-component">
 		    <div class="content">
 				<table class="table ">
@@ -47,7 +49,7 @@
                                 <td>{{ $aluno->name }}</td>
                                 <td>{{ $aluno->email }}</td>
                                 <td>
-                                    <a href="{{ route('admin.turmas.destroy', ['id' => $aluno->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}').submit();"}}">
+                                    <a href="{{ route('admin.turma-alunos.destroy', ['id' => $aluno->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 
