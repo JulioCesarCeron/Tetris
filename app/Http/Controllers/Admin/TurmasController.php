@@ -48,7 +48,7 @@ class TurmasController extends Controller {
         }
 
         Turma::create($form->getFieldValues());
-        return redirect()->route('admin.turmas.index');
+        return redirect()->route('admin.turmas.index')->with('status', 'Turma criada com sucesso!');
     }
 
     /**
@@ -99,6 +99,6 @@ class TurmasController extends Controller {
      */
     public function destroy(Turma $turma) {
         $turma->delete();
-        return redirect()->route('admin.turmas.index');
+        return redirect()->route('admin.turmas.index')->with('status', 'Turma removida!');
     }
 }

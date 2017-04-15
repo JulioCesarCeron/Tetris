@@ -52,7 +52,7 @@ class UsersController extends Controller
         $user = $form->getFieldValues();
         $user["password"] = bcrypt($user['password']);
         User::create($user);
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index')->with('status', 'Usuário criado com sucesso');
     }
 
     /**
@@ -104,6 +104,6 @@ class UsersController extends Controller
      */
     public function destroy(User $user) {
         $user->delete();
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index')->with('status', 'Usuário removido com sucesso!');
     }
 }

@@ -38,8 +38,11 @@ Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 
 	
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin/turmas'], function(){
 	Route::resource('turma-alunos', 'Admin\TurmaAlunosController');
-	Route::get('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adiciona');
-	Route::post('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adicionaStore');
+
+	Route::group(['as' => 'turma.turma-alunos.adiciona'], function(){
+		Route::get('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adiciona');
+		Route::post('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adicionaStore');
+	});
 });
 
 

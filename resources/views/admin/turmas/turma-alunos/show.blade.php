@@ -8,17 +8,10 @@
 		        <h2 class="header"> Turma: {!! $turma->turma !!}</h2>
 		         <h2 class="header"> Serie: {!! $turma->serie !!}</h2>
 		    </div>           
-            
-            @php
-                $turma_id = $turma->id;
-            @endphp
-			<a href="{{ route('admin.turma-alunos.create') }}" class="btn btn-info">Aluno
+
+            <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-info">Aluno
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
-			
-			
-
-
 		</div>
         
         @if (session('status'))

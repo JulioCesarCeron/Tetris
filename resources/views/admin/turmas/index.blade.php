@@ -4,23 +4,26 @@
 @section('content')
     <div class="container">
         <div class="row">
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+            @endif
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">Administração de Turmas</h3>
                 </div>
                 <div class="panel-body">
-                    
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.turmas.create') }}" class="btn btn-raised btn-success">
+                            <a href="{{ route('admin.turmas.create') }}" class="btn btn-raised btn-success">Turma
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
+                            
+                            <a href="{{ route('admin.turma-alunos.create') }}" class="btn btn-info">Aluno
+                                <span class='glyphicon glyphicon-plus'></span>
+                            </a>
+
                         </div>
                     </div>
                     <br/>

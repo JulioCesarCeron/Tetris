@@ -5,6 +5,11 @@
 @section('content')
     <div class="container">
         <div class="row">
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+            @endif
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">Administração de Usuários</h3>
@@ -12,7 +17,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">
+                            <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">Usuário
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
                         </div>

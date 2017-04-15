@@ -14,6 +14,7 @@ class TurmaForm extends Form
             ])
             ->add('turma', 'text', [
             	'rules' => 'required',
+                'empty_value' => '=== Select language ==='
             ]);
     }
 }
