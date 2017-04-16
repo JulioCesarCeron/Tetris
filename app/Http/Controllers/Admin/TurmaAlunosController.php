@@ -21,7 +21,7 @@ class TurmaAlunosController extends Controller
      */
     public function index() {
         $turmaAluno = TurmaAluno::paginate(20);
-        return view('admin.turmas.turma-alunos.index',compact('turmaAluno'));
+        return view('admin.turmas.turma-alunos.index',compact('turmaAlunos'));
     }
 
     /**
@@ -118,7 +118,7 @@ class TurmaAlunosController extends Controller
      */
     public function destroy(TurmaAluno $turmaAluno) {
         $turmaAluno->delete();
-        return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno->turma_id])->with('status', "Aluno(a) Removido!");
+        return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno->turma_id])->with('remove', "Aluno(a) Removido!");
     }
 
     public function novoAluno($id) {
@@ -127,7 +127,7 @@ class TurmaAlunosController extends Controller
     }
 
     public function adiciona($id) {
-        $alunos = User::where('type', 'aluno')->get();
+        $alunos = User::where('type', 'aluno')->whereDoesntHave('turma')->get();
         $turma = Turma::find($id);
         return view('admin.turmas.turma-alunos.adiciona', compact('turma', 'alunos'));
     }

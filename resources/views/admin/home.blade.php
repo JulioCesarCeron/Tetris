@@ -7,9 +7,9 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                <li><a href="../admin/users">Usuários</a></li>
-                <li><a href="../admin/turmas">Turmas</a></li>
-                <li><a href="#">Export</a></li>
+                <li><a href=" {{ url('admin/users')}} ">Usuários</a></li>
+                <li><a href=" {{ url('admin/turmas') }} ">Turmas</a></li>
+                <li><a href=" {{ url('admin/materias')}} ">Materias</a></li>
             </ul>
             <ul class="nav nav-sidebar">
                 <li><a href="">Nav item</a></li>

@@ -65,4 +65,8 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Turma', 'turma_alunos', 'user_id', 'turma_id');
     }
 
+    public function materias() {
+        return $this->hasMany('App\Materia', 'professor_user_id');
+    }
+
 }

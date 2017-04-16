@@ -8,12 +8,12 @@
         <div class="bs-component">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Usuários</h3>
+                    <h3 class="panel-title">Administração de Matérias</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">Usuário
+                            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
                         </div>
@@ -35,31 +35,28 @@
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Tipo</th>
-                        <th>Ações</th>
+                        <th>Matéria</th>
+                        <th>Professor</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($users as $user)
+                    @foreach($materias as $materia)
                         <tr>
-                            <td>{{ $user->id  }}</td>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->type }}</td>
+                            <td>{{ $materia->id  }}</td>
+                            <td>{{ $materia->materia }}</td>
+                            <td>{{ $materia->professor->name }}</td>
                             <td>
-                                <a href="{{ route('admin.users.edit',['id' => $user->id]) }}">
+                                <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |
-                                <a href="{{ route('admin.users.destroy', ['id' => $user->id]) }}" onclick="{{"event.preventDefault();document.getElementById('user-delete-form-{$user->id}').submit();"}}">
+                                <a href="{{ route('admin.materias.destroy', ['id' => $materia->id]) }}" onclick="{{"event.preventDefault();document.getElementById('materia-delete-form-{$materia->id}').submit();"}}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
                                 {!! 
                                     form(\FormBuilder::plain([
-                                        'id'     => "user-delete-form-{$user->id}",
+                                        'id'     => "materia-delete-form-{$materia->id}",
                                         'method' => 'DELETE',
-                                        'url'    => route('admin.users.destroy',['id' => $user->id])
+                                        'url'    => route('admin.materias.destroy',['id' => $materia->id])
                                     ]));
                                 !!}
                             </td>
@@ -67,7 +64,7 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{ $users->links() }}
+                {{-- {{ $materias->links() }} --}}
             </div>
         </div>
     </div>

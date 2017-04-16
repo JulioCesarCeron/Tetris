@@ -9,7 +9,7 @@
 		         <h2 class="header"> Serie: {!! $turma->serie !!}</h2>
 		    </div>           
 
-            <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-info">Aluno
+            <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-raised btn-info">Aluno
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
 		</div>
@@ -17,6 +17,12 @@
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
+            </div>
+        @endif
+
+         @if (session('remove'))
+            <div class="alert alert-danger">
+                {{ session('remove') }}
             </div>
         @endif
 
