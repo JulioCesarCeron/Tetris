@@ -99,6 +99,6 @@ class TurmasController extends Controller {
      */
     public function destroy(Turma $turma) {
         $turma->delete();
-        return redirect()->route('admin.turmas.index')->with('status', 'Turma removida!');
+        return redirect()->route('admin.turmas.index')->with('remove', 'Turma removida!');
     }
 }

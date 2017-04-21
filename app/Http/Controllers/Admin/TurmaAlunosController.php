@@ -47,24 +47,13 @@ class TurmaAlunosController extends Controller
      */
     public function store(FormBuilder $formBuilder) {
         $form = $formBuilder->create(TurmaAlunoForm::class);
-
          // It will automatically use current request, get the rules, and do the validation
         if (!$form->isValid()) {
             return redirect()->back()->withErrors($form->getErrors())->withInput();
         }
-
-        // Or automatically redirect on error. This will throw an HttpResponseException with redirect
-        // $form->redirectIfNotValid();
-
         $turmaAluno = $form->getFieldValues();
-
-        // var_dump($turmaAluno["turma_id"]);
-        // die();
-
-
         TurmaAluno::create($form->getFieldValues());
         return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno["turma_id"]])->with('status', "Aluno Adicionado!");
-        //return redirect()->route('admin.turmas.index');
     }
 
     /**
@@ -87,13 +76,13 @@ class TurmaAlunosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(TurmaAluno $turmaAluno) {
-        $form = \FormBuilder::create(TurmaAlunoForm::class, [
-            'method' => 'PUT',
-            'url'    => route('admin.turma-alunos.update', ['id' => $turmaAluno->turma_id]),
-            'model'  => $turmaAluno
-        ]);
-        $title = "Editar Turma";
-        return view('admin.turmas.turma-alunos.save', compact('form', 'title'));
+        // $form = \FormBuilder::create(TurmaAlunoForm::class, [
+        //     'method' => 'PUT',
+        //     'url'    => route('admin.turma-alunos.update', ['id' => $turmaAluno->turma_id]),
+        //     'model'  => $turmaAluno
+        // ]);
+        // $title = "Editar Turma";
+        // return view('admin.turmas.turma-alunos.save', compact('form', 'title'));
     }
 
     /**
@@ -104,21 +93,10 @@ class TurmaAlunosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(FormBuilder $formBuilder, TurmaAluno $turmaAluno) {
-        $form = $formBuilder->create(TurmaForm::class);
-        $turma->fill($form->getFieldValues());
-        $turma->save();
-        return redirect()->route('admin.turmas.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\TurmaAluno  $turmaAluno
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(TurmaAluno $turmaAluno) {
-        $turmaAluno->delete();
-        return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno->turma_id])->with('remove', "Aluno(a) Removido!");
+        // $form = $formBuilder->create(TurmaForm::class);
+        // $turma->fill($form->getFieldValues());
+        // $turma->save();
+        // return redirect()->route('admin.turmas.index');
     }
 
     public function novoAluno($id) {
@@ -139,5 +117,17 @@ class TurmaAlunosController extends Controller
                     ));
         $turmaAluno->save();
         return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno->turma_id])->with('status', "Aluno(a) Adicionado!");
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\TurmaAluno  $turmaAluno
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(TurmaAluno $turmaAluno) {
+        $turmaAluno->delete();
+        return redirect()->route('admin.turma-alunos.show', ['id' => $turmaAluno->turma_id])->with('remove', "Aluno(a) Removido!");
     }
 }

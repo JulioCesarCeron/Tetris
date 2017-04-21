@@ -29,6 +29,12 @@
             </div>
         @endif
 
+        @if (session('remove'))
+            <div class="alert alert-danger">
+                {{ session('remove') }}
+            </div>
+        @endif
+
         <div class="well well bs-component">
             <div class="content">
                 <table class="table">

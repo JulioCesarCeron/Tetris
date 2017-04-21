@@ -3,13 +3,6 @@
 
 @section('content')
     <div class="container">
-
-        @if (session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-        @endif
-
         <div class="bs-component">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -32,6 +25,19 @@
                 </div>
             </div>
         </div>
+        
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        @if (session('remove'))
+            <div class="alert alert-danger">
+                {{ session('remove') }}
+            </div>
+        @endif
+
         <div class="well well bs-component">
             <div class="content">
                 <table class="table ">
