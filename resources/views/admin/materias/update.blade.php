@@ -32,23 +32,6 @@
                         </button>
                     </fieldset>
                 </form>
-				
-				{{-- <form method="POST" action="http://127.0.0.1:8000/admin/turmas/1" accept-charset="UTF-8">
-				<input name="_method" type="hidden" value="PUT">
-				<input name="_token" type="hidden" value="dYOiR3oNLVa4CEus9E20o3xa2sBZNW52C8iFojCM">
-					<div class="form-group">
-						<label for="serie" class="control-label required">Serie</label>
-						<input class="form-control" required="required" name="serie" type="text" value="2" id="serie">
-					</div>
-					<div class="form-group">
-						<label for="turma" class="control-label required">Turma</label>
-						<input class="form-control" required="required" name="turma" type="text" value="2B" id="turma">
-					</div>
-					<button class="form-control" type="submit">
-						<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
-					</button>
-				</form> --}}
-
             </div>
         </div>
     </div>

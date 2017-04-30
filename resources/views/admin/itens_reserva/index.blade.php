@@ -8,14 +8,14 @@
         <div class="bs-component">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Matérias</h3>
+                    <h3 class="panel-title">Gerenciamento de itens para reserva</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
+                            <!--<a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
                                 <span class='glyphicon glyphicon-plus'></span>
-                            </a>
+                            </a>-->
                         </div>
                     </div>
                     <br/>
@@ -23,7 +23,7 @@
             </div>
         </div>
         
-        @if (session('status'))
+        <!--@if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
@@ -33,7 +33,7 @@
             <div class="alert alert-danger">
                 {{ session('remove') }}
             </div>
-        @endif
+        @endif-->
 
         <div class="well well bs-component">
             <div class="content">
@@ -46,13 +46,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($materias as $materia)
+                    @foreach($itemsReservas as $item)
                         <tr>
-                            <td>{{ $materia->id  }}</td>
+                            <td>{{ $item->id  }}</td>
                             <td>{{ $materia->materia }}</td>
                             <td>{{ $materia->professor->name }}</td>
                             <td>
-                                <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
+                               <!-- <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |
                                 <a href="{{ route('admin.materias.destroy', ['id' => $materia->id]) }}" onclick="{{"event.preventDefault();document.getElementById('materia-delete-form-{$materia->id}').submit();"}}">
@@ -65,13 +65,12 @@
                                         'method' => 'DELETE',
                                         'url'    => route('admin.materias.destroy',['id' => $materia->id])
                                     ]));
-                                !!}
+                                !!}-->
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
-                {{-- {{ $materias->links() }} --}}
             </div>
         </div>
     </div>
