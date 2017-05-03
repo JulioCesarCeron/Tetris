@@ -60,10 +60,10 @@
                                 </a>
                                 {!! 
                                     form(\FormBuilder::plain([
-                                        'class'  => "materia-submit-delete",
-                                        'id'     => "materia-delete-form-{$materia->id}",
-                                        'method' => 'DELETE',
-                                        'url'    => route('admin.materias.destroy',['id' => $materia->id])
+                                        'class'    => "materia-submit-delete",
+                                        'id'       => "materia-delete-form-{$materia->id}",
+                                        'method'   => 'DELETE',
+                                        'url'      => route('admin.materias.destroy',['id' => $materia->id])
                                     ]));
                                 !!}
                             </td>
@@ -75,11 +75,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        $('.materia-submit-delete').on("submit", function(){
-            return confirm("Tem certeza que deseja excluir essa Matéria?")
-        });
-    </script>
 
 @endsection
