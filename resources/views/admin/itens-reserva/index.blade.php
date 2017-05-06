@@ -13,9 +13,9 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <!--<a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
+                            <a href="{{ route('admin.itens-reserva.create') }}" class="btn btn-raised btn-success">Item
                                 <span class='glyphicon glyphicon-plus'></span>
-                            </a>-->
+                            </a>
                         </div>
                     </div>
                     <br/>
@@ -23,7 +23,7 @@
             </div>
         </div>
         
-        <!--@if (session('status'))
+        @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
@@ -33,7 +33,7 @@
             <div class="alert alert-danger">
                 {{ session('remove') }}
             </div>
-        @endif-->
+        @endif
 
         <div class="well well bs-component">
             <div class="content">
@@ -41,31 +41,31 @@
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
-                        <th>Matéria</th>
-                        <th>Professor</th>
+                        <th>Item</th>
+                        <th>Quantidade</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($itemsReservas as $item)
+                    @foreach($itemsReservas as $itemsReserva)
                         <tr>
-                            <td>{{ $item->id  }}</td>
-                            <td>{{ $materia->materia }}</td>
-                            <td>{{ $materia->professor->name }}</td>
+                            <td>{{ $itemsReserva->id  }}</td>
+                            <td>{{ $itemsReserva->item  }}</td>
+                            <td>{{ $itemsReserva->quantidade }}</td>
                             <td>
-                               <!-- <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
+                                <a href="{{ route('admin.itens-reserva.edit',['id' => 2]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |
-                                <a href="{{ route('admin.materias.destroy', ['id' => $materia->id]) }}" onclick="{{"event.preventDefault();document.getElementById('materia-delete-form-{$materia->id}').submit();"}}">
+                                <a href="{{ route('admin.itens-reserva.destroy', ['id' => $itemsReserva->id]) }}" onclick="{{"event.preventDefault();document.getElementById('item-delete-form-{$itemsReserva->id}').submit();"}}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
                                 {!! 
                                     form(\FormBuilder::plain([
-                                        'class'  => "materia-submit-delete",
-                                        'id'     => "materia-delete-form-{$materia->id}",
+                                        'class'  => "item-submit-delete",
+                                        'id'     => "item-delete-form-{$itemsReserva->id}",
                                         'method' => 'DELETE',
-                                        'url'    => route('admin.materias.destroy',['id' => $materia->id])
+                                        'url'    => route('admin.itens-reserva.destroy',['id' => $itemsReserva->id])
                                     ]));
-                                !!}-->
+                                !!}
                             </td>
                         </tr>
                     @endforeach
@@ -76,7 +76,7 @@
     </div>
 
     <script>
-        $('.materia-submit-delete').on("submit", function(){
+        $('.item-submit-delete').on("submit", function(){
             return confirm("Tem certeza que deseja excluir essa Matéria?")
         });
     </script>

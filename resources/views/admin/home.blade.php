@@ -10,18 +10,7 @@
                 <li><a href=" {{ url('admin/users')}} ">Usuários</a></li>
                 <li><a href=" {{ url('admin/turmas') }} ">Turmas</a></li>
                 <li><a href=" {{ url('admin/materias')}} ">Materias</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="">Nav item</a></li>
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
-                <li><a href="">More navigation</a></li>
-            </ul>
-                <ul class="nav nav-sidebar">
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
+                <li><a href=" {{ url('admin/itens-reserva')}} ">Itens Reserva</a></li>
             </ul>
         </div>
         <div class="col-md-8 col-md-offset-2">

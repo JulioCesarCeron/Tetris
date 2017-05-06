@@ -10,6 +10,7 @@ class ItemReservaForm extends Form
     {
         $this
             ->add('item', 'text')
-            ->add('description', 'textarea');
+            ->add('quantidade', 'number')
+            ->add('descricao', 'textarea');
     }
 }

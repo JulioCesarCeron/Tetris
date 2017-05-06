@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\ItemReserva;
-use App\ItemReserva;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Forms\ItemReservaForm;
+use Kris\LaravelFormBuilder\FormBuilder;
 
 class ItemReservasController extends Controller
 {
@@ -16,7 +17,7 @@ class ItemReservasController extends Controller
      */
     public function index() {
         $itemsReservas = ItemReserva::paginate(10);
-        return view('admin.itens_reserva.index',compact('itemsReservas'));
+        return view('admin.itens-reserva.index',compact('itemsReservas'));
     }
 
     /**
@@ -24,9 +25,13 @@ class ItemReservasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+    public function create() {
+        $form = \FormBuilder::create(ItemReservaForm::class, [
+            'method' => 'POST',
+            'url' => route('admin.itens-reserva.store')
+        ]);
+        $title = "Novo Item para reserva";
+        return view('admin.itens-reserva.save', compact('form', 'title'));
     }
 
     /**
@@ -35,9 +40,11 @@ class ItemReservasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(FormBuilder $formBuilder) {
+        $form = $formBuilder->create(ItemReservaForm::class);
+
+        ItemReserva::create($form->getFieldValues());
+        return redirect()->route('admin.itens-reserva.index');
     }
 
     /**
@@ -57,9 +64,9 @@ class ItemReservasController extends Controller
      * @param  \App\ItemReserva  $itemReserva
      * @return \Illuminate\Http\Response
      */
-    public function edit(ItemReserva $itemReserva)
-    {
-        //
+    public function edit(ItemReserva $itemReserva) {
+        var_dump($itemReserva);
+        die();
     }
 
     /**
@@ -69,9 +76,11 @@ class ItemReservasController extends Controller
      * @param  \App\ItemReserva  $itemReserva
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ItemReserva $itemReserva)
-    {
-        //
+    public function update(FormBuilder $formBuilder, ItemReserva $itemReserva) {
+        $form = $formBuilder->create(ItemReservaForm::class);
+        $itemReserva->fill($form->getFieldValues());
+        $itemReserva->save();
+        return redirect()->route('admin.itens-reserva.index');
     }
 
     /**
