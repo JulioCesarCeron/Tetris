@@ -15,7 +15,7 @@ class CreateItemReservasTable extends Migration
     {
         Schema::create('item_reservas', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('item');
+            $table->string('nome_item');
             $table->integer('quantidade');
             $table->text('descricao');
             $table->timestamps();

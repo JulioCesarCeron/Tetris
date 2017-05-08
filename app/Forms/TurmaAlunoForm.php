@@ -10,11 +10,7 @@ class TurmaAlunoForm extends Form
     public function buildForm() {
     	
         $this
-	        ->add('user_id', 'number', [
-            	'rules' => 'required',
-            ])
-		  	->add('turma_id', 'number', [
-            	'rules' => 'required',
-            ]);
+	        ->add('user_id',  'number', ['rules' => 'required'])
+		  	->add('turma_id', 'number', ['rules' => 'required']);
     }
 }

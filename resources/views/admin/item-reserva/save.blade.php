@@ -1,5 +1,5 @@
 @extends('master')
-@section('title', 'Salvar novo Produto')
+@section('title', 'Salvar nova Turma')
 
 @section('content')
     <div class="container">

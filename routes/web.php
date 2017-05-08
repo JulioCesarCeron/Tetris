@@ -29,11 +29,10 @@ Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], fun
 });
 
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
-	Route::resource('users',         'Admin\UsersController'        );
-	Route::resource('products',      'Admin\ProductsController'     );
-	Route::resource('itens-reserva', 'Admin\ItemReservasController' );
-	Route::resource('materias',      'Admin\MateriasController'     );
-	Route::resource('turmas',        'Admin\TurmasController'       );
+	Route::resource('users',         'Admin\UsersController'         );
+	Route::resource('products',      'Admin\ProductsController'      );
+	Route::resource('materias',      'Admin\MateriasController'      );
+	Route::resource('item-reserva',      'Admin\ItemReservasController'      );
 	Route::resource('turmas',        'Admin\TurmasController', ['parameters' => ['turmas' => 'turma']]);
 });
 

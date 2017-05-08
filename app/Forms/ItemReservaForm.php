@@ -9,8 +9,8 @@ class ItemReservaForm extends Form
     public function buildForm()
     {
         $this
-            ->add('item', 'text')
-            ->add('quantidade', 'number')
-            ->add('descricao', 'textarea');
+            ->add('nome_item',  'text', ['rules' => 'required'])
+            ->add('quantidade', 'number', ['rules' => 'required'])
+            ->add('descricao',  'textarea', ['rules' => 'required']);
     }
 }

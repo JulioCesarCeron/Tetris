@@ -9,7 +9,8 @@ elixir(function(mix) {
 		//'../../../node_modules/bootstrap/dist/css/bootstrap.css.map',
 		'../../../node_modules/font-awesome/css/font-awesome.css',
 		'bootstrap-material-design.css',
-		//'bootstrap-material-design.css.map'
+		//'bootstrap-material-design.css.map',
+		'styles.css',
 	], 'public/css/app.css');
 
 

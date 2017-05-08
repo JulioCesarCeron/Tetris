@@ -86,6 +86,11 @@ class TurmasController extends Controller {
      */
     public function update(FormBuilder $formBuilder, Turma $turma) {
         $form = $formBuilder->create(TurmaForm::class);
+
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
+        
         $turma->fill($form->getFieldValues());
         $turma->save();
         return redirect()->route('admin.turmas.index');

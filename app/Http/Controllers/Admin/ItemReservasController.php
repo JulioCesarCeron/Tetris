@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\ItemReserva;
+use App\Forms\ItemReservaForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Forms\ItemReservaForm;
 use Kris\LaravelFormBuilder\FormBuilder;
 
-class ItemReservasController extends Controller
-{
+
+class ItemReservasController extends Controller {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $itemsReservas = ItemReserva::paginate(10);
-        return view('admin.itens-reserva.index',compact('itemsReservas'));
+        $itens = ItemReserva::paginate(5);
+        return view('admin.item-reserva.index', compact('itens'));
     }
 
     /**
@@ -28,10 +28,10 @@ class ItemReservasController extends Controller
     public function create() {
         $form = \FormBuilder::create(ItemReservaForm::class, [
             'method' => 'POST',
-            'url' => route('admin.itens-reserva.store')
+            'url' => route('admin.item-reserva.store')
         ]);
         $title = "Novo Item para reserva";
-        return view('admin.itens-reserva.save', compact('form', 'title'));
+        return view('admin.item-reserva.save', compact('form', 'title'));
     }
 
     /**
@@ -42,9 +42,13 @@ class ItemReservasController extends Controller
      */
     public function store(FormBuilder $formBuilder) {
         $form = $formBuilder->create(ItemReservaForm::class);
+         // It will automatically use current request, get the rules, and do the validation
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
 
         ItemReserva::create($form->getFieldValues());
-        return redirect()->route('admin.itens-reserva.index');
+        return redirect()->route('admin.item-reserva.index')->with('status', 'Item criado com sucesso!');
     }
 
     /**
@@ -53,8 +57,7 @@ class ItemReservasController extends Controller
      * @param  \App\ItemReserva  $itemReserva
      * @return \Illuminate\Http\Response
      */
-    public function show(ItemReserva $itemReserva)
-    {
+    public function show(ItemReserva $itemReserva) {
         //
     }
 
@@ -65,8 +68,13 @@ class ItemReservasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(ItemReserva $itemReserva) {
-        var_dump($itemReserva);
-        die();
+        $form = \FormBuilder::create(ItemReservaForm::class, [
+        'method' => 'PUT',
+        'url'    => route('admin.item-reserva.update', ['id' => $itemReserva->id]),
+        'model'  => $itemReserva
+        ]);
+        $title = "Editar Item";
+        return view('admin.item-reserva.save', compact('form', 'title'));
     }
 
     /**
@@ -78,9 +86,14 @@ class ItemReservasController extends Controller
      */
     public function update(FormBuilder $formBuilder, ItemReserva $itemReserva) {
         $form = $formBuilder->create(ItemReservaForm::class);
+
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
+
         $itemReserva->fill($form->getFieldValues());
         $itemReserva->save();
-        return redirect()->route('admin.itens-reserva.index');
+        return redirect()->route('admin.item-reserva.index')->with('status', 'Item atualizado com sucesso!');;
     }
 
     /**
@@ -89,8 +102,8 @@ class ItemReservasController extends Controller
      * @param  \App\ItemReserva  $itemReserva
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ItemReserva $itemReserva)
-    {
-        //
+    public function destroy(ItemReserva $itemReserva) {
+        $itemReserva->delete();
+        return redirect()->route('admin.item-reserva.index')->with('remove', 'Item removido com sucesso!');
     }
 }

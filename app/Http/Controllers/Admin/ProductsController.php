@@ -67,6 +67,7 @@ class ProductsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product) {
+ 
         $form = \FormBuilder::create(ProductForm::class, [
             'method' => 'PUT',
             'url'    => route('admin.products.update', ['id' => $product->id]),
@@ -75,6 +76,7 @@ class ProductsController extends Controller
         $title = "Editar Produto";
         return view('admin.products.save', compact('form', 'title'));
     }
+
 
     /**
      * Update the specified resource in storage.

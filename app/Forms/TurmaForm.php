@@ -9,12 +9,7 @@ class TurmaForm extends Form
     public function buildForm()
     {
         $this
-            ->add('serie', 'text', [
-            	'rules' => 'required',
-            ])
-            ->add('turma', 'text', [
-            	'rules' => 'required',
-                'empty_value' => '=== Select language ==='
-            ]);
+            ->add('serie', 'text', ['rules' => 'required'])
+            ->add('turma', 'text', ['rules' => 'required']);
     }
 }

@@ -11,9 +11,14 @@
                     </button>
 
                     <!-- Branding Image -->
-                    <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
-                    </a>
+                        
+                    @if (Auth::check() && Auth::user()->isAdmin())
+                        <a class="navbar-brand" href="{{ url('/admin') }}">Home</a>
+                    @elseif(Auth::check() && Auth::user()->isProfessor())
+                        <a class="navbar-brand" href="{{ url('/professor') }}">Home</a>
+                    @endif
+                    <a class="navbar-brand" href="{{ url('/') }}"> {{ config('app.name', 'Laravel') }}</a>
+
                 </div>
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">

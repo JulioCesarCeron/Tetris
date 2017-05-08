@@ -9,7 +9,7 @@ class MateriaForm extends Form
     public function buildForm()
     {
         $this
-            ->add('materia', 'text')
-            ->add('professor_user_id', 'number');
+            ->add('materia', 'text', ['rules' => 'required'] )
+            ->add('professor_user_id', 'number', ['rules' => 'required']);
     }
 }
