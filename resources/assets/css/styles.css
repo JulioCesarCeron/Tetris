@@ -48,3 +48,9 @@ html, body {
 .m-b-md {
     margin-bottom: 30px;
 }
+
+.table-calendar td {
+        width: 14.285714285714285%;
+        text-align: center;
+    }
+}

@@ -16,6 +16,10 @@ class Turma extends Model {
     	return $this->hasMany('App\TurmaAluno');
     }
 
+    public function horarios() {
+        return $this->belongsTo('App\Horario');
+    }
+
     // public function alunos() {
     //     return $this->hasManyThrough('App\TurmaAluno', 'App\User');
     // }

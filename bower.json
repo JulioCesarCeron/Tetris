@@ -1,0 +1,17 @@
+{
+  "name": "Tetris",
+  "description": "",
+  "main": "",
+  "authors": [
+    "JulioCesarCeron <julio.ceorn@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/JulioCesarCeron/Tetris",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

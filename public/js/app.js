@@ -12630,6 +12630,5786 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
+//     Underscore.js 1.8.3
+//     http://underscorejs.org
+//     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     Underscore may be freely distributed under the MIT license.
+
+(function() {
+
+  // Baseline setup
+  // --------------
+
+  // Establish the root object, `window` in the browser, or `exports` on the server.
+  var root = this;
+
+  // Save the previous value of the `_` variable.
+  var previousUnderscore = root._;
+
+  // Save bytes in the minified (but not gzipped) version:
+  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
+
+  // Create quick reference variables for speed access to core prototypes.
+  var
+    push             = ArrayProto.push,
+    slice            = ArrayProto.slice,
+    toString         = ObjProto.toString,
+    hasOwnProperty   = ObjProto.hasOwnProperty;
+
+  // All **ECMAScript 5** native function implementations that we hope to use
+  // are declared here.
+  var
+    nativeIsArray      = Array.isArray,
+    nativeKeys         = Object.keys,
+    nativeBind         = FuncProto.bind,
+    nativeCreate       = Object.create;
+
+  // Naked function reference for surrogate-prototype-swapping.
+  var Ctor = function(){};
+
+  // Create a safe reference to the Underscore object for use below.
+  var _ = function(obj) {
+    if (obj instanceof _) return obj;
+    if (!(this instanceof _)) return new _(obj);
+    this._wrapped = obj;
+  };
+
+  // Export the Underscore object for **Node.js**, with
+  // backwards-compatibility for the old `require()` API. If we're in
+  // the browser, add `_` as a global object.
+  if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = _;
+    }
+    exports._ = _;
+  } else {
+    root._ = _;
+  }
+
+  // Current version.
+  _.VERSION = '1.8.3';
+
+  // Internal function that returns an efficient (for current engines) version
+  // of the passed-in callback, to be repeatedly applied in other Underscore
+  // functions.
+  var optimizeCb = function(func, context, argCount) {
+    if (context === void 0) return func;
+    switch (argCount == null ? 3 : argCount) {
+      case 1: return function(value) {
+        return func.call(context, value);
+      };
+      case 2: return function(value, other) {
+        return func.call(context, value, other);
+      };
+      case 3: return function(value, index, collection) {
+        return func.call(context, value, index, collection);
+      };
+      case 4: return function(accumulator, value, index, collection) {
+        return func.call(context, accumulator, value, index, collection);
+      };
+    }
+    return function() {
+      return func.apply(context, arguments);
+    };
+  };
+
+  // A mostly-internal function to generate callbacks that can be applied
+  // to each element in a collection, returning the desired result — either
+  // identity, an arbitrary callback, a property matcher, or a property accessor.
+  var cb = function(value, context, argCount) {
+    if (value == null) return _.identity;
+    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    if (_.isObject(value)) return _.matcher(value);
+    return _.property(value);
+  };
+  _.iteratee = function(value, context) {
+    return cb(value, context, Infinity);
+  };
+
+  // An internal function for creating assigner functions.
+  var createAssigner = function(keysFunc, undefinedOnly) {
+    return function(obj) {
+      var length = arguments.length;
+      if (length < 2 || obj == null) return obj;
+      for (var index = 1; index < length; index++) {
+        var source = arguments[index],
+            keys = keysFunc(source),
+            l = keys.length;
+        for (var i = 0; i < l; i++) {
+          var key = keys[i];
+          if (!undefinedOnly || obj[key] === void 0) obj[key] = source[key];
+        }
+      }
+      return obj;
+    };
+  };
+
+  // An internal function for creating a new object that inherits from another.
+  var baseCreate = function(prototype) {
+    if (!_.isObject(prototype)) return {};
+    if (nativeCreate) return nativeCreate(prototype);
+    Ctor.prototype = prototype;
+    var result = new Ctor;
+    Ctor.prototype = null;
+    return result;
+  };
+
+  var property = function(key) {
+    return function(obj) {
+      return obj == null ? void 0 : obj[key];
+    };
+  };
+
+  // Helper for collection methods to determine whether a collection
+  // should be iterated as an array or as an object
+  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
+  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+  var getLength = property('length');
+  var isArrayLike = function(collection) {
+    var length = getLength(collection);
+    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
+  };
+
+  // Collection Functions
+  // --------------------
+
+  // The cornerstone, an `each` implementation, aka `forEach`.
+  // Handles raw objects in addition to array-likes. Treats all
+  // sparse array-likes as if they were dense.
+  _.each = _.forEach = function(obj, iteratee, context) {
+    iteratee = optimizeCb(iteratee, context);
+    var i, length;
+    if (isArrayLike(obj)) {
+      for (i = 0, length = obj.length; i < length; i++) {
+        iteratee(obj[i], i, obj);
+      }
+    } else {
+      var keys = _.keys(obj);
+      for (i = 0, length = keys.length; i < length; i++) {
+        iteratee(obj[keys[i]], keys[i], obj);
+      }
+    }
+    return obj;
+  };
+
+  // Return the results of applying the iteratee to each element.
+  _.map = _.collect = function(obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length,
+        results = Array(length);
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      results[index] = iteratee(obj[currentKey], currentKey, obj);
+    }
+    return results;
+  };
+
+  // Create a reducing function iterating left or right.
+  function createReduce(dir) {
+    // Optimized iterator function as using arguments.length
+    // in the main function will deoptimize the, see #1991.
+    function iterator(obj, iteratee, memo, keys, index, length) {
+      for (; index >= 0 && index < length; index += dir) {
+        var currentKey = keys ? keys[index] : index;
+        memo = iteratee(memo, obj[currentKey], currentKey, obj);
+      }
+      return memo;
+    }
+
+    return function(obj, iteratee, memo, context) {
+      iteratee = optimizeCb(iteratee, context, 4);
+      var keys = !isArrayLike(obj) && _.keys(obj),
+          length = (keys || obj).length,
+          index = dir > 0 ? 0 : length - 1;
+      // Determine the initial value if none is provided.
+      if (arguments.length < 3) {
+        memo = obj[keys ? keys[index] : index];
+        index += dir;
+      }
+      return iterator(obj, iteratee, memo, keys, index, length);
+    };
+  }
+
+  // **Reduce** builds up a single result from a list of values, aka `inject`,
+  // or `foldl`.
+  _.reduce = _.foldl = _.inject = createReduce(1);
+
+  // The right-associative version of reduce, also known as `foldr`.
+  _.reduceRight = _.foldr = createReduce(-1);
+
+  // Return the first value which passes a truth test. Aliased as `detect`.
+  _.find = _.detect = function(obj, predicate, context) {
+    var key;
+    if (isArrayLike(obj)) {
+      key = _.findIndex(obj, predicate, context);
+    } else {
+      key = _.findKey(obj, predicate, context);
+    }
+    if (key !== void 0 && key !== -1) return obj[key];
+  };
+
+  // Return all the elements that pass a truth test.
+  // Aliased as `select`.
+  _.filter = _.select = function(obj, predicate, context) {
+    var results = [];
+    predicate = cb(predicate, context);
+    _.each(obj, function(value, index, list) {
+      if (predicate(value, index, list)) results.push(value);
+    });
+    return results;
+  };
+
+  // Return all the elements for which a truth test fails.
+  _.reject = function(obj, predicate, context) {
+    return _.filter(obj, _.negate(cb(predicate)), context);
+  };
+
+  // Determine whether all of the elements match a truth test.
+  // Aliased as `all`.
+  _.every = _.all = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      if (!predicate(obj[currentKey], currentKey, obj)) return false;
+    }
+    return true;
+  };
+
+  // Determine if at least one element in the object matches a truth test.
+  // Aliased as `any`.
+  _.some = _.any = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      if (predicate(obj[currentKey], currentKey, obj)) return true;
+    }
+    return false;
+  };
+
+  // Determine if the array or object contains a given item (using `===`).
+  // Aliased as `includes` and `include`.
+  _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
+    if (!isArrayLike(obj)) obj = _.values(obj);
+    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+    return _.indexOf(obj, item, fromIndex) >= 0;
+  };
+
+  // Invoke a method (with arguments) on every item in a collection.
+  _.invoke = function(obj, method) {
+    var args = slice.call(arguments, 2);
+    var isFunc = _.isFunction(method);
+    return _.map(obj, function(value) {
+      var func = isFunc ? method : value[method];
+      return func == null ? func : func.apply(value, args);
+    });
+  };
+
+  // Convenience version of a common use case of `map`: fetching a property.
+  _.pluck = function(obj, key) {
+    return _.map(obj, _.property(key));
+  };
+
+  // Convenience version of a common use case of `filter`: selecting only objects
+  // containing specific `key:value` pairs.
+  _.where = function(obj, attrs) {
+    return _.filter(obj, _.matcher(attrs));
+  };
+
+  // Convenience version of a common use case of `find`: getting the first object
+  // containing specific `key:value` pairs.
+  _.findWhere = function(obj, attrs) {
+    return _.find(obj, _.matcher(attrs));
+  };
+
+  // Return the maximum element (or element-based computation).
+  _.max = function(obj, iteratee, context) {
+    var result = -Infinity, lastComputed = -Infinity,
+        value, computed;
+    if (iteratee == null && obj != null) {
+      obj = isArrayLike(obj) ? obj : _.values(obj);
+      for (var i = 0, length = obj.length; i < length; i++) {
+        value = obj[i];
+        if (value > result) {
+          result = value;
+        }
+      }
+    } else {
+      iteratee = cb(iteratee, context);
+      _.each(obj, function(value, index, list) {
+        computed = iteratee(value, index, list);
+        if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+          result = value;
+          lastComputed = computed;
+        }
+      });
+    }
+    return result;
+  };
+
+  // Return the minimum element (or element-based computation).
+  _.min = function(obj, iteratee, context) {
+    var result = Infinity, lastComputed = Infinity,
+        value, computed;
+    if (iteratee == null && obj != null) {
+      obj = isArrayLike(obj) ? obj : _.values(obj);
+      for (var i = 0, length = obj.length; i < length; i++) {
+        value = obj[i];
+        if (value < result) {
+          result = value;
+        }
+      }
+    } else {
+      iteratee = cb(iteratee, context);
+      _.each(obj, function(value, index, list) {
+        computed = iteratee(value, index, list);
+        if (computed < lastComputed || computed === Infinity && result === Infinity) {
+          result = value;
+          lastComputed = computed;
+        }
+      });
+    }
+    return result;
+  };
+
+  // Shuffle a collection, using the modern version of the
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  _.shuffle = function(obj) {
+    var set = isArrayLike(obj) ? obj : _.values(obj);
+    var length = set.length;
+    var shuffled = Array(length);
+    for (var index = 0, rand; index < length; index++) {
+      rand = _.random(0, index);
+      if (rand !== index) shuffled[index] = shuffled[rand];
+      shuffled[rand] = set[index];
+    }
+    return shuffled;
+  };
+
+  // Sample **n** random values from a collection.
+  // If **n** is not specified, returns a single random element.
+  // The internal `guard` argument allows it to work with `map`.
+  _.sample = function(obj, n, guard) {
+    if (n == null || guard) {
+      if (!isArrayLike(obj)) obj = _.values(obj);
+      return obj[_.random(obj.length - 1)];
+    }
+    return _.shuffle(obj).slice(0, Math.max(0, n));
+  };
+
+  // Sort the object's values by a criterion produced by an iteratee.
+  _.sortBy = function(obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    return _.pluck(_.map(obj, function(value, index, list) {
+      return {
+        value: value,
+        index: index,
+        criteria: iteratee(value, index, list)
+      };
+    }).sort(function(left, right) {
+      var a = left.criteria;
+      var b = right.criteria;
+      if (a !== b) {
+        if (a > b || a === void 0) return 1;
+        if (a < b || b === void 0) return -1;
+      }
+      return left.index - right.index;
+    }), 'value');
+  };
+
+  // An internal function used for aggregate "group by" operations.
+  var group = function(behavior) {
+    return function(obj, iteratee, context) {
+      var result = {};
+      iteratee = cb(iteratee, context);
+      _.each(obj, function(value, index) {
+        var key = iteratee(value, index, obj);
+        behavior(result, value, key);
+      });
+      return result;
+    };
+  };
+
+  // Groups the object's values by a criterion. Pass either a string attribute
+  // to group by, or a function that returns the criterion.
+  _.groupBy = group(function(result, value, key) {
+    if (_.has(result, key)) result[key].push(value); else result[key] = [value];
+  });
+
+  // Indexes the object's values by a criterion, similar to `groupBy`, but for
+  // when you know that your index values will be unique.
+  _.indexBy = group(function(result, value, key) {
+    result[key] = value;
+  });
+
+  // Counts instances of an object that group by a certain criterion. Pass
+  // either a string attribute to count by, or a function that returns the
+  // criterion.
+  _.countBy = group(function(result, value, key) {
+    if (_.has(result, key)) result[key]++; else result[key] = 1;
+  });
+
+  // Safely create a real, live array from anything iterable.
+  _.toArray = function(obj) {
+    if (!obj) return [];
+    if (_.isArray(obj)) return slice.call(obj);
+    if (isArrayLike(obj)) return _.map(obj, _.identity);
+    return _.values(obj);
+  };
+
+  // Return the number of elements in an object.
+  _.size = function(obj) {
+    if (obj == null) return 0;
+    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+  };
+
+  // Split a collection into two arrays: one whose elements all satisfy the given
+  // predicate, and one whose elements all do not satisfy the predicate.
+  _.partition = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var pass = [], fail = [];
+    _.each(obj, function(value, key, obj) {
+      (predicate(value, key, obj) ? pass : fail).push(value);
+    });
+    return [pass, fail];
+  };
+
+  // Array Functions
+  // ---------------
+
+  // Get the first element of an array. Passing **n** will return the first N
+  // values in the array. Aliased as `head` and `take`. The **guard** check
+  // allows it to work with `_.map`.
+  _.first = _.head = _.take = function(array, n, guard) {
+    if (array == null) return void 0;
+    if (n == null || guard) return array[0];
+    return _.initial(array, array.length - n);
+  };
+
+  // Returns everything but the last entry of the array. Especially useful on
+  // the arguments object. Passing **n** will return all the values in
+  // the array, excluding the last N.
+  _.initial = function(array, n, guard) {
+    return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+  };
+
+  // Get the last element of an array. Passing **n** will return the last N
+  // values in the array.
+  _.last = function(array, n, guard) {
+    if (array == null) return void 0;
+    if (n == null || guard) return array[array.length - 1];
+    return _.rest(array, Math.max(0, array.length - n));
+  };
+
+  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
+  // Especially useful on the arguments object. Passing an **n** will return
+  // the rest N values in the array.
+  _.rest = _.tail = _.drop = function(array, n, guard) {
+    return slice.call(array, n == null || guard ? 1 : n);
+  };
+
+  // Trim out all falsy values from an array.
+  _.compact = function(array) {
+    return _.filter(array, _.identity);
+  };
+
+  // Internal implementation of a recursive `flatten` function.
+  var flatten = function(input, shallow, strict, startIndex) {
+    var output = [], idx = 0;
+    for (var i = startIndex || 0, length = getLength(input); i < length; i++) {
+      var value = input[i];
+      if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+        //flatten current level of array or arguments object
+        if (!shallow) value = flatten(value, shallow, strict);
+        var j = 0, len = value.length;
+        output.length += len;
+        while (j < len) {
+          output[idx++] = value[j++];
+        }
+      } else if (!strict) {
+        output[idx++] = value;
+      }
+    }
+    return output;
+  };
+
+  // Flatten out an array, either recursively (by default), or just one level.
+  _.flatten = function(array, shallow) {
+    return flatten(array, shallow, false);
+  };
+
+  // Return a version of the array that does not contain the specified value(s).
+  _.without = function(array) {
+    return _.difference(array, slice.call(arguments, 1));
+  };
+
+  // Produce a duplicate-free version of the array. If the array has already
+  // been sorted, you have the option of using a faster algorithm.
+  // Aliased as `unique`.
+  _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+    if (!_.isBoolean(isSorted)) {
+      context = iteratee;
+      iteratee = isSorted;
+      isSorted = false;
+    }
+    if (iteratee != null) iteratee = cb(iteratee, context);
+    var result = [];
+    var seen = [];
+    for (var i = 0, length = getLength(array); i < length; i++) {
+      var value = array[i],
+          computed = iteratee ? iteratee(value, i, array) : value;
+      if (isSorted) {
+        if (!i || seen !== computed) result.push(value);
+        seen = computed;
+      } else if (iteratee) {
+        if (!_.contains(seen, computed)) {
+          seen.push(computed);
+          result.push(value);
+        }
+      } else if (!_.contains(result, value)) {
+        result.push(value);
+      }
+    }
+    return result;
+  };
+
+  // Produce an array that contains the union: each distinct element from all of
+  // the passed-in arrays.
+  _.union = function() {
+    return _.uniq(flatten(arguments, true, true));
+  };
+
+  // Produce an array that contains every item shared between all the
+  // passed-in arrays.
+  _.intersection = function(array) {
+    var result = [];
+    var argsLength = arguments.length;
+    for (var i = 0, length = getLength(array); i < length; i++) {
+      var item = array[i];
+      if (_.contains(result, item)) continue;
+      for (var j = 1; j < argsLength; j++) {
+        if (!_.contains(arguments[j], item)) break;
+      }
+      if (j === argsLength) result.push(item);
+    }
+    return result;
+  };
+
+  // Take the difference between one array and a number of other arrays.
+  // Only the elements present in just the first array will remain.
+  _.difference = function(array) {
+    var rest = flatten(arguments, true, true, 1);
+    return _.filter(array, function(value){
+      return !_.contains(rest, value);
+    });
+  };
+
+  // Zip together multiple lists into a single array -- elements that share
+  // an index go together.
+  _.zip = function() {
+    return _.unzip(arguments);
+  };
+
+  // Complement of _.zip. Unzip accepts an array of arrays and groups
+  // each array's elements on shared indices
+  _.unzip = function(array) {
+    var length = array && _.max(array, getLength).length || 0;
+    var result = Array(length);
+
+    for (var index = 0; index < length; index++) {
+      result[index] = _.pluck(array, index);
+    }
+    return result;
+  };
+
+  // Converts lists into objects. Pass either a single array of `[key, value]`
+  // pairs, or two parallel arrays of the same length -- one of keys, and one of
+  // the corresponding values.
+  _.object = function(list, values) {
+    var result = {};
+    for (var i = 0, length = getLength(list); i < length; i++) {
+      if (values) {
+        result[list[i]] = values[i];
+      } else {
+        result[list[i][0]] = list[i][1];
+      }
+    }
+    return result;
+  };
+
+  // Generator function to create the findIndex and findLastIndex functions
+  function createPredicateIndexFinder(dir) {
+    return function(array, predicate, context) {
+      predicate = cb(predicate, context);
+      var length = getLength(array);
+      var index = dir > 0 ? 0 : length - 1;
+      for (; index >= 0 && index < length; index += dir) {
+        if (predicate(array[index], index, array)) return index;
+      }
+      return -1;
+    };
+  }
+
+  // Returns the first index on an array-like that passes a predicate test
+  _.findIndex = createPredicateIndexFinder(1);
+  _.findLastIndex = createPredicateIndexFinder(-1);
+
+  // Use a comparator function to figure out the smallest index at which
+  // an object should be inserted so as to maintain order. Uses binary search.
+  _.sortedIndex = function(array, obj, iteratee, context) {
+    iteratee = cb(iteratee, context, 1);
+    var value = iteratee(obj);
+    var low = 0, high = getLength(array);
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2);
+      if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
+    }
+    return low;
+  };
+
+  // Generator function to create the indexOf and lastIndexOf functions
+  function createIndexFinder(dir, predicateFind, sortedIndex) {
+    return function(array, item, idx) {
+      var i = 0, length = getLength(array);
+      if (typeof idx == 'number') {
+        if (dir > 0) {
+            i = idx >= 0 ? idx : Math.max(idx + length, i);
+        } else {
+            length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
+        }
+      } else if (sortedIndex && idx && length) {
+        idx = sortedIndex(array, item);
+        return array[idx] === item ? idx : -1;
+      }
+      if (item !== item) {
+        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+        return idx >= 0 ? idx + i : -1;
+      }
+      for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
+        if (array[idx] === item) return idx;
+      }
+      return -1;
+    };
+  }
+
+  // Return the position of the first occurrence of an item in an array,
+  // or -1 if the item is not included in the array.
+  // If the array is large and already in sort order, pass `true`
+  // for **isSorted** to use binary search.
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
+
+  // Generate an integer Array containing an arithmetic progression. A port of
+  // the native Python `range()` function. See
+  // [the Python documentation](http://docs.python.org/library/functions.html#range).
+  _.range = function(start, stop, step) {
+    if (stop == null) {
+      stop = start || 0;
+      start = 0;
+    }
+    step = step || 1;
+
+    var length = Math.max(Math.ceil((stop - start) / step), 0);
+    var range = Array(length);
+
+    for (var idx = 0; idx < length; idx++, start += step) {
+      range[idx] = start;
+    }
+
+    return range;
+  };
+
+  // Function (ahem) Functions
+  // ------------------
+
+  // Determines whether to execute a function as a constructor
+  // or a normal function with the provided arguments
+  var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
+    if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+    var self = baseCreate(sourceFunc.prototype);
+    var result = sourceFunc.apply(self, args);
+    if (_.isObject(result)) return result;
+    return self;
+  };
+
+  // Create a function bound to a given object (assigning `this`, and arguments,
+  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+  // available.
+  _.bind = function(func, context) {
+    if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+    if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+    var args = slice.call(arguments, 2);
+    var bound = function() {
+      return executeBound(func, bound, context, this, args.concat(slice.call(arguments)));
+    };
+    return bound;
+  };
+
+  // Partially apply a function by creating a version that has had some of its
+  // arguments pre-filled, without changing its dynamic `this` context. _ acts
+  // as a placeholder, allowing any combination of arguments to be pre-filled.
+  _.partial = function(func) {
+    var boundArgs = slice.call(arguments, 1);
+    var bound = function() {
+      var position = 0, length = boundArgs.length;
+      var args = Array(length);
+      for (var i = 0; i < length; i++) {
+        args[i] = boundArgs[i] === _ ? arguments[position++] : boundArgs[i];
+      }
+      while (position < arguments.length) args.push(arguments[position++]);
+      return executeBound(func, bound, this, this, args);
+    };
+    return bound;
+  };
+
+  // Bind a number of an object's methods to that object. Remaining arguments
+  // are the method names to be bound. Useful for ensuring that all callbacks
+  // defined on an object belong to it.
+  _.bindAll = function(obj) {
+    var i, length = arguments.length, key;
+    if (length <= 1) throw new Error('bindAll must be passed function names');
+    for (i = 1; i < length; i++) {
+      key = arguments[i];
+      obj[key] = _.bind(obj[key], obj);
+    }
+    return obj;
+  };
+
+  // Memoize an expensive function by storing its results.
+  _.memoize = function(func, hasher) {
+    var memoize = function(key) {
+      var cache = memoize.cache;
+      var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+      if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
+      return cache[address];
+    };
+    memoize.cache = {};
+    return memoize;
+  };
+
+  // Delays a function for the given number of milliseconds, and then calls
+  // it with the arguments supplied.
+  _.delay = function(func, wait) {
+    var args = slice.call(arguments, 2);
+    return setTimeout(function(){
+      return func.apply(null, args);
+    }, wait);
+  };
+
+  // Defers a function, scheduling it to run after the current call stack has
+  // cleared.
+  _.defer = _.partial(_.delay, _, 1);
+
+  // Returns a function, that, when invoked, will only be triggered at most once
+  // during a given window of time. Normally, the throttled function will run
+  // as much as it can, without ever going more than once per `wait` duration;
+  // but if you'd like to disable the execution on the leading edge, pass
+  // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  _.throttle = function(func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    if (!options) options = {};
+    var later = function() {
+      previous = options.leading === false ? 0 : _.now();
+      timeout = null;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    };
+    return function() {
+      var now = _.now();
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        previous = now;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+  };
+
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+  _.debounce = function(func, wait, immediate) {
+    var timeout, args, context, timestamp, result;
+
+    var later = function() {
+      var last = _.now() - timestamp;
+
+      if (last < wait && last >= 0) {
+        timeout = setTimeout(later, wait - last);
+      } else {
+        timeout = null;
+        if (!immediate) {
+          result = func.apply(context, args);
+          if (!timeout) context = args = null;
+        }
+      }
+    };
+
+    return function() {
+      context = this;
+      args = arguments;
+      timestamp = _.now();
+      var callNow = immediate && !timeout;
+      if (!timeout) timeout = setTimeout(later, wait);
+      if (callNow) {
+        result = func.apply(context, args);
+        context = args = null;
+      }
+
+      return result;
+    };
+  };
+
+  // Returns the first function passed as an argument to the second,
+  // allowing you to adjust arguments, run code before and after, and
+  // conditionally execute the original function.
+  _.wrap = function(func, wrapper) {
+    return _.partial(wrapper, func);
+  };
+
+  // Returns a negated version of the passed-in predicate.
+  _.negate = function(predicate) {
+    return function() {
+      return !predicate.apply(this, arguments);
+    };
+  };
+
+  // Returns a function that is the composition of a list of functions, each
+  // consuming the return value of the function that follows.
+  _.compose = function() {
+    var args = arguments;
+    var start = args.length - 1;
+    return function() {
+      var i = start;
+      var result = args[start].apply(this, arguments);
+      while (i--) result = args[i].call(this, result);
+      return result;
+    };
+  };
+
+  // Returns a function that will only be executed on and after the Nth call.
+  _.after = function(times, func) {
+    return function() {
+      if (--times < 1) {
+        return func.apply(this, arguments);
+      }
+    };
+  };
+
+  // Returns a function that will only be executed up to (but not including) the Nth call.
+  _.before = function(times, func) {
+    var memo;
+    return function() {
+      if (--times > 0) {
+        memo = func.apply(this, arguments);
+      }
+      if (times <= 1) func = null;
+      return memo;
+    };
+  };
+
+  // Returns a function that will be executed at most one time, no matter how
+  // often you call it. Useful for lazy initialization.
+  _.once = _.partial(_.before, 2);
+
+  // Object Functions
+  // ----------------
+
+  // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+  var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
+  var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
+                      'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+  function collectNonEnumProps(obj, keys) {
+    var nonEnumIdx = nonEnumerableProps.length;
+    var constructor = obj.constructor;
+    var proto = (_.isFunction(constructor) && constructor.prototype) || ObjProto;
+
+    // Constructor is a special case.
+    var prop = 'constructor';
+    if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+    while (nonEnumIdx--) {
+      prop = nonEnumerableProps[nonEnumIdx];
+      if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+        keys.push(prop);
+      }
+    }
+  }
+
+  // Retrieve the names of an object's own properties.
+  // Delegates to **ECMAScript 5**'s native `Object.keys`
+  _.keys = function(obj) {
+    if (!_.isObject(obj)) return [];
+    if (nativeKeys) return nativeKeys(obj);
+    var keys = [];
+    for (var key in obj) if (_.has(obj, key)) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // Retrieve all the property names of an object.
+  _.allKeys = function(obj) {
+    if (!_.isObject(obj)) return [];
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // Retrieve the values of an object's properties.
+  _.values = function(obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var values = Array(length);
+    for (var i = 0; i < length; i++) {
+      values[i] = obj[keys[i]];
+    }
+    return values;
+  };
+
+  // Returns the results of applying the iteratee to each element of the object
+  // In contrast to _.map it returns an object
+  _.mapObject = function(obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys =  _.keys(obj),
+          length = keys.length,
+          results = {},
+          currentKey;
+      for (var index = 0; index < length; index++) {
+        currentKey = keys[index];
+        results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+      }
+      return results;
+  };
+
+  // Convert an object into a list of `[key, value]` pairs.
+  _.pairs = function(obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var pairs = Array(length);
+    for (var i = 0; i < length; i++) {
+      pairs[i] = [keys[i], obj[keys[i]]];
+    }
+    return pairs;
+  };
+
+  // Invert the keys and values of an object. The values must be serializable.
+  _.invert = function(obj) {
+    var result = {};
+    var keys = _.keys(obj);
+    for (var i = 0, length = keys.length; i < length; i++) {
+      result[obj[keys[i]]] = keys[i];
+    }
+    return result;
+  };
+
+  // Return a sorted list of the function names available on the object.
+  // Aliased as `methods`
+  _.functions = _.methods = function(obj) {
+    var names = [];
+    for (var key in obj) {
+      if (_.isFunction(obj[key])) names.push(key);
+    }
+    return names.sort();
+  };
+
+  // Extend a given object with all the properties in passed-in object(s).
+  _.extend = createAssigner(_.allKeys);
+
+  // Assigns a given object with all the own properties in the passed-in object(s)
+  // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+  _.extendOwn = _.assign = createAssigner(_.keys);
+
+  // Returns the first key on an object that passes a predicate test
+  _.findKey = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = _.keys(obj), key;
+    for (var i = 0, length = keys.length; i < length; i++) {
+      key = keys[i];
+      if (predicate(obj[key], key, obj)) return key;
+    }
+  };
+
+  // Return a copy of the object only containing the whitelisted properties.
+  _.pick = function(object, oiteratee, context) {
+    var result = {}, obj = object, iteratee, keys;
+    if (obj == null) return result;
+    if (_.isFunction(oiteratee)) {
+      keys = _.allKeys(obj);
+      iteratee = optimizeCb(oiteratee, context);
+    } else {
+      keys = flatten(arguments, false, false, 1);
+      iteratee = function(value, key, obj) { return key in obj; };
+      obj = Object(obj);
+    }
+    for (var i = 0, length = keys.length; i < length; i++) {
+      var key = keys[i];
+      var value = obj[key];
+      if (iteratee(value, key, obj)) result[key] = value;
+    }
+    return result;
+  };
+
+   // Return a copy of the object without the blacklisted properties.
+  _.omit = function(obj, iteratee, context) {
+    if (_.isFunction(iteratee)) {
+      iteratee = _.negate(iteratee);
+    } else {
+      var keys = _.map(flatten(arguments, false, false, 1), String);
+      iteratee = function(value, key) {
+        return !_.contains(keys, key);
+      };
+    }
+    return _.pick(obj, iteratee, context);
+  };
+
+  // Fill in a given object with default properties.
+  _.defaults = createAssigner(_.allKeys, true);
+
+  // Creates an object that inherits from the given prototype object.
+  // If additional properties are provided then they will be added to the
+  // created object.
+  _.create = function(prototype, props) {
+    var result = baseCreate(prototype);
+    if (props) _.extendOwn(result, props);
+    return result;
+  };
+
+  // Create a (shallow-cloned) duplicate of an object.
+  _.clone = function(obj) {
+    if (!_.isObject(obj)) return obj;
+    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  };
+
+  // Invokes interceptor with the obj, and then returns obj.
+  // The primary purpose of this method is to "tap into" a method chain, in
+  // order to perform operations on intermediate results within the chain.
+  _.tap = function(obj, interceptor) {
+    interceptor(obj);
+    return obj;
+  };
+
+  // Returns whether an object has a given set of `key:value` pairs.
+  _.isMatch = function(object, attrs) {
+    var keys = _.keys(attrs), length = keys.length;
+    if (object == null) return !length;
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (attrs[key] !== obj[key] || !(key in obj)) return false;
+    }
+    return true;
+  };
+
+
+  // Internal recursive comparison function for `isEqual`.
+  var eq = function(a, b, aStack, bStack) {
+    // Identical objects are equal. `0 === -0`, but they aren't identical.
+    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    // A strict comparison is necessary because `null == undefined`.
+    if (a == null || b == null) return a === b;
+    // Unwrap any wrapped objects.
+    if (a instanceof _) a = a._wrapped;
+    if (b instanceof _) b = b._wrapped;
+    // Compare `[[Class]]` names.
+    var className = toString.call(a);
+    if (className !== toString.call(b)) return false;
+    switch (className) {
+      // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+      case '[object RegExp]':
+      // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+      case '[object String]':
+        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+        // equivalent to `new String("5")`.
+        return '' + a === '' + b;
+      case '[object Number]':
+        // `NaN`s are equivalent, but non-reflexive.
+        // Object(NaN) is equivalent to NaN
+        if (+a !== +a) return +b !== +b;
+        // An `egal` comparison is performed for other numeric values.
+        return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+      case '[object Date]':
+      case '[object Boolean]':
+        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+        // millisecond representations. Note that invalid dates with millisecond representations
+        // of `NaN` are not equivalent.
+        return +a === +b;
+    }
+
+    var areArrays = className === '[object Array]';
+    if (!areArrays) {
+      if (typeof a != 'object' || typeof b != 'object') return false;
+
+      // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+      // from different frames are.
+      var aCtor = a.constructor, bCtor = b.constructor;
+      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+                               _.isFunction(bCtor) && bCtor instanceof bCtor)
+                          && ('constructor' in a && 'constructor' in b)) {
+        return false;
+      }
+    }
+    // Assume equality for cyclic structures. The algorithm for detecting cyclic
+    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+    // Initializing stack of traversed objects.
+    // It's done here since we only need them for objects and arrays comparison.
+    aStack = aStack || [];
+    bStack = bStack || [];
+    var length = aStack.length;
+    while (length--) {
+      // Linear search. Performance is inversely proportional to the number of
+      // unique nested structures.
+      if (aStack[length] === a) return bStack[length] === b;
+    }
+
+    // Add the first object to the stack of traversed objects.
+    aStack.push(a);
+    bStack.push(b);
+
+    // Recursively compare objects and arrays.
+    if (areArrays) {
+      // Compare array lengths to determine if a deep comparison is necessary.
+      length = a.length;
+      if (length !== b.length) return false;
+      // Deep compare the contents, ignoring non-numeric properties.
+      while (length--) {
+        if (!eq(a[length], b[length], aStack, bStack)) return false;
+      }
+    } else {
+      // Deep compare objects.
+      var keys = _.keys(a), key;
+      length = keys.length;
+      // Ensure that both objects contain the same number of properties before comparing deep equality.
+      if (_.keys(b).length !== length) return false;
+      while (length--) {
+        // Deep compare each member
+        key = keys[length];
+        if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+      }
+    }
+    // Remove the first object from the stack of traversed objects.
+    aStack.pop();
+    bStack.pop();
+    return true;
+  };
+
+  // Perform a deep comparison to check if two objects are equal.
+  _.isEqual = function(a, b) {
+    return eq(a, b);
+  };
+
+  // Is a given array, string, or object empty?
+  // An "empty" object has no enumerable own-properties.
+  _.isEmpty = function(obj) {
+    if (obj == null) return true;
+    if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    return _.keys(obj).length === 0;
+  };
+
+  // Is a given value a DOM element?
+  _.isElement = function(obj) {
+    return !!(obj && obj.nodeType === 1);
+  };
+
+  // Is a given value an array?
+  // Delegates to ECMA5's native Array.isArray
+  _.isArray = nativeIsArray || function(obj) {
+    return toString.call(obj) === '[object Array]';
+  };
+
+  // Is a given variable an object?
+  _.isObject = function(obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  };
+
+  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
+  _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function(name) {
+    _['is' + name] = function(obj) {
+      return toString.call(obj) === '[object ' + name + ']';
+    };
+  });
+
+  // Define a fallback version of the method in browsers (ahem, IE < 9), where
+  // there isn't any inspectable "Arguments" type.
+  if (!_.isArguments(arguments)) {
+    _.isArguments = function(obj) {
+      return _.has(obj, 'callee');
+    };
+  }
+
+  // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
+  // IE 11 (#1621), and in Safari 8 (#1929).
+  if (typeof /./ != 'function' && typeof Int8Array != 'object') {
+    _.isFunction = function(obj) {
+      return typeof obj == 'function' || false;
+    };
+  }
+
+  // Is a given object a finite number?
+  _.isFinite = function(obj) {
+    return isFinite(obj) && !isNaN(parseFloat(obj));
+  };
+
+  // Is the given value `NaN`? (NaN is the only number which does not equal itself).
+  _.isNaN = function(obj) {
+    return _.isNumber(obj) && obj !== +obj;
+  };
+
+  // Is a given value a boolean?
+  _.isBoolean = function(obj) {
+    return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+  };
+
+  // Is a given value equal to null?
+  _.isNull = function(obj) {
+    return obj === null;
+  };
+
+  // Is a given variable undefined?
+  _.isUndefined = function(obj) {
+    return obj === void 0;
+  };
+
+  // Shortcut function for checking if an object has a given property directly
+  // on itself (in other words, not on a prototype).
+  _.has = function(obj, key) {
+    return obj != null && hasOwnProperty.call(obj, key);
+  };
+
+  // Utility Functions
+  // -----------------
+
+  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
+  // previous owner. Returns a reference to the Underscore object.
+  _.noConflict = function() {
+    root._ = previousUnderscore;
+    return this;
+  };
+
+  // Keep the identity function around for default iteratees.
+  _.identity = function(value) {
+    return value;
+  };
+
+  // Predicate-generating functions. Often useful outside of Underscore.
+  _.constant = function(value) {
+    return function() {
+      return value;
+    };
+  };
+
+  _.noop = function(){};
+
+  _.property = property;
+
+  // Generates a function for a given object that returns a given property.
+  _.propertyOf = function(obj) {
+    return obj == null ? function(){} : function(key) {
+      return obj[key];
+    };
+  };
+
+  // Returns a predicate for checking whether an object has a given set of
+  // `key:value` pairs.
+  _.matcher = _.matches = function(attrs) {
+    attrs = _.extendOwn({}, attrs);
+    return function(obj) {
+      return _.isMatch(obj, attrs);
+    };
+  };
+
+  // Run a function **n** times.
+  _.times = function(n, iteratee, context) {
+    var accum = Array(Math.max(0, n));
+    iteratee = optimizeCb(iteratee, context, 1);
+    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+    return accum;
+  };
+
+  // Return a random integer between min and max (inclusive).
+  _.random = function(min, max) {
+    if (max == null) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.floor(Math.random() * (max - min + 1));
+  };
+
+  // A (possibly faster) way to get the current timestamp as an integer.
+  _.now = Date.now || function() {
+    return new Date().getTime();
+  };
+
+   // List of HTML entities for escaping.
+  var escapeMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '`': '&#x60;'
+  };
+  var unescapeMap = _.invert(escapeMap);
+
+  // Functions for escaping and unescaping strings to/from HTML interpolation.
+  var createEscaper = function(map) {
+    var escaper = function(match) {
+      return map[match];
+    };
+    // Regexes for identifying a key that needs to be escaped
+    var source = '(?:' + _.keys(map).join('|') + ')';
+    var testRegexp = RegExp(source);
+    var replaceRegexp = RegExp(source, 'g');
+    return function(string) {
+      string = string == null ? '' : '' + string;
+      return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+    };
+  };
+  _.escape = createEscaper(escapeMap);
+  _.unescape = createEscaper(unescapeMap);
+
+  // If the value of the named `property` is a function then invoke it with the
+  // `object` as context; otherwise, return it.
+  _.result = function(object, property, fallback) {
+    var value = object == null ? void 0 : object[property];
+    if (value === void 0) {
+      value = fallback;
+    }
+    return _.isFunction(value) ? value.call(object) : value;
+  };
+
+  // Generate a unique integer id (unique within the entire client session).
+  // Useful for temporary DOM ids.
+  var idCounter = 0;
+  _.uniqueId = function(prefix) {
+    var id = ++idCounter + '';
+    return prefix ? prefix + id : id;
+  };
+
+  // By default, Underscore uses ERB-style template delimiters, change the
+  // following template settings to use alternative delimiters.
+  _.templateSettings = {
+    evaluate    : /<%([\s\S]+?)%>/g,
+    interpolate : /<%=([\s\S]+?)%>/g,
+    escape      : /<%-([\s\S]+?)%>/g
+  };
+
+  // When customizing `templateSettings`, if you don't want to define an
+  // interpolation, evaluation or escaping regex, we need one that is
+  // guaranteed not to match.
+  var noMatch = /(.)^/;
+
+  // Certain characters need to be escaped so that they can be put into a
+  // string literal.
+  var escapes = {
+    "'":      "'",
+    '\\':     '\\',
+    '\r':     'r',
+    '\n':     'n',
+    '\u2028': 'u2028',
+    '\u2029': 'u2029'
+  };
+
+  var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
+
+  var escapeChar = function(match) {
+    return '\\' + escapes[match];
+  };
+
+  // JavaScript micro-templating, similar to John Resig's implementation.
+  // Underscore templating handles arbitrary delimiters, preserves whitespace,
+  // and correctly escapes quotes within interpolated code.
+  // NB: `oldSettings` only exists for backwards compatibility.
+  _.template = function(text, settings, oldSettings) {
+    if (!settings && oldSettings) settings = oldSettings;
+    settings = _.defaults({}, settings, _.templateSettings);
+
+    // Combine delimiters into one regular expression via alternation.
+    var matcher = RegExp([
+      (settings.escape || noMatch).source,
+      (settings.interpolate || noMatch).source,
+      (settings.evaluate || noMatch).source
+    ].join('|') + '|$', 'g');
+
+    // Compile the template source, escaping string literals appropriately.
+    var index = 0;
+    var source = "__p+='";
+    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+      source += text.slice(index, offset).replace(escaper, escapeChar);
+      index = offset + match.length;
+
+      if (escape) {
+        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+      } else if (interpolate) {
+        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+      } else if (evaluate) {
+        source += "';\n" + evaluate + "\n__p+='";
+      }
+
+      // Adobe VMs need the match returned to produce the correct offest.
+      return match;
+    });
+    source += "';\n";
+
+    // If a variable is not specified, place data values in local scope.
+    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+    source = "var __t,__p='',__j=Array.prototype.join," +
+      "print=function(){__p+=__j.call(arguments,'');};\n" +
+      source + 'return __p;\n';
+
+    try {
+      var render = new Function(settings.variable || 'obj', '_', source);
+    } catch (e) {
+      e.source = source;
+      throw e;
+    }
+
+    var template = function(data) {
+      return render.call(this, data, _);
+    };
+
+    // Provide the compiled source as a convenience for precompilation.
+    var argument = settings.variable || 'obj';
+    template.source = 'function(' + argument + '){\n' + source + '}';
+
+    return template;
+  };
+
+  // Add a "chain" function. Start chaining a wrapped Underscore object.
+  _.chain = function(obj) {
+    var instance = _(obj);
+    instance._chain = true;
+    return instance;
+  };
+
+  // OOP
+  // ---------------
+  // If Underscore is called as a function, it returns a wrapped object that
+  // can be used OO-style. This wrapper holds altered versions of all the
+  // underscore functions. Wrapped objects may be chained.
+
+  // Helper function to continue chaining intermediate results.
+  var result = function(instance, obj) {
+    return instance._chain ? _(obj).chain() : obj;
+  };
+
+  // Add your own custom functions to the Underscore object.
+  _.mixin = function(obj) {
+    _.each(_.functions(obj), function(name) {
+      var func = _[name] = obj[name];
+      _.prototype[name] = function() {
+        var args = [this._wrapped];
+        push.apply(args, arguments);
+        return result(this, func.apply(_, args));
+      };
+    });
+  };
+
+  // Add all of the Underscore functions to the wrapper object.
+  _.mixin(_);
+
+  // Add all mutator Array functions to the wrapper.
+  _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function() {
+      var obj = this._wrapped;
+      method.apply(obj, arguments);
+      if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
+      return result(this, obj);
+    };
+  });
+
+  // Add all accessor Array functions to the wrapper.
+  _.each(['concat', 'join', 'slice'], function(name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function() {
+      return result(this, method.apply(this._wrapped, arguments));
+    };
+  });
+
+  // Extracts the result from a wrapped and chained object.
+  _.prototype.value = function() {
+    return this._wrapped;
+  };
+
+  // Provide unwrapping proxy for some methods used in engine operations
+  // such as arithmetic and JSON stringification.
+  _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+
+  _.prototype.toString = function() {
+    return '' + this._wrapped;
+  };
+
+  // AMD registration happens at the end for compatibility with AMD loaders
+  // that may not enforce next-turn semantics on modules. Even though general
+  // practice for AMD registration is to be anonymous, underscore registers
+  // as a named module because, like jQuery, it is a base library that is
+  // popular enough to be bundled in a third party lib, but not be part of
+  // an AMD load request. Those cases could generate an error when an
+  // anonymous define() is called outside of a loader request.
+  if (typeof define === 'function' && define.amd) {
+    define('underscore', [], function() {
+      return _;
+    });
+  }
+}.call(this));
+
+/**
+ * Bootstrap based calendar full view.
+ *
+ * https://github.com/Serhioromano/bootstrap-calendar
+ *
+ * User: Sergey Romanov <serg4172@mail.ru>
+ */
+"use strict";
+
+Date.prototype.getWeek = function(iso8601) {
+	if (iso8601) {
+		var target = new Date(this.valueOf());
+		var dayNr  = (this.getDay() + 6) % 7;
+		target.setDate(target.getDate() - dayNr + 3);
+		var firstThursday = target.valueOf();
+		target.setMonth(0, 1);
+		if (target.getDay() != 4) {
+			target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+		}
+		return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 * 24 * 3600 * 1000
+	} else {
+		var onejan = new Date(this.getFullYear(), 0, 1);
+		return Math.ceil((((this.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+	}
+};
+Date.prototype.getMonthFormatted = function() {
+	var month = this.getMonth() + 1;
+	return month < 10 ? '0' + month : month;
+};
+Date.prototype.getDateFormatted = function() {
+	var date = this.getDate();
+	return date < 10 ? '0' + date : date;
+};
+
+if(!String.prototype.format) {
+	String.prototype.format = function() {
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) {
+			return typeof args[number] != 'undefined' ? args[number] : match;
+		});
+	};
+}
+if(!String.prototype.formatNum) {
+	String.prototype.formatNum = function(decimal) {
+		var r = "" + this;
+		while(r.length < decimal)
+			r = "0" + r;
+		return r;
+	};
+}
+
+(function($) {
+
+	var defaults = {
+        // Container to append the tooltip
+        tooltip_container : 'body',
+		// Width of the calendar
+		width: '100%',
+		// Initial view (can be 'month', 'week', 'day')
+		view: 'month',
+		// Initial date. No matter month, week or day this will be a starting point. Can be 'now' or a date in format 'yyyy-mm-dd'
+		day: 'now',
+		// Day Start time and end time with time intervals. Time split 10, 15 or 30.
+		time_start: '06:00',
+		time_end: '22:00',
+		time_split: '30',
+		// Source of events data. It can be one of the following:
+		// - URL to return JSON list of events in special format.
+		//   {success:1, result: [....]} or for error {success:0, error:'Something terrible happened'}
+		//   events: [...] as described in events property description
+		//   The start and end variables will be sent to this url
+		// - A function that received the start and end date, and that
+		//   returns an array of events (as described in events property description)
+		// - An array containing the events
+		events_source: '',
+		// Static cache of events. If set to true, events will only be loaded once.
+		// Useful if response is not constrained by date.
+		events_cache: false,
+		// Set format12 to true if you want to use 12 Hour format instead of 24 Hour
+		format12: false,
+		am_suffix: "AM",
+		pm_suffix: "PM",
+		// Path to templates should end with slash /. It can be as relative
+		// /component/bootstrap-calendar/tmpls/
+		// or absolute
+		// http://localhost/component/bootstrap-calendar/tmpls/
+		tmpl_path: 'tmpls/',
+		tmpl_cache: true,
+		classes: {
+			months: {
+				inmonth: 'cal-day-inmonth',
+				outmonth: 'cal-day-outmonth',
+				saturday: 'cal-day-weekend',
+				sunday: 'cal-day-weekend',
+				holidays: 'cal-day-holiday',
+				today: 'cal-day-today'
+			},
+			week: {
+				workday: 'cal-day-workday',
+				saturday: 'cal-day-weekend',
+				sunday: 'cal-day-weekend',
+				holidays: 'cal-day-holiday',
+				today: 'cal-day-today'
+			}
+		},
+		// ID of the element of modal window. If set, events URLs will be opened in modal windows.
+		modal: null,
+		//	modal handling setting, one of "iframe", "ajax" or "template"
+		modal_type: "iframe",
+		//	function to set modal title, will be passed the event as a parameter
+		modal_title: null,
+		views: {
+			year: {
+				slide_events: 1,
+				enable: 1
+			},
+			month: {
+				slide_events: 1,
+				enable: 1
+			},
+			week: {
+				enable: 1
+			},
+			day: {
+				enable: 1
+			}
+		},
+		merge_holidays: false,
+		display_week_numbers: true,
+		weekbox: true,
+		// ------------------------------------------------------------
+		// CALLBACKS. Events triggered by calendar class. You can use
+		// those to affect you UI
+		// ------------------------------------------------------------
+		onAfterEventsLoad: function(events) {
+			// Inside this function 'this' is the calendar instance
+		},
+		onBeforeEventsLoad: function(next) {
+			// Inside this function 'this' is the calendar instance
+			next();
+		},
+		onAfterViewLoad: function(view) {
+			// Inside this function 'this' is the calendar instance
+		},
+		onAfterModalShown: function(events) {
+			// Inside this function 'this' is the calendar instance
+		},
+		onAfterModalHidden: function(events) {
+			// Inside this function 'this' is the calendar instance
+		},
+		// -------------------------------------------------------------
+		// INTERNAL USE ONLY. DO NOT ASSIGN IT WILL BE OVERRIDDEN ANYWAY
+		// -------------------------------------------------------------
+		events: [],
+		templates: {
+			year: '',
+			month: '',
+			week: '',
+			day: ''
+		},
+		stop_cycling: false
+	};
+
+	var defaults_extended = {
+		first_day: 2,
+		week_numbers_iso_8601: false,
+		holidays: {
+			// January 1
+			'01-01': "New Year's Day",
+			// Third (+3*) Monday (1) in January (01)
+			'01+3*1': "Birthday of Dr. Martin Luther King, Jr.",
+			// Third (+3*) Monday (1) in February (02)
+			'02+3*1': "Washington's Birthday",
+			// Last (-1*) Monday (1) in May (05)
+			'05-1*1': "Memorial Day",
+			// July 4
+			'04-07': "Independence Day",
+			// First (+1*) Monday (1) in September (09)
+			'09+1*1': "Labor Day",
+			// Second (+2*) Monday (1) in October (10)
+			'10+2*1': "Columbus Day",
+			// November 11
+			'11-11': "Veterans Day",
+			// Fourth (+4*) Thursday (4) in November (11)
+			'11+4*4': "Thanksgiving Day",
+			// December 25
+			'25-12': "Christmas"
+		}
+	};
+
+	var strings = {
+		error_noview: 'Calendar: View {0} not found',
+		error_dateformat: 'Calendar: Wrong date format {0}. Should be either "now" or "yyyy-mm-dd"',
+		error_loadurl: 'Calendar: Event URL is not set',
+		error_where: 'Calendar: Wrong navigation direction {0}. Can be only "next" or "prev" or "today"',
+		error_timedevide: 'Calendar: Time split parameter should divide 60 without decimals. Something like 10, 15, 30',
+
+		no_events_in_day: 'No events in this day.',
+
+		title_year: '{0}',
+		title_month: '{0} {1}',
+		title_week: 'week {0} of {1}',
+		title_day: '{0} {1} {2}, {3}',
+
+		week: 'Week {0}',
+		all_day: 'All day',
+		time: 'Time',
+		events: 'Events',
+		before_time: 'Ends before timeline',
+		after_time: 'Starts after timeline',
+
+		m0: 'January',
+		m1: 'February',
+		m2: 'March',
+		m3: 'April',
+		m4: 'May',
+		m5: 'June',
+		m6: 'July',
+		m7: 'August',
+		m8: 'September',
+		m9: 'October',
+		m10: 'November',
+		m11: 'December',
+
+		ms0: 'Jan',
+		ms1: 'Feb',
+		ms2: 'Mar',
+		ms3: 'Apr',
+		ms4: 'May',
+		ms5: 'Jun',
+		ms6: 'Jul',
+		ms7: 'Aug',
+		ms8: 'Sep',
+		ms9: 'Oct',
+		ms10: 'Nov',
+		ms11: 'Dec',
+
+		d0: 'Sunday',
+		d1: 'Monday',
+		d2: 'Tuesday',
+		d3: 'Wednesday',
+		d4: 'Thursday',
+		d5: 'Friday',
+		d6: 'Saturday'
+	};
+
+	var browser_timezone = '';
+	try {
+		if($.type(window.jstz) == 'object' && $.type(jstz.determine) == 'function') {
+			browser_timezone = jstz.determine().name();
+			if($.type(browser_timezone) !== 'string') {
+				browser_timezone = '';
+			}
+		}
+	}
+	catch(e) {
+	}
+
+	function buildEventsUrl(events_url, data) {
+		var separator, key, url;
+		url = events_url;
+		separator = (events_url.indexOf('?') < 0) ? '?' : '&';
+		for(key in data) {
+			url += separator + key + '=' + encodeURIComponent(data[key]);
+			separator = '&';
+		}
+		return url;
+	}
+
+	function getExtentedOption(cal, option_name) {
+		var fromOptions = (cal.options[option_name] != null) ? cal.options[option_name] : null;
+		var fromLanguage = (cal.locale[option_name] != null) ? cal.locale[option_name] : null;
+		if((option_name == 'holidays') && cal.options.merge_holidays) {
+			var holidays = {};
+			$.extend(true, holidays, fromLanguage ? fromLanguage : defaults_extended.holidays);
+			if(fromOptions) {
+				$.extend(true, holidays, fromOptions);
+			}
+			return holidays;
+		}
+		else {
+			if(fromOptions != null) {
+				return fromOptions;
+			}
+			if(fromLanguage != null) {
+				return fromLanguage;
+			}
+			return defaults_extended[option_name];
+		}
+	}
+
+	function getHolidays(cal, year) {
+		var hash = [];
+		var holidays_def = getExtentedOption(cal, 'holidays');
+		for(var k in holidays_def) {
+			hash.push(k + ':' + holidays_def[k]);
+		}
+		hash.push(year);
+		hash = hash.join('|');
+		if(hash in getHolidays.cache) {
+			return getHolidays.cache[hash];
+		}
+		var holidays = [];
+		$.each(holidays_def, function(key, name) {
+			var firstDay = null, lastDay = null, failed = false;
+			$.each(key.split('>'), function(i, chunk) {
+				var m, date = null;
+				if(m = /^(\d\d)-(\d\d)$/.exec(chunk)) {
+					date = new Date(year, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+				}
+				else if(m = /^(\d\d)-(\d\d)-(\d\d\d\d)$/.exec(chunk)) {
+					if(parseInt(m[3], 10) == year) {
+						date = new Date(year, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+					}
+				}
+				else if(m = /^easter(([+\-])(\d+))?$/.exec(chunk)) {
+					date = getEasterDate(year, m[1] ? parseInt(m[1], 10) : 0);
+				}
+				else if(m = /^(\d\d)([+\-])([1-5])\*([0-6])$/.exec(chunk)) {
+					var month = parseInt(m[1], 10) - 1;
+					var direction = m[2];
+					var offset = parseInt(m[3]);
+					var weekday = parseInt(m[4]);
+					switch(direction) {
+						case '+':
+							var d = new Date(year, month, 1 - 7);
+							while(d.getDay() != weekday) {
+								d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+							}
+							date = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7 * offset);
+							break;
+						case '-':
+							var d = new Date(year, month + 1, 0 + 7);
+							while(d.getDay() != weekday) {
+								d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+							}
+							date = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7 * offset);
+							break;
+					}
+				}
+				if(!date) {
+					warn('Unknown holiday: ' + key);
+					failed = true;
+					return false;
+				}
+				switch(i) {
+					case 0:
+						firstDay = date;
+						break;
+					case 1:
+						if(date.getTime() <= firstDay.getTime()) {
+							warn('Unknown holiday: ' + key);
+							failed = true;
+							return false;
+						}
+						lastDay = date;
+						break;
+					default:
+						warn('Unknown holiday: ' + key);
+						failed = true;
+						return false;
+				}
+			});
+			if(!failed) {
+				var days = [];
+				if(lastDay) {
+					for(var date = new Date(firstDay.getTime()); date.getTime() <= lastDay.getTime(); date.setDate(date.getDate() + 1)) {
+						days.push(new Date(date.getTime()));
+					}
+				}
+				else {
+					days.push(firstDay);
+				}
+				holidays.push({name: name, days: days});
+			}
+		});
+		getHolidays.cache[hash] = holidays;
+		return getHolidays.cache[hash];
+	}
+
+	getHolidays.cache = {};
+
+	function warn(message) {
+		if($.type(window.console) == 'object' && $.type(window.console.warn) == 'function') {
+			window.console.warn('[Bootstrap-Calendar] ' + message);
+		}
+	}
+
+	function Calendar(params, context) {
+		this.options = $.extend(true, {position: {start: new Date(), end: new Date()}}, defaults, params);
+		this.setLanguage(this.options.language);
+		this.context = context;
+
+		context.css('width', this.options.width).addClass('cal-context');
+
+		this.view();
+		return this;
+	}
+
+	Calendar.prototype.setOptions = function(object) {
+		$.extend(this.options, object);
+		if('language' in object) {
+			this.setLanguage(object.language);
+		}
+		if('modal' in object) {
+			this._update_modal();
+		}
+	}
+
+	Calendar.prototype.setLanguage = function(lang) {
+		if(window.calendar_languages && (lang in window.calendar_languages)) {
+			this.locale = $.extend(true, {}, strings, calendar_languages[lang]);
+			this.options.language = lang;
+		} else {
+			this.locale = strings;
+			delete this.options.language;
+		}
+	}
+
+	Calendar.prototype._render = function() {
+		this.context.html('');
+		this._loadTemplate(this.options.view);
+		this.stop_cycling = false;
+
+		var data = {};
+		data.cal = this;
+		data.day = 1;
+
+		// Getting list of days in a week in correct order. Works for month and week views
+		if(getExtentedOption(this, 'first_day') == 1) {
+			data.days_name = [this.locale.d1, this.locale.d2, this.locale.d3, this.locale.d4, this.locale.d5, this.locale.d6, this.locale.d0]
+		} else {
+			data.days_name = [this.locale.d0, this.locale.d1, this.locale.d2, this.locale.d3, this.locale.d4, this.locale.d5, this.locale.d6]
+		}
+
+		// Get all events between start and end
+		var start = parseInt(this.options.position.start.getTime());
+		var end = parseInt(this.options.position.end.getTime());
+
+		data.events = this.getEventsBetween(start, end);
+
+		switch(this.options.view) {
+			case 'month':
+				break;
+			case 'week':
+				this._calculate_hour_minutes(data);
+				break;
+			case 'day':
+				this._calculate_hour_minutes(data);
+				break;
+		}
+
+		data.start = new Date(this.options.position.start.getTime());
+		data.lang = this.locale;
+
+		this.context.append(this.options.templates[this.options.view](data));
+		this._update();
+	};
+
+	Calendar.prototype._format_hour = function(str_hour) {
+		var hour_split = str_hour.split(":");
+		var hour = parseInt(hour_split[0]);
+		var minutes = parseInt(hour_split[1]);
+
+		var suffix = '';
+
+		if(this.options.format12) {
+			if(hour < 12) {
+				suffix = this.options.am_suffix;
+			}
+			else {
+				suffix = this.options.pm_suffix;
+			}
+
+			hour = hour % 12;
+			if(hour == 0) {
+				hour = 12;
+			}
+		}
+
+		return hour.toString().formatNum(2) + ':' + minutes.toString().formatNum(2) + suffix;
+	};
+
+	Calendar.prototype._format_time = function(datetime) {
+		return this._format_hour(datetime.getHours() + ':' + datetime.getMinutes());
+	};
+
+	Calendar.prototype._calculate_hour_minutes = function(data) {
+		var $self = this;
+		var time_split = parseInt(this.options.time_split);
+		var time_split_count = 60 / time_split;
+		var time_split_hour = Math.min(time_split_count, 1);
+
+		if(((time_split_count >= 1) && (time_split_count % 1 != 0)) || ((time_split_count < 1) && (1440 / time_split % 1 != 0))) {
+			$.error(this.locale.error_timedevide);
+		}
+
+		var time_start = this.options.time_start.split(":");
+		var time_end = this.options.time_end.split(":");
+
+		data.hours = (parseInt(time_end[0]) - parseInt(time_start[0])) * time_split_hour;
+		var lines = data.hours * time_split_count - parseInt(time_start[1]) / time_split;
+		var ms_per_line = (60000 * time_split);
+
+		var start = new Date(this.options.position.start.getTime());
+		start.setHours(time_start[0]);
+		start.setMinutes(time_start[1]);
+		var end = new Date(this.options.position.end.getTime());
+		end.setHours(time_end[0]);
+		end.setMinutes(time_end[1]);
+
+		data.all_day = [];
+		data.by_hour = [];
+		data.after_time = [];
+		data.before_time = [];
+		$.each(data.events, function(k, e) {
+			var s = new Date(parseInt(e.start));
+			var f = new Date(parseInt(e.end));
+
+			e.start_hour = $self._format_time(s);
+			e.end_hour = $self._format_time(f);
+
+			if(e.start < start.getTime()) {
+				warn(1);
+				e.start_hour = s.getDate() + ' ' + $self.locale['ms' + s.getMonth()] + ' ' + e.start_hour;
+			}
+
+			if(e.end > end.getTime()) {
+				warn(1);
+				e.end_hour = f.getDate() + ' ' + $self.locale['ms' + f.getMonth()] + ' ' + e.end_hour;
+			}
+
+			if(e.start < start.getTime() && e.end > end.getTime()) {
+				data.all_day.push(e);
+				return;
+			}
+
+			if(e.end < start.getTime()) {
+				data.before_time.push(e);
+				return;
+			}
+
+			if(e.start > end.getTime()) {
+				data.after_time.push(e);
+				return;
+			}
+
+			var event_start = start.getTime() - e.start;
+
+			if(event_start >= 0) {
+				e.top = 0;
+			} else {
+				e.top = Math.abs(event_start) / ms_per_line;
+			}
+
+			var lines_left = Math.abs(lines - e.top);
+			var lines_in_event = (e.end - e.start) / ms_per_line;
+			if(event_start >= 0) {
+				lines_in_event = (e.end - start.getTime()) / ms_per_line;
+			}
+
+			e.lines = lines_in_event;
+			if(lines_in_event > lines_left) {
+				e.lines = lines_left;
+			}
+
+			data.by_hour.push(e);
+		});
+
+		//var d = new Date('2013-03-14 13:20:00');
+		//warn(d.getTime());
+	};
+
+	Calendar.prototype._hour_min = function(hour) {
+		var time_start = this.options.time_start.split(":");
+		var time_split = parseInt(this.options.time_split);
+		var in_hour = 60 / time_split;
+		return (hour == 0) ? (in_hour - (parseInt(time_start[1]) / time_split)) : in_hour;
+	};
+
+	Calendar.prototype._hour = function(hour, part) {
+		var time_start = this.options.time_start.split(":");
+		var time_split = parseInt(this.options.time_split);
+		var h = "" + (parseInt(time_start[0]) + hour * Math.max(time_split / 60, 1));
+		var m = "" + time_split * part;
+
+		return this._format_hour(h.formatNum(2) + ":" + m.formatNum(2));
+	};
+
+	Calendar.prototype._week = function(event) {
+		this._loadTemplate('week-days');
+
+		var t = {};
+		var start = parseInt(this.options.position.start.getTime());
+		var end = parseInt(this.options.position.end.getTime());
+		var events = [];
+		var self = this;
+		var first_day = getExtentedOption(this, 'first_day');
+
+		$.each(this.getEventsBetween(start, end), function(k, event) {
+			event.start_day = new Date(parseInt(event.start)).getDay();
+			if(first_day == 1) {
+				event.start_day = (event.start_day + 6) % 7;
+			}
+			if((event.end - event.start) <= 86400000) {
+				event.days = 1;
+			} else {
+				event.days = ((event.end - event.start) / 86400000);
+			}
+
+			if(event.start < start) {
+
+				event.days = event.days - ((start - event.start) / 86400000);
+				event.start_day = 0;
+			}
+
+			event.days = Math.ceil(event.days);
+
+			if(event.start_day + event.days > 7) {
+				event.days = 7 - (event.start_day);
+			}
+
+			events.push(event);
+		});
+		t.events = events;
+		t.cal = this;
+		return self.options.templates['week-days'](t);
+	}
+
+	Calendar.prototype._month = function(month) {
+		this._loadTemplate('year-month');
+
+		var t = {cal: this};
+		var newmonth = month + 1;
+		t.data_day = this.options.position.start.getFullYear() + '-' + (newmonth < 10 ? '0' + newmonth : newmonth) + '-' + '01';
+		t.month_name = this.locale['m' + month];
+
+		var curdate = new Date(this.options.position.start.getFullYear(), month, 1, 0, 0, 0);
+		t.start = parseInt(curdate.getTime());
+		t.end = parseInt(new Date(this.options.position.start.getFullYear(), month + 1, 1, 0, 0, 0).getTime());
+		t.events = this.getEventsBetween(t.start, t.end);
+		return this.options.templates['year-month'](t);
+	}
+
+	Calendar.prototype._day = function(week, day) {
+		this._loadTemplate('month-day');
+
+		var t = {tooltip: '', cal: this};
+		var cls = this.options.classes.months.outmonth;
+
+		var firstday = this.options.position.start.getDay();
+		if(getExtentedOption(this, 'first_day') == 2) {
+			firstday++;
+		} else {
+			firstday = (firstday == 0 ? 7 : firstday);
+		}
+
+		day = (day - firstday) + 1;
+		var curdate = new Date(this.options.position.start.getFullYear(), this.options.position.start.getMonth(), day, 0, 0, 0);
+
+		// if day of the current month
+		if(day > 0) {
+			cls = this.options.classes.months.inmonth;
+		}
+		// stop cycling table rows;
+		var daysinmonth = (new Date(this.options.position.end.getTime() - 1)).getDate();
+		if((day + 1) > daysinmonth) {
+			this.stop_cycling = true;
+		}
+		// if day of the next month
+		if(day > daysinmonth) {
+			day = day - daysinmonth;
+			cls = this.options.classes.months.outmonth;
+		}
+
+		cls = $.trim(cls + " " + this._getDayClass("months", curdate));
+
+		if(day <= 0) {
+			var daysinprevmonth = (new Date(this.options.position.start.getFullYear(), this.options.position.start.getMonth(), 0)).getDate();
+			day = daysinprevmonth - Math.abs(day);
+			cls += ' cal-month-first-row';
+		}
+
+		var holiday = this._getHoliday(curdate);
+		if(holiday !== false) {
+			t.tooltip = holiday;
+		}
+
+		t.data_day = curdate.getFullYear() + '-' + curdate.getMonthFormatted() + '-' + (day < 10 ? '0' + day : day);
+		t.cls = cls;
+		t.day = day;
+
+		t.start = parseInt(curdate.getTime());
+		t.end = parseInt(t.start + 86400000);
+		t.events = this.getEventsBetween(t.start, t.end);
+		return this.options.templates['month-day'](t);
+	}
+
+	Calendar.prototype._getHoliday = function(date) {
+		var result = false;
+		$.each(getHolidays(this, date.getFullYear()), function() {
+			var found = false;
+			$.each(this.days, function() {
+				if(this.toDateString() == date.toDateString()) {
+					found = true;
+					return false;
+				}
+			});
+			if(found) {
+				result = this.name;
+				return false;
+			}
+		});
+		return result;
+	};
+
+	Calendar.prototype._getHolidayName = function(date) {
+		var holiday = this._getHoliday(date);
+		return (holiday === false) ? "" : holiday;
+	};
+
+	Calendar.prototype._getDayClass = function(class_group, date) {
+		var self = this;
+		var addClass = function(which, to) {
+			var cls;
+			cls = (self.options.classes && (class_group in self.options.classes) && (which in self.options.classes[class_group])) ? self.options.classes[class_group][which] : "";
+			if((typeof(cls) == "string") && cls.length) {
+				to.push(cls);
+			}
+		};
+		var classes = [];
+		if(date.toDateString() == (new Date()).toDateString()) {
+			addClass("today", classes);
+		}
+		var holiday = this._getHoliday(date);
+		if(holiday !== false) {
+			addClass("holidays", classes);
+		}
+		switch(date.getDay()) {
+			case 0:
+				addClass("sunday", classes);
+				break;
+			case 6:
+				addClass("saturday", classes);
+				break;
+		}
+
+		addClass(date.toDateString(), classes);
+
+		return classes.join(" ");
+	};
+
+	Calendar.prototype.view = function(view) {
+		if(view) {
+			if(!this.options.views[view].enable) {
+				return;
+			}
+			this.options.view = view;
+		}
+
+		this._init_position();
+		this._loadEvents();
+		this._render();
+
+		this.options.onAfterViewLoad.call(this, this.options.view);
+	};
+
+	Calendar.prototype.navigate = function(where, next) {
+		var to = $.extend({}, this.options.position);
+		if(where == 'next') {
+			switch(this.options.view) {
+				case 'year':
+					to.start.setFullYear(this.options.position.start.getFullYear() + 1);
+					break;
+				case 'month':
+					to.start.setMonth(this.options.position.start.getMonth() + 1);
+					break;
+				case 'week':
+					to.start.setDate(this.options.position.start.getDate() + 7);
+					break;
+				case 'day':
+					to.start.setDate(this.options.position.start.getDate() + 1);
+					break;
+			}
+		} else if(where == 'prev') {
+			switch(this.options.view) {
+				case 'year':
+					to.start.setFullYear(this.options.position.start.getFullYear() - 1);
+					break;
+				case 'month':
+					to.start.setMonth(this.options.position.start.getMonth() - 1);
+					break;
+				case 'week':
+					to.start.setDate(this.options.position.start.getDate() - 7);
+					break;
+				case 'day':
+					to.start.setDate(this.options.position.start.getDate() - 1);
+					break;
+			}
+		} else if(where == 'today') {
+			to.start.setTime(new Date().getTime());
+		}
+		else {
+			$.error(this.locale.error_where.format(where))
+		}
+		this.options.day = to.start.getFullYear() + '-' + to.start.getMonthFormatted() + '-' + to.start.getDateFormatted();
+		this.view();
+		if(_.isFunction(next)) {
+			next();
+		}
+	};
+
+	Calendar.prototype._init_position = function() {
+		var year, month, day;
+
+		if(this.options.day == 'now') {
+			var date = new Date();
+			year = date.getFullYear();
+			month = date.getMonth();
+			day = date.getDate();
+		} else if(this.options.day.match(/^\d{4}-\d{2}-\d{2}$/g)) {
+			var list = this.options.day.split('-');
+			year = parseInt(list[0], 10);
+			month = parseInt(list[1], 10) - 1;
+			day = parseInt(list[2], 10);
+		}
+		else {
+			$.error(this.locale.error_dateformat.format(this.options.day));
+		}
+
+		switch(this.options.view) {
+			case 'year':
+				this.options.position.start.setTime(new Date(year, 0, 1).getTime());
+				this.options.position.end.setTime(new Date(year + 1, 0, 1).getTime());
+				break;
+			case 'month':
+				this.options.position.start.setTime(new Date(year, month, 1).getTime());
+				this.options.position.end.setTime(new Date(year, month + 1, 1).getTime());
+				break;
+			case 'day':
+				this.options.position.start.setTime(new Date(year, month, day).getTime());
+				this.options.position.end.setTime(new Date(year, month, day + 1).getTime());
+				break;
+			case 'week':
+				var curr = new Date(year, month, day);
+				var first;
+				if(getExtentedOption(this, 'first_day') == 1) {
+					first = curr.getDate() - ((curr.getDay() + 6) % 7);
+				}
+				else {
+					first = curr.getDate() - curr.getDay();
+				}
+				this.options.position.start.setTime(new Date(year, month, first).getTime());
+				this.options.position.end.setTime(new Date(year, month, first + 7).getTime());
+				break;
+			default:
+				$.error(this.locale.error_noview.format(this.options.view))
+		}
+		return this;
+	};
+
+	Calendar.prototype.getTitle = function() {
+		var p = this.options.position.start;
+		switch(this.options.view) {
+			case 'year':
+				return this.locale.title_year.format(p.getFullYear());
+				break;
+			case 'month':
+				return this.locale.title_month.format(this.locale['m' + p.getMonth()], p.getFullYear());
+				break;
+			case 'week':
+				return this.locale.title_week.format(p.getWeek(getExtentedOption(this, 'week_numbers_iso_8601')), p.getFullYear());
+				break;
+			case 'day':
+				return this.locale.title_day.format(this.locale['d' + p.getDay()], p.getDate(), this.locale['m' + p.getMonth()], p.getFullYear());
+				break;
+		}
+		return;
+	};
+	
+	Calendar.prototype.getYear = function() {
+		var p = this.options.position.start;
+		return p.getFullYear();
+	};
+
+	Calendar.prototype.getMonth = function() {
+		var p = this.options.position.start;
+		return this.locale['m' + p.getMonth()];
+	};
+
+	Calendar.prototype.getDay = function() {
+		var p = this.options.position.start;
+		return this.locale['d' + p.getDay()];
+	};
+
+	Calendar.prototype.isToday = function() {
+		var now = new Date().getTime();
+
+		return ((now > this.options.position.start) && (now < this.options.position.end));
+	}
+
+	Calendar.prototype.getStartDate = function() {
+		return this.options.position.start;
+	}
+
+	Calendar.prototype.getEndDate = function() {
+		return this.options.position.end;
+	}
+
+	Calendar.prototype._loadEvents = function() {
+		var self = this;
+		var source = null;
+		if('events_source' in this.options && this.options.events_source !== '') {
+			source = this.options.events_source;
+		}
+		else if('events_url' in this.options) {
+			source = this.options.events_url;
+			warn('The events_url option is DEPRECATED and it will be REMOVED in near future. Please use events_source instead.');
+		}
+		var loader;
+		switch($.type(source)) {
+			case 'function':
+				loader = function() {
+					return source(self.options.position.start, self.options.position.end, browser_timezone);
+				};
+				break;
+			case 'array':
+				loader = function() {
+					return [].concat(source);
+				};
+				break;
+			case 'string':
+				if(source.length) {
+					loader = function() {
+						var events = [];
+                                                var d_from = self.options.position.start;
+                                                var d_to = self.options.position.end;
+                                                var params = {from: d_from.getTime(), to: d_to.getTime(), utc_offset_from: d_from.getTimezoneOffset(), utc_offset_to: d_to.getTimezoneOffset()};
+
+						if(browser_timezone.length) {
+							params.browser_timezone = browser_timezone;
+						}
+						$.ajax({
+							url: buildEventsUrl(source, params),
+							dataType: 'json',
+							type: 'GET',
+							async: false
+						}).done(function(json) {
+							if(!json.success) {
+								$.error(json.error);
+							}
+							if(json.result) {
+								events = json.result;
+							}
+						});
+						return events;
+					};
+				}
+				break;
+		}
+		if(!loader) {
+			$.error(this.locale.error_loadurl);
+		}
+		this.options.onBeforeEventsLoad.call(this, function() {
+			if (!self.options.events.length || !self.options.events_cache) {
+				self.options.events = loader();
+				self.options.events.sort(function (a, b) {
+					var delta;
+					delta = a.start - b.start;
+					if (delta == 0) {
+						delta = a.end - b.end;
+					}
+					return delta;
+				});
+			}
+			self.options.onAfterEventsLoad.call(self, self.options.events);
+		});
+	};
+
+	Calendar.prototype._templatePath = function(name) {
+		if(typeof this.options.tmpl_path == 'function') {
+			return this.options.tmpl_path(name)
+		}
+		else {
+			return this.options.tmpl_path + name + '.html';
+		}
+	};
+
+	Calendar.prototype._loadTemplate = function(name) {
+		if(this.options.templates[name]) {
+			return;
+		}
+		var self = this;
+		$.ajax({
+			url: self._templatePath(name),
+			dataType: 'html',
+			type: 'GET',
+			async: false,
+			cache: this.options.tmpl_cache
+		}).done(function(html) {
+			self.options.templates[name] = _.template(html);
+		});
+	};
+
+	Calendar.prototype._update = function() {
+		var self = this;
+
+		$('*[data-toggle="tooltip"]').tooltip({container: this.options.tooltip_container});
+
+		$('*[data-cal-date]').click(function() {
+			var view = $(this).data('cal-view');
+			self.options.day = $(this).data('cal-date');
+			self.view(view);
+		});
+		$('.cal-cell').dblclick(function() {
+			var view = $('[data-cal-date]', this).data('cal-view');
+			self.options.day = $('[data-cal-date]', this).data('cal-date');
+			self.view(view);
+		});
+
+		this['_update_' + this.options.view]();
+
+		this._update_modal();
+
+	};
+
+	Calendar.prototype._update_modal = function() {
+		var self = this;
+
+		$('a[data-event-id]', this.context).unbind('click');
+
+		if(!self.options.modal) {
+			return;
+		}
+
+		var modal = $(self.options.modal);
+
+		if(!modal.length) {
+			return;
+		}
+
+		var ifrm = null;
+		if(self.options.modal_type == "iframe") {
+			ifrm = $(document.createElement("iframe"))
+				.attr({
+					width: "100%",
+					frameborder: "0"
+				});
+		}
+
+		$('a[data-event-id]', this.context).on('click', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var url = $(this).attr('href');
+			var id = $(this).data("event-id");
+			var event = _.find(self.options.events, function(event) {
+				return event.id == id
+			});
+
+			if(self.options.modal_type == "iframe") {
+				ifrm.attr('src', url);
+				$('.modal-body', modal).html(ifrm);
+			}
+
+			if(!modal.data('handled.bootstrap-calendar') || (modal.data('handled.bootstrap-calendar') && modal.data('handled.event-id') != event.id)) {
+				modal.off('show.bs.modal')
+					.off('shown.bs.modal')
+					.off('hidden.bs.modal')
+					.on('show.bs.modal', function() {
+						var modal_body = $(this).find('.modal-body');
+						switch(self.options.modal_type) {
+							case "iframe" :
+								var height = modal_body.height() - parseInt(modal_body.css('padding-top'), 10) - parseInt(modal_body.css('padding-bottom'), 10);
+								$(this).find('iframe').height(Math.max(height, 50));
+								break;
+
+							case "ajax":
+								$.ajax({
+									url: url, dataType: "html", async: false, success: function(data) {
+										modal_body.html(data);
+									}
+								});
+								break;
+
+							case "template":
+								self._loadTemplate("modal");
+								//	also serve calendar instance to underscore template to be able to access current language strings
+								modal_body.html(self.options.templates["modal"]({"event": event, "calendar": self}))
+								break;
+						}
+
+						//	set the title of the bootstrap modal
+						if(_.isFunction(self.options.modal_title)) {
+							modal.find(".modal-title").html(self.options.modal_title(event));
+						}
+					})
+					.on('shown.bs.modal', function() {
+						self.options.onAfterModalShown.call(self, self.options.events);
+					})
+					.on('hidden.bs.modal', function() {
+						self.options.onAfterModalHidden.call(self, self.options.events);
+					})
+					.data('handled.bootstrap-calendar', true).data('handled.event-id', event.id);
+			}
+			modal.modal('show');
+		});
+	};
+
+	Calendar.prototype._update_day = function() {
+		$('#cal-day-panel').height($('#cal-day-panel-hour').height());
+	};
+
+	Calendar.prototype._update_week = function() {
+	};
+
+	Calendar.prototype._update_year = function() {
+		this._update_month_year();
+	};
+
+	Calendar.prototype._update_month = function() {
+		this._update_month_year();
+
+		var self = this;
+
+		if(this.options.weekbox == true) {
+			var week = $(document.createElement('div')).attr('id', 'cal-week-box');
+			var start = this.options.position.start.getFullYear() + '-' + this.options.position.start.getMonthFormatted() + '-';
+			self.context.find('.cal-month-box .cal-row-fluid')
+				.on('mouseenter', function() {
+					var p = new Date(self.options.position.start);
+					var child = $('.cal-cell1:first-child .cal-month-day', this);
+					var day = (child.hasClass('cal-month-first-row') ? 1 : $('[data-cal-date]', child).text());
+					p.setDate(parseInt(day));
+					day = (day < 10 ? '0' + day : day);
+					week.html(self.locale.week.format(self.options.display_week_numbers == true ? p.getWeek(getExtentedOption(self, 'week_numbers_iso_8601')) : ''));
+					week.attr('data-cal-week', start + day).show().appendTo(child);
+				})
+				.on('mouseleave', function() {
+					week.hide();
+				});
+
+			week.click(function() {
+				self.options.day = $(this).data('cal-week');
+				self.view('week');
+			});
+		}
+
+
+		self.context.find('a.event').mouseenter(function() {
+			$('a[data-event-id="' + $(this).data('event-id') + '"]').closest('.cal-cell1').addClass('day-highlight dh-' + $(this).data('event-class'));
+		});
+		self.context.find('a.event').mouseleave(function() {
+			$('div.cal-cell1').removeClass('day-highlight dh-' + $(this).data('event-class'));
+		});
+	};
+
+	Calendar.prototype._update_month_year = function() {
+		if(!this.options.views[this.options.view].slide_events) {
+			return;
+		}
+		var self = this;
+		var activecell = 0;
+		var downbox = $(document.createElement('div')).attr('id', 'cal-day-tick').html('<i class="icon-chevron-down glyphicon glyphicon-chevron-down"></i>');
+
+		self.context.find('.cal-month-day, .cal-year-box .span3')
+			.on('mouseenter', function() {
+				if($('.events-list', this).length == 0) {
+					return;
+				}
+				if($(this).children('[data-cal-date]').text() == self.activecell) {
+					return;
+				}
+				downbox.show().appendTo(this);
+			})
+			.on('mouseleave', function() {
+				downbox.hide();
+			})
+			.on('click', function(event) {
+				if($('.events-list', this).length == 0) {
+					return;
+				}
+				if($(this).children('[data-cal-date]').text() == self.activecell) {
+					return;
+				}
+				showEventsList(event, downbox, slider, self);
+			})
+		;
+
+		var slider = $(document.createElement('div')).attr('id', 'cal-slide-box');
+		slider.hide().click(function(event) {
+			event.stopPropagation();
+		});
+
+		this._loadTemplate('events-list');
+
+		downbox.click(function(event) {
+			showEventsList(event, $(this), slider, self);
+		});
+	};
+
+	Calendar.prototype.getEventsBetween = function(start, end) {
+		var events = [];
+		$.each(this.options.events, function() {
+			if(this.start == null) {
+				return true;
+			}
+			var event_end = this.end || this.start;
+			if((parseInt(this.start) < end) && (parseInt(event_end) >= start)) {
+				events.push(this);
+			}
+		});
+		return events;
+	};
+
+	function showEventsList(event, that, slider, self) {
+
+		event.stopPropagation();
+
+		var that = $(that);
+		var cell = that.closest('.cal-cell');
+		var row = cell.closest('.cal-before-eventlist');
+		var tick_position = cell.data('cal-row');
+
+		that.fadeOut('fast');
+
+		slider.slideUp('fast', function() {
+			var event_list = $('.events-list', cell);
+			slider.html(self.options.templates['events-list']({
+				cal: self,
+				events: self.getEventsBetween(parseInt(event_list.data('cal-start')), parseInt(event_list.data('cal-end')))
+			}));
+			row.after(slider);
+			self.activecell = $('[data-cal-date]', cell).text();
+			$('#cal-slide-tick').addClass('tick' + tick_position).show();
+			slider.slideDown('fast', function() {
+				$('body').one('click', function() {
+					slider.slideUp('fast');
+					self.activecell = 0;
+				});
+			});
+		});
+
+		// Wait 400ms before updating the modal & attach the mouseenter&mouseleave(400ms is the time for the slider to fade out and slide up)
+		setTimeout(function() {
+			$('a.event-item').mouseenter(function() {
+				$('a[data-event-id="' + $(this).data('event-id') + '"]').closest('.cal-cell1').addClass('day-highlight dh-' + $(this).data('event-class'));
+			});
+			$('a.event-item').mouseleave(function() {
+				$('div.cal-cell1').removeClass('day-highlight dh-' + $(this).data('event-class'));
+			});
+			self._update_modal();
+		}, 400);
+	}
+
+	function getEasterDate(year, offsetDays) {
+		var a = year % 19;
+		var b = Math.floor(year / 100);
+		var c = year % 100;
+		var d = Math.floor(b / 4);
+		var e = b % 4;
+		var f = Math.floor((b + 8) / 25);
+		var g = Math.floor((b - f + 1) / 3);
+		var h = (19 * a + b - d - g + 15) % 30;
+		var i = Math.floor(c / 4);
+		var k = c % 4;
+		var l = (32 + 2 * e + 2 * i - h - k) % 7;
+		var m = Math.floor((a + 11 * h + 22 * l) / 451);
+		var n0 = (h + l + 7 * m + 114)
+		var n = Math.floor(n0 / 31) - 1;
+		var p = n0 % 31 + 1;
+		return new Date(year, n, p + (offsetDays ? offsetDays : 0), 0, 0, 0);
+	}
+
+	$.fn.calendar = function(params) {
+		return new Calendar(params, this);
+	}
+}(jQuery));
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['ar-SA'] = {
+	error_noview: 'التقويم: العرض {0} غير موجود',
+	error_dateformat: 'التقويم: تنسيق خاطئ للتاريخ {0}. يجب أن يكون التاريخ "الآن" أو "yyyy-mm-dd"',
+	error_loadurl: 'التقويم: لم يتم تحديد رابط الحدث',
+	error_where: 'التقويم: اتجاه تصفح خاطئ {0}. يجب أن يحتوي فقط على "التالي" أو "السابق" أو "اليوم"',
+	error_timedevide: 'التقويم: تقسيم الوقت يجب أن يمكن قسمة 60 عليه بدون باقي . مثل 10, 15, 30',
+
+	no_events_in_day: 'لا يوجد أحداث في هذا اليوم',
+
+	title_year: 'العام {0}',
+	title_month: '{0} {1}',
+	title_week: 'الأسبوع {0} من {1}',
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'الأسبوع {0}',
+	all_day:     'كامل اليوم',
+	time:        'الوقت',
+	events:      'الأحداث',
+	before_time: 'ينتهي قبل الخط الزمني',
+	after_time:  'يبدء بعد الخط الزمني',
+
+	m0: 'يناير',
+	m1: 'فبراير',
+	m2: 'مارس',
+	m3: 'أبريل',
+	m4: 'مايو',
+	m5: 'يونيو',
+	m6: 'يوليو',
+	m7: 'أغسطس',
+	m8: 'سبتمبر',
+	m9: 'أكتوبر',
+	m10: 'نوفمبر',
+	m11: 'ديسمبر',
+
+	ms0: 'يناير',
+	ms1: 'فبراير',
+	ms2: 'مارس',
+	ms3: 'أبريل',
+	ms4: 'مايو',
+	ms5: 'يونيو',
+	ms6: 'يوليو',
+	ms7: 'أغسطس',
+	ms8: 'سبتمبر',
+	ms9: 'أكتوبر',
+	ms10: 'نوفمبر',
+	ms11: 'ديسمبر',
+
+	d0: 'الأحد',
+	d1: 'الإثنين',
+	d2: 'الثلاثاء',
+	d3: 'الأربعاء',
+	d4: 'الخميس',
+	d5: 'الجمعة',
+	d6: 'السبت',
+
+	first_day: 2,
+
+	holidays: {
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['bg-BG'] = {
+	error_noview: 'Календар: Изглед {0} не беше открит',
+	error_dateformat: 'Календар: Грешен формат за дата {0}. Трябва да бъде или "now", или "yyyy-mm-dd"',
+	error_loadurl: 'Календар: URL адресът на събитието не е зададен',
+	error_where: 'Календар: Грешна посока {0}. Може да бъде  зададено само "next", "prev", или "today"',
+	error_timedevide: 'Календар: Параметърът за разделяне на времето трябва да може да се дели на 60, без остатък. Например 10, 15, 30',
+
+	no_events_in_day: 'Няма събития за този ден.',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'Седмица {0} от {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:        'Седмица {0}',
+	all_day:     'Цял ден',
+	time:        'Часове',
+	events:      'Събития',
+	before_time: 'Приключва преди времевата линия',
+	after_time:  'Започва след началото на времевата линия',
+
+	m0: 'януари',
+	m1: 'февруари',
+	m2: 'март',
+	m3: 'април',
+	m4: 'май',
+	m5: 'юни',
+	m6: 'юли',
+	m7: 'август',
+	m8: 'септември',
+	m9: 'октомври',
+	m10: 'ноември',
+	m11: 'декември',
+
+	ms0: 'яну',
+	ms1: 'фев',
+	ms2: 'мар',
+	ms3: 'апр',
+	ms4: 'май',
+	ms5: 'юни',
+	ms6: 'юли',
+	ms7: 'авг',
+	ms8: 'сеп',
+	ms9: 'окт',
+	ms10: 'ное',
+	ms11: 'дек',
+
+	d0: 'неделя',
+	d1: 'понеделник',
+	d2: 'вторник',
+	d3: 'сряда',
+	d4: 'четвъртък',
+	d5: 'петък',
+	d6: 'събота',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01').
+	holidays: {
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['bs-BA'] = {
+	error_noview:     'Kalendar: View {0} nije pronađen',
+	error_dateformat: 'Kalendar: Pogrešan format datuma {0}. Trebao bi biti ili "now" ili "yyyy-mm-dd"',
+	error_loadurl:    'Kalendar: URL za događaje nije definisan',
+	error_where:      'Kalendar: Pogrešna naredba za navigaciju {0}. Dozvoljene navigacije su "next", "prev" ili "today"',
+	error_timedevide: 'Kalendar: Parametar za dijeljenje vremena mora broj 60 dijeliti bez ostatka. Dozvoljeni parametri su npr. 10, 15, 30',
+
+	no_events_in_day: 'Na ovaj dan nema događaja.',
+
+	title_year:  '{0}. godina',
+	title_month: '{0} {1}',
+	title_week:  '{0}. sedmica u {1}. godini',
+	title_day:   '{0}, {1}. {2} {3}.',
+
+	week:        'Sedmica {0}',
+	all_day:     'Cijeli dan',
+	time:        'Vrijeme',
+	events:      'Događaj',
+	before_time: 'Završava prije',
+	after_time:  'Započinje nakon',
+
+	m0:  'Januar',
+	m1:  'Februar',
+	m2:  'Mart',
+	m3:  'April',
+	m4:  'Maj',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'August',
+	m8:  'Septembar',
+	m9:  'Oktobar',
+	m10: 'Novembar',
+	m11: 'Decembar',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Apr',
+	ms4:  'Maj',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Nedelja',
+	d1: 'Ponedeljak',
+	d2: 'Utorak',
+	d3: 'Srijeda',
+	d4: 'Četvrtak',
+	d5: 'Petak',
+	d6: 'Subota',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		"01-01>02-01": "Nova godina",
+		"01-03":       "Dan nezavisnosti Bosne i Hercegovine",
+		"01-05>02-05": "Praznik rada",
+		"25-11":       "Dan državnosti Bosne i Hercegovine"
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['ca-ES'] = {
+	error_noview:     'Calendari: Vista {0} no trobada',
+	error_dateformat: 'Calendari: Format de data invàlid {0}. Ha de ser "now" o "yyyy-mm-dd"',
+	error_loadurl:    'Calendari: URL de càrrega d\'esdeveniments no configurada',
+	error_where:      'Calendari: Adreça de navegació incorrecta {0}. Els valors correctes són "next" o "prev" o "today"',
+	error_timedevide: 'Calendari: paràmetre per al separador d\'hora ha de dividir 60 per un sencer. Per exemple 10, 15, 30',
+
+	no_events_in_day: 'Avui no hi ha esdeveniments',
+
+	title_year:  'Any {0}',
+	title_month: '{0} {1}',
+	title_week:  'Setmana {0} del {1}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Setmana {0}',
+	all_day:     'Tot el dia',
+	time:        'Temps',
+	events:      'Desenvolupament',
+	before_time: 'Temps abans de la línia de temps',
+	after_time:  'Fi després d\'una línia de temps',
+
+	m0:  'Gener',
+	m1:  'Febrer',
+	m2:  'Març',
+	m3:  'Abril',
+	m4:  'Maig',
+	m5:  'Juny',
+	m6:  'Juliol',
+	m7:  'Agost',
+	m8:  'Setembre',
+	m9:  'Octubre',
+	m10: 'Novembre',
+	m11: 'Desembre',
+
+	ms0:  'Gen',
+	ms1:  'Feb',
+	ms2:  'Març',
+	ms3:  'Abr',
+	ms4:  'Maig',
+	ms5:  'Juny',
+	ms6:  'Jul',
+	ms7:  'Ag',
+	ms8:  'Set',
+	ms9:  'Oct',
+	ms10: 'Nov',
+	ms11: 'Des',
+
+	d0: 'Diumenge',
+	d1: 'Dilluns',
+	d2: 'Dimarts',
+	d3: 'Dimecres',
+	d4: 'Dijous',
+	d5: 'Divendres',
+	d6: 'Dissabte',
+
+	easter:       'Pasqües',
+	easterMonday: 'Dilluns de Pasqües',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':    "Any nou",
+		'06-01':    "Dia de Reis",
+		'19-03':    "San Josep",
+		'easter-3': "Dijous Sant",
+		'easter-2': "Divendres Sant",
+		'easter':   "Pasqua",
+		'easter+1': "Dilluns de Pasqua",
+		'01-05':    "Dia del Treballador",
+		'15-08':    "Asunció",
+		'12-10':    "Festa Nacional d'Espanya",
+		'01-11':    "Dia de tots Sants",
+		'06-12':    "Día de la Constitución Espanyola",
+		'08-12':    "Inmaculada Concepció",
+		'25-12':    "Nadal"
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['cs-CZ'] = {
+	error_noview: 'Kalendář: Pohled {0} nebyl nalezen',
+	error_dateformat: 'Kalendář: Chybný formát data {0}. Zvolte "now" nebo "yyyy-mm-dd"',
+	error_loadurl: 'Kalendář: Není vyplněno URL události',
+	error_where: 'Kalendář: Chyba navigace {0}. Can be only "next" or "prev" or "today"',
+	error_timedevide: 'Kalendář: Rozdělení času musí být dělitelem 60 beze zbytku. Například 10, 15, 30',
+
+	no_events_in_day: 'Dnes žádné události.',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'týden {0} of {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:        'Týden {0}',
+	all_day:     'Celý den',
+	time:        'Čas',
+	events:      'Události',
+	before_time: 'Ends before timeline',
+	after_time:  'Starts after timeline',
+
+	m0: 'Leden',
+	m1: 'Únor',
+	m2: 'Březen',
+	m3: 'Duben',
+	m4: 'Květen',
+	m5: 'Červen',
+	m6: 'Červenec',
+	m7: 'Srpen',
+	m8: 'Září',
+	m9: 'Říjen',
+	m10: 'Listopad',
+	m11: 'Prosinec',
+
+	ms0: 'Led',
+	ms1: 'Úno',
+	ms2: 'Bře',
+	ms3: 'Dub',
+	ms4: 'Kvě',
+	ms5: 'Čer',
+	ms6: 'Črv',
+	ms7: 'Srp',
+	ms8: 'Zář',
+	ms9: 'Říj',
+	ms10: 'Lis',
+	ms11: 'Pro',
+
+	d0: 'Neděle',
+	d1: 'Pondělí',
+	d2: 'Úterý',
+	d3: 'Středa',
+	d4: 'Čtvrtek',
+	d5: 'Pátek',
+	d6: 'Sobota',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01').
+	holidays: {
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['da-DK'] = {
+	error_noview: 'Kalender: View {0} ikke fundet',
+	error_dateformat: 'Kalender: Forkert dato format {0}. Det skal enten være "now" eller "åååå-mm-dd"',
+	error_loadurl: 'Kalender: Aktivitet URL ikke angivet',
+	error_where: 'Kalender: Forkert navigering {0}. Du kan kun bruge "next" eller "prev" eller "today"',
+	error_timedevide: 'Kalender: Time split parameter skal være dividerbart med 60 uden decimaler. Noget ala 10, 15, 30',
+
+	no_events_in_day: 'Ingen aktiviteret på denne dag.',
+
+	title_year: '{0}',
+	title_month: '{0} {1}',
+	title_week: 'uge {0} af {1}',
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'Uge {0}',
+	all_day:     'Hele dagen',
+	time:        'Time',
+	events:      'Aktivitet',
+	before_time: 'Slutter før tidslinje',
+	after_time:  'Starter efer tidslinje',
+
+	m0: 'Januar',
+	m1: 'Februar',
+	m2: 'Marst',
+	m3: 'April',
+	m4: 'Maj',
+	m5: 'Juni',
+	m6: 'Juli',
+	m7: 'August',
+	m8: 'September',
+	m9: 'Oktober',
+	m10: 'November',
+	m11: 'December',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mar',
+	ms3: 'Apr',
+	ms4: 'Maj',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Aug',
+	ms8: 'Sep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Søndag',
+	d1: 'Mandag',
+	d2: 'Tirsdag',
+	d3: 'Onsdag',
+	d4: 'Torsdag',
+	d5: 'Fredag',
+	d6: 'Lørdag',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+	  '01-01':'Nytårsdag',
+	  'easter-3':'Skærtorsdag',
+	  'easter-2':'Langfredag',
+	  'easter':'Påskedag',
+	  'easter+1':'2. Påskedag',
+	  'easter+26':'Store bededag',
+	  'easter+39':'Kristi himmelfartsdag',
+	  'easter+49':'Pinsedag',
+	  'easter+50':'2. Pinsedag',
+	  '25-12':'Juledag',
+	  '26-12':'2. Juledag'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['de-AT'] = {
+	error_noview:     'Kalender: Ansicht {0} nicht gefunden',
+	error_dateformat: 'Kalender: Falsches Datumsformat {0}. Sollte entweder "now" oder "yyyy-mm-dd" sein',
+	error_loadurl:    'Kalender: Event-URL nicht gesetzt.',
+	error_where:      'Kalender: Falsche Navigationsrichtung {0}. Nur "next", "prev" oder "today" sind erlaubt',
+	error_timedevide: 'Kalender: Parameter für die Zeiteinteilung muss ein Teiler von 60 sein. Beispielsweise 10, 15, 30',
+
+	no_events_in_day: 'Keine Ereignisse an diesem Tag.',
+
+	title_year:  '{0}',
+	title_month: '{0} {1}',
+	title_week:  '{0}. Kalenderwoche {1}',
+	title_day:   '{0}, der {1}. {2} {3}',
+
+	week:        'KW {0}',
+	all_day:     'Ganztägig',
+	time:        'Zeit',
+	events:      'Ereignisse',
+	before_time: 'Endet vor Zeitspanne',
+	after_time:  'Beginnt nach Zeitspanne',
+
+	m0:  'Jänner',
+	m1:  'Februar',
+	m2:  'März',
+	m3:  'April',
+	m4:  'Mai',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'August',
+	m8:  'September',
+	m9:  'Oktober',
+	m10: 'November',
+	m11: 'Dezember',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mär',
+	ms3:  'Apr',
+	ms4:  'Mai',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dez',
+
+	d0: 'Sonntag',
+	d1: 'Montag',
+	d2: 'Dienstag',
+	d3: 'Mittwoch',
+	d4: 'Donnerstag',
+	d5: 'Freitag',
+	d6: 'Samstag',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     'Neujahr',
+		'06-01':     'Heilige Drei Könige',
+		'easter-2':  'Karfreitag',
+		'easter+1':  'Ostermontag',
+		'01-05':     'Staatsfeiertag',
+		'easter+39': 'Christi Himmelfahrt',
+		'easter+49': 'Pfingstsonntag',
+		'easter+50': 'Pfingstmontag',
+		'15-08':     'Mariä Himmelfahrt',
+		'26-10':     'Nationalfeiertag',
+		'01-11':     'Allerheiligen',
+		'08-12':     'Mariä Empfängnis',
+		'24-12':     'Heiliger Abend',
+		'25-12':     'Weihnachten',
+		'26-12':     'Stefanitag',
+		'31-12':     'Silvester'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['de-DE'] = {
+	error_noview:     'Kalender: Ansicht {0} nicht gefunden',
+	error_dateformat: 'Kalender: Falsches Datumsformat {0}. Sollte entweder "now" oder "yyyy-mm-dd" sein',
+	error_loadurl:    'Kalender: Event-URL nicht gesetzt.',
+	error_where:      'Kalender: Falsche Navigationsrichtung {0}. Nur "next", "prev" oder "today" sind erlaubt',
+	error_timedevide: 'Kalender: Parameter für die Zeiteinteilung muss ein Teiler von 60 sein. Beispielsweise 10, 15, 30',
+
+	no_events_in_day: 'Keine Ereignisse an diesem Tag.',
+
+	title_year:  '{0}',
+	title_month: '{0} {1}',
+	title_week:  '{0}. Kalenderwoche {1}',
+	title_day:   '{0}, der {1}. {2} {3}',
+
+	week:        'KW {0}',
+	all_day:     'Ganztägig',
+	time:        'Zeit',
+	events:      'Ereignisse',
+	before_time: 'Endet vor Zeitspanne',
+	after_time:  'Beginnt nach Zeitspanne',
+
+	m0:  'Januar',
+	m1:  'Februar',
+	m2:  'März',
+	m3:  'April',
+	m4:  'Mai',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'August',
+	m8:  'September',
+	m9:  'Oktober',
+	m10: 'November',
+	m11: 'Dezember',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mär',
+	ms3:  'Apr',
+	ms4:  'Mai',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dez',
+
+	d0: 'Sonntag',
+	d1: 'Montag',
+	d2: 'Dienstag',
+	d3: 'Mittwoch',
+	d4: 'Donnerstag',
+	d5: 'Freitag',
+	d6: 'Samstag',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     'Neujahr',
+		'06-01':     'Heilige Drei Könige',
+		'easter-3':  'Gründonnerstag',
+		'easter-2':  'Karfreitag',
+		'easter':    'Ostersonntag',
+		'easter+1':  'Ostermontag',
+		'01-05':     'Tag der Arbeit',
+		'easter+39': 'Himmelfahrt',
+		'easter+49': 'Pfingstsonntag',
+		'easter+50': 'Pfingstmontag',
+		'15-08':     'Mariä Himmelfahrt',
+		'03-10':     'Tag der Deutschen Einheit',
+		'01-11':     'Allerheiligen',
+		'25-12':     'Erster Weihnachtsfeiertag',
+		'26-12':     'Zweiter Weihnachtsfeiertag'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['el-GR'] = {
+	error_noview:     'Ημερολόγιο: Η προβολή {0} δεν βρέθηκε',
+	error_dateformat: 'Ημερολόγιο: Η μορφή της ημερομηνίας {0} δεν είναι έγκυρη. Παρακαλώ χρησιμοποιήστε "now" ή "yyyy-mm-dd"',
+	error_loadurl:    'Ημερολόγιο: Η διεύθυνση λήψης των event δεν έχει καθοριστεί',
+	error_where:      'Ημερολόγιο: Η μορφή κατεύθυνσης {0} δεν είναι έγκυρη. Παρακαλώ χρησιμοποιήστε μία εκ των "next", "prev" και "today"',
+	error_timedevide: 'Ημερολόγιο: παράμετρος στο διαχωριστή χρόνου πρέπει να διαιρέσει το 60 με έναν ακέραιο αριθμό. Για παράδειγμα 10, 15, 30',
+
+	no_events_in_day: 'Δεν υπάρχουν καταχωρήσεις σε αυτήν την ημέρα.',
+
+	title_year:  'Έτος {0}',
+	title_month: '{0} {1}',
+	title_week:  'Εβδομάδα {0} του έτους {1}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Εβδομάδα {0}',
+	all_day:     'Όλη την ημέρα',
+	time:        'χρόνος',
+	events:      'εξελίξεις',
+	before_time: 'Ώρα πριν από το τέλος της ταινίας',
+	after_time:  'Τερματισμός μετά από μια προσωρινή ταινία',
+
+	m0:  'Ιανουάριος',
+	m1:  'Φεβρουάριος',
+	m2:  'Μάρτιος',
+	m3:  'Απρίλιος',
+	m4:  'Μάϊος',
+	m5:  'Ιούνιος',
+	m6:  'Ιούλιος',
+	m7:  'Αύγουστος',
+	m8:  'Σεπτέμβριος',
+	m9:  'Οκτώβριος',
+	m10: 'Νοέμβριος',
+	m11: 'Δεκέμβριος',
+
+	ms0:  'Ιαν',
+	ms1:  'Φεβ',
+	ms2:  'Μαρ',
+	ms3:  'Απρ',
+	ms4:  'Μαϊ',
+	ms5:  'Ιουν',
+	ms6:  'Ιουλ',
+	ms7:  'Αυγ',
+	ms8:  'Σεπ',
+	ms9:  'Οκτ',
+	ms10: 'Νοε',
+	ms11: 'Δεκ',
+
+	d0: 'Κυριακή',
+	d1: 'Δευτέρα',
+	d2: 'Τρίτη',
+	d3: 'Τετάρτη',
+	d4: 'Πέμπτη',
+	d5: 'Παρασκευή',
+	d6: 'Σάββατο',
+
+	easter:       'Πάσχα',
+	easterMonday: 'Δευτέρα του Πάσχα',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     "Πρωτοχρονιά",
+		'06-01':     "Θεοφάνεια",
+		'easter-41': "Καθαρά Δευτέρα",
+		'23-03':     "Εικοστή Πέμπτη Μαρτιου",
+		'easter-2':  "Μεγάλη Παρασκευή",
+		'easter':    "Κυριακή του Πάσχα",
+		'easter+1':  "Δευτέρα του Πάσχα",
+		'01-05':     "Εργατική Πρωτομαγιά",
+		'easter+49': "Πεντηκοστή",
+		'easter+50': "Αγίου Πνεύματος",
+		'15-08':     "Η Κοίμηση της Θεοτόκου",
+		'28-10':     "Ημέρα του Όχι",
+		'25-12':     "Χριστούγεννα",
+		'26-12':     "Σύναξις Ὑπεραγίας Θεοτόκου Μαρίας"
+	}
+};
+
+if(!window.calendar_languages) {
+  window.calendar_languages = {};
+}
+window.calendar_languages['es-CO'] = {
+  error_noview:     'Calendar: Vista {0} no encontrada',
+  error_dateformat: 'Calendar: Formato de Fecha Inválido {0}. Debe ser "now" o con el formato "yyyy-mm-dd"',
+  error_loadurl:    'Calendar: URL de datos no definida',
+  error_where:      'Calendar: Dirección de navegación errónea {0}. Valores válidos: "next" o "prev" o "today"',
+  error_timedevide: 'Calendario: parámetro para el separador de hora debe dividir 60 por un entero. Por ejemplo 10, 15, 30',
+
+  title_year:  'Año {0}',
+  title_month: '{0} año {1}',
+  title_week:  '{0} semana del año {1}',
+  title_day:   '{0} {1} {2} año {3}',
+
+  week:        'Semana {0}',
+  all_day:     'Todo el día',
+  time:        'Hora',
+  events:      'Eventos',
+  before_time: 'Cita antes de la hora de atención',
+  after_time:  'Cita después de la hora de atención',
+
+
+  m0:  'Enero',
+  m1:  'Febrero',
+  m2:  'Marzo',
+  m3:  'Abril',
+  m4:  'Mayo',
+  m5:  'Junio',
+  m6:  'Julio',
+  m7:  'Agosto',
+  m8:  'Septiembre',
+  m9:  'Octubre',
+  m10: 'Noviembre',
+  m11: 'Diciembre',
+
+  ms0:  'Ene',
+  ms1:  'Feb',
+  ms2:  'Mar',
+  ms3:  'Abr',
+  ms4:  'May',
+  ms5:  'Jun',
+  ms6:  'Jul',
+  ms7:  'Ago',
+  ms8:  'Sep',
+  ms9:  'Oct',
+  ms10: 'Nov',
+  ms11: 'Dic',
+
+  d0: 'Domingo',
+  d1: 'Lunes',
+  d2: 'Martes',
+  d3: 'Miércoles',
+  d4: 'Jueves',
+  d5: 'Viernes',
+  d6: 'Sábado',
+
+  easter:       'Semana Santa',
+  easterMonday: 'Lunes de Pascua',
+
+  first_day: 1,
+  week_numbers_iso_8601: true,
+
+  holidays: {
+    // for 2014
+    "01-01": "Año Nuevo",
+    "06-01": "Día de los Reyes Magos",
+    "24-03": "Día de San José",
+    "13-04": "Domingo de Ramos",
+    "17-04": "Jueves Santo",
+    "18-04": "Viernes Santo",
+    "20-04": "Domingo de Resurrección",
+    "01-05": "Día del Trabajo",
+    "02-06": "Día de la Ascensión",
+    "23-06": "Corpus Christi",
+    "30-06": "Sagrado Corazón",
+    "30-06": "San Pedro y San Pablo",
+    "20-07": "Día de la Independenci",
+    "07-08": "Batalla de Boyaca",
+    "18-08": "La asunción de la Virgen",
+    "13-10": "Día de la Raza",
+    "03-11": "Todos los Santo",
+    "17-11": "Independencia de Cartagena",
+    "08-12": "Día de la Inmaculada Concepción",
+    "25-12": "Día de Navidad"
+    /* For 2015
+    "01-01": "Año Nuevo",
+    "12-01": "Día de los Reyes Magos",
+    "23-03": "Día de San José",
+    "29-03": "Domingo de Ramos",
+    "02-04": "Jueves Santo",
+    "03-04": "Viernes Santo",
+    "05-04": "Domingo de Resurrección",
+    "01-05":  "Día del Trabajo",
+    "18-05": "Día de la Ascensión",
+    "08-06": "Corpus Christi",
+    "15-06": "Sagrado Corazón",
+    "29-06": "San Pedro y San Pablo",
+    "20-07": "Día de la Independencia",
+    "07-08":  "Batalla de Boyacá",
+    "17-08": "La asunción de la Virgen",
+    "12-10": "Día de la Raza",
+    "02-10": "Todos los Santos",
+    "16-10": "Independencia de Cartagena",
+    "08-12": "Día de la Inmaculada Concepción",
+    "25-12": "Día de Navidad"
+    */
+  }
+
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['es-ES'] = {
+	error_noview:     'Calendario: Vista {0} no encontrada',
+	error_dateformat: 'Calendario: Formato de fecha inválido {0}. Debe ser "now" o "yyyy-mm-dd"',
+	error_loadurl:    'Calendario: URL de carga de eventos no configurada',
+	error_where:      'Calendario: Dirección de navegación incorrecta {0}. Los valores correctos son "next" o "prev" o "today"',
+	error_timedevide: 'Calendario: parámetro para el separador de hora debe dividir 60 por un entero. Por ejemplo 10, 15, 30',
+
+	no_events_in_day: 'No hay eventos hoy',
+
+	title_year:  'Año {0}',
+	title_month: '{0} {1}',
+	title_week:  'Semana {0} del {1}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Semana {0}',
+	all_day:     'Todo el día',
+	time:        'Tiempo',
+	events:      'Eventos',
+	before_time: 'Horas previas',
+	after_time:  'Horas posteriores',
+
+	m0:  'Enero',
+	m1:  'Febrero',
+	m2:  'Marzo',
+	m3:  'Abril',
+	m4:  'Mayo',
+	m5:  'Junio',
+	m6:  'Julio',
+	m7:  'Agosto',
+	m8:  'Septiembre',
+	m9:  'Octubre',
+	m10: 'Noviembre',
+	m11: 'Diciembre',
+
+	ms0:  'Ene',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Abr',
+	ms4:  'May',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Ago',
+	ms8:  'Sep',
+	ms9:  'Oct',
+	ms10: 'Nov',
+	ms11: 'Dic',
+
+	d0: 'Domingo',
+	d1: 'Lunes',
+	d2: 'Martes',
+	d3: 'Miércoles',
+	d4: 'Jueves',
+	d5: 'Viernes',
+	d6: 'Sábado',
+
+	easter:       'Pascua',
+	easterMonday: 'Lunes de Pascua',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':    "Año Nuevo",
+		'06-01':    "Día de Reyes",
+		'19-03':    "San José",
+		'easter-3': "Jueves Santo",
+		'easter-2': "Viernes Santo",
+		'easter':   "Pascua",
+		'easter+1': "Lunes de Pascua",
+		'01-05':    "Día del Trabajador",
+		'15-08':    "Asunción",
+		'12-10':    "Fiesta Nacional de España",
+		'01-11':    "Día de todos los Santos",
+		'06-12':    "Día de la Constitución",
+		'08-12':    "Inmaculada Concepción",
+		'25-12':    "Navidad"
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['es-MX'] = {
+	error_noview:     'Calendar: Vista {0} no encontrada',
+	error_dateformat: 'Calendar: Formato de Fecha Inválido {0}. Debe ser "now" o con el formato "yyyy-mm-dd"',
+	error_loadurl:    'Calendar: URL de datos no definida',
+	error_where:      'Calendar: Dirección de navegación errónea {0}. Valores válidos: "next" o "prev" o "today"',
+	error_timedevide: 'Calendario: parámetro para el separador de hora debe dividir 60 por un entero. Por ejemplo 10, 15, 30',
+
+	title_year:  'Año {0}',
+	title_month: '{0} año {1}',
+	title_week:  '{0} semana del año {1}',
+	title_day:   '{0} {1} {2} año {3}',
+
+	week:        'Semana {0}',
+	all_day:     'Todo el día',
+	time:        'Tiempo',
+	events:      'Desarrollos',
+	before_time: 'Tiempo antes de la cinta final',
+	after_time:  'Fin después de una cinta temporal',
+
+
+	m0:  'Enero',
+	m1:  'Febrero',
+	m2:  'Marzo',
+	m3:  'Abril',
+	m4:  'Mayo',
+	m5:  'Junio',
+	m6:  'Julio',
+	m7:  'Agosto',
+	m8:  'Septiembre',
+	m9:  'Octubre',
+	m10: 'Noviembre',
+	m11: 'Diciembre',
+
+	ms0:  'Ene',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Abr',
+	ms4:  'May',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Ago',
+	ms8:  'Sep',
+	ms9:  'Oct',
+	ms10: 'Nov',
+	ms11: 'Dic',
+
+	d0: 'Domingo',
+	d1: 'Lunes',
+	d2: 'Martes',
+	d3: 'Miércoles',
+	d4: 'Jueves',
+	d5: 'Viernes',
+	d6: 'Sábado',
+
+	easter:       'Pascuas',
+	easterMonday: 'Lunes de Pascuas',
+
+	first_day: 2,
+
+	holidays: {
+		'01-01': "Año Nuevo",
+		'05-02': "Día de la Constitución",
+		'21-03': "Natalicio de Benito Juárez",
+		'01-05': "Día del Trabajo",
+		'16-09': "Día de la Independencia",
+		'20-11': "Día de la Revolución",
+		'01-12': "Transmisión del Poder Ejecutivo Federal",
+		'25-12': "Navidad"
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+    window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['fi-FI'] = {
+    error_noview: 'Kalenteri: {0} näkymää ei löytynyt',
+    error_dateformat: 'Kalenteri: väärä päivämääräformaatti {0}. Oikea formaatti on "yyyy-mm-dd"',
+    error_loadurl: 'Kalenteri: Tapahtuman osoitetta ei ole asetettu',
+    error_where: 'Kalenteri: Väärä navigointisuunta {0}. Suunta voi olla vain "seuraava" tai "edellinen" or "tänään"',
+    error_timedevide: 'Kalenteri: Aikajaon tulee olla alle 60 ja kokonaisluku, kuten 10, 15, 30',
+
+    no_events_in_day: 'Ei tapahtumia.',
+
+    // {0} will be replaced with the year (example: 2013)
+    title_year: '{0}',
+    // {0} will be replaced with the month name (example: September)
+    // {1} will be replaced with the year (example: 2013)
+    title_month: '{0} {1}',
+    // {0} will be replaced with the week number (example: 37)
+    // {1} will be replaced with the year (example: 2013)
+    title_week: 'viikko {0}/{1}',
+    // {0} will be replaced with the weekday name (example: Thursday)
+    // {1} will be replaced with the day of the month (example: 12)
+    // {2} will be replaced with the month name (example: September)
+    // {3} will be replaced with the year (example: 2013)
+    title_day: '{0} {1} {2}, {3}',
+
+    week:        'Viikko',
+    all_day:     'Koko päivä',
+    time:        'Aika',
+    events:      'Tapahtumat',
+    before_time: 'Loppu ennen aikajanaa',
+    after_time:  'Alkaa aikajanan jälkeen',
+
+    m0: 'Tammikuu',
+    m1: 'Helmikuu',
+    m2: 'Maaliskuu',
+    m3: 'Huhtikuu',
+    m4: 'Toukokuu',
+    m5: 'Kesäkuu',
+    m6: 'Heinäkuu',
+    m7: 'Elokuu',
+    m8: 'Syyskuu',
+    m9: 'Lokakuu',
+    m10: 'Marraskuu',
+    m11: 'Joulukuu',
+
+    ms0: 'Tammi',
+    ms1: 'Helmi',
+    ms2: 'Maalis',
+    ms3: 'Huhti',
+    ms4: 'Touko',
+    ms5: 'Kesä',
+    ms6: 'Heinä',
+    ms7: 'Elo',
+    ms8: 'Syys',
+    ms9: 'Loka',
+    ms10: 'Marras',
+    ms11: 'Joulu',
+
+    d0: 'Sunnuntai',
+    d1: 'Maanantai',
+    d2: 'Tiistai',
+    d3: 'Keskiviikko',
+    d4: 'Torstai',
+    d5: 'Perjantai',
+    d6: 'Lauantai',
+
+    // Which is the first day of the week (2 for sunday, 1 for monday)
+    first_day: 1,
+    week_numbers_iso_8601: true,
+
+    // The list of the holidays.
+    // Each holiday has a date definition and a name (in your language)
+    // For instance:
+    // holidays: {
+    //  'date': 'name',
+    //  'date': 'name',
+    //  ...
+    //   'date': 'name' //No ending comma for the last holiday
+    // }
+    // The format of the date may be one of the following:
+    // # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+    // # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+    // # For Easter: use simply 'easter'
+    // # For holidays that are based on the Easter date: 'easter+offset in days'.
+    //   Some examples:
+    //   - 'easter-2' is Good Friday (2 days before Easter)
+    //   - 'easter+1' is Easter Monday (1 day after Easter)
+    //   - 'easter+39' is the Ascension Day
+    //   - 'easter+49' is Pentecost
+    // # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+    //   For example:
+    //   - Second (2) Monday (1) in October (10): '10+2*1'
+    // # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+    //   For example:
+    //   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+    //   - Last (1) Monday (1) in May (05): '05-1*1'
+    // # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+    //   For example:
+    //   - From 1 January to 6 January: '01-01>06-01'
+    //   - Easter and the day after Easter: 'easter>easter+1'
+    //   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01'). 
+    holidays: {
+      // January 1, 6
+      '01-01': "Uudenvuodenpäivä",
+      '06-01': "Loppiainen",
+      'easter-2': "Pitkäperjantai",
+      'easter': "Pääsiäispäivä",
+      'easter+1': "2. pääsiäispäivä",
+      'easter+39': "Helatorstai",
+      'easter+49': "Helluntaipäivä",
+      '01-05': "Vappu",
+      '06-12': "Itsenäisyyspäivä",
+      '24-12': "Jouluaatto",
+      '25-12': "Joulupäivä",
+      '26-12': "Tapaninpäivä"
+    }
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['fr-FR'] = {
+	error_noview:     'Calendrier: Vue {0} introuvable',
+	error_dateformat: 'Calendrier: Format de date incorrect {0}. Formats acceptés : "now" ou "yyyy-mm-dd"',
+	error_loadurl:    'Calendrier: L\'adresse de chargement des évènements n\'est pas définie',
+	error_where:      'Calendrier: Mauvaise commande de navigation {0}. Commandes acceptées : "suivant", "précédent" or "aujourd\'hui"',
+	error_timedevide: 'Calendrier: La valeur des espaces-temps doit diviser 60 avec une valeur exacte. Par exemple 10, 15, 30',
+
+	title_year:  'Année {0}',
+	title_month: '{0} {1}',
+	title_week:  'Semaine {0}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Semaine {0}',
+	all_day:     'Toute la journée',
+	time:        'Heure',
+	events:      'Evènements',
+	before_time: 'Se terminant avant le début de plage horaire',
+	after_time:  'Se terminant après la fin de la plage horaire',
+
+	m0:  'Janvier',
+	m1:  'Février',
+	m2:  'Mars',
+	m3:  'Avril',
+	m4:  'Mai',
+	m5:  'Juin',
+	m6:  'Juillet',
+	m7:  'Août',
+	m8:  'Septembre',
+	m9:  'Octobre',
+	m10: 'Novembre',
+	m11: 'Décembre',
+
+	ms0:  'Jan',
+	ms1:  'Fév',
+	ms2:  'Mar',
+	ms3:  'Avr',
+	ms4:  'Mai',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aoû',
+	ms8:  'Sep',
+	ms9:  'Oct',
+	ms10: 'Nov',
+	ms11: 'Déc',
+
+	d0: 'Dimanche',
+	d1: 'Lundi',
+	d2: 'Mardi',
+	d3: 'Mercredi',
+	d4: 'Jeudi',
+	d5: 'Vendredi',
+	d6: 'Samedi',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     "Premier de l'an",
+		'easter':    "Pâques",
+		'easter+1':  "Lundi de Pâques",
+		'01-05':     "Fête du Travail",
+		'08-05':     "Fête de la Victoire 1945",
+		'easter+39': "Ascension",
+		'easter+49': "Pentecôte",
+		'easter+50': "Lundi de Pentecôte",
+		'14-07':     "Fête Nationale",
+		'15-08':     "Assomption",
+		'01-11':     "Toussaint",
+		'11-11':     "Armistice 1918",
+		'25-12':     "Noël"
+	}
+};
+
+if(!window.calendar_languages) {
+        window.calendar_languages = {};
+}
+
+window.calendar_languages['hr-HR'] = {
+        error_noview:     'Kalendar: Prikaz {0} nije pronađen.',
+        error_dateformat: 'Kalendar: Neispravan format datuma {0}. Unesite "now" ili "yyyy-mm-dd"',
+        error_loadurl:    'Kalendar: Poveznica događaja nije postavljena.',
+        error_where:      'Kalendar: Pogrešan smjer navigacije {0}. Moguće je birati "sljedeće", "prethodno" ili "danas"',
+        error_timedevide: 'Kalendar: Rezultat dijeljenja vremena ne smije sadržavati decimalna mjesta. Djelitelj može biti, primjerice, 10, 15, 30.',
+
+        no_events_in_day: 'Nema događanja za današnji dan.',
+
+        title_year:  'Godina {0}.',
+        title_month: 'Mjesec {0} {1}. godine',
+        title_week:  '{0}. tjedan {1}. godine',
+        title_day:   '{0}, {1}. {2} {3}.',
+
+        week:        '{0}. tjedan',
+        all_day:     'Cijeli dan',
+        time:        'Vrijeme',
+        events:      'Događaji i zbivanja',
+        before_time: 'Nema završetka',
+        after_time:  'Nema početka',
+
+        m0:  'Siječanj',
+        m1:  'Veljača',
+        m2:  'Ožujak',
+        m3:  'Travanj',
+        m4:  'Svibanj',
+        m5:  'Lipanj',
+        m6:  'Srpanj',
+        m7:  'Kolovoz',
+        m8:  'Rujan',
+        m9:  'Listopad',
+        m10: 'Studeni',
+        m11: 'Prosinac',
+
+        ms0:  'Siječanj',
+        ms1:  'Veljača',
+        ms2:  'Ožujak',
+        ms3:  'Travanj',
+        ms4:  'Svibanj',
+        ms5:  'Lipanj',
+        ms6:  'Srpanj',
+        ms7:  'Kolovoz',
+        ms8:  'Rujan',
+        ms9:  'Listopad',
+        ms10: 'Studeni',
+        ms11: 'Prosinac',
+
+        d0: 'Nedjelja',
+        d1: 'Ponedjeljak',
+        d2: 'Utorak',
+        d3: 'Srijeda',
+        d4: 'Četvrtak',
+        d5: 'Petak',
+        d6: 'Subota',
+
+        first_day: 1,
+        week_numbers_iso_8601: true
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['hu-HU'] = {
+	error_noview: 'Naptár: {0} nézet nem található',
+	error_dateformat: 'Naptár: Hibás dátum formátum {0}.  "now" vagy "éééé-hh-nn" lehet',
+	error_loadurl: 'Naptár: Esemény URL nincs beállítva',
+	error_where: 'Naptár: Rossz navigálási irány {0}. Csak "next", "prev" vagy "today" lehet',
+	error_timedevide: 'Naptár: Az idő elválasztó 60 maradék nélküli osztója kell legyen. Például: 10, 15, 30',
+	no_events_in_day: 'Nincs esemény.',
+
+	title_year: '{0}',
+	title_month: '{1} {0}' ,
+	title_week: '{1} {0}. hét',
+	title_day: '{3}. {2} {1}., {0}',
+
+	week:'{0}. hét',
+	all_day:     'Egész napos',
+	time:        'Idő',
+	events:      'Események',
+	before_time: 'Az idővonal előtt végződik',
+	after_time:  'Az idővonal után kezdődik',
+
+	m0: 'Január',
+	m1: 'Február',
+	m2: 'Március',
+	m3: 'Április',
+	m4: 'Május',
+	m5: 'Június',
+	m6: 'Július',
+	m7: 'Augusztus',
+	m8: 'Szeptember',
+	m9: 'Október',
+	m10: 'November',
+	m11: 'December',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Már',
+	ms3: 'Ápr',
+	ms4: 'Máj',
+	ms5: 'Jún',
+	ms6: 'Júl',
+	ms7: 'Aug',
+	ms8: 'Szep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Vasárnap',
+	d1: 'Hétfő',
+	d2: 'Kedd',
+	d3: 'Szerda',
+	d4: 'Csütörtök',
+	d5: 'Péntek',
+	d6: 'Szombat',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 1,
+	week_numbers_iso_8601: true,
+    holidays: {
+		'01-01':     'Újév',
+		'easter+1':  'Húsvéthétfő',
+		'01-05':     'Május elseje',
+		'15-13':     '1848–49-es forradalom és szabadságharc',
+		'easter+49': 'Pünkösdvasárnap',
+		'easter+50': 'Pünkösdhétfő',
+		'08-20':     'Államalapítás ünnepe',
+		'10-23':     '1956-os forradalom és szabadságharc',
+		'25-12':     'Karácsony',
+		'26-12':     'Karácsony'
+	}
+
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['id-ID'] = {
+	error_noview: 'Kalender: Tampilan {0} tidak ditemukan',
+	error_dateformat: 'Kalender: Format tanggal salah {0}. Seharusnya "now" atau "yyyy-mm-dd"',
+	error_loadurl: 'Kalender: URL dari jadwal belum di tentukan',
+	error_where: 'Kalender: Arah navigasi salah {0}. Hanya boleh "next" atau "prev" atau "today"',
+	error_timedevide: 'Kalender: Parameter perpecahan waktu harus dibagi 60 tanpa desimal. Seperti 10, 15, 30',
+
+	no_events_in_day: 'Tidak ada Jadwal di hari ini.',
+
+	title_year: '{0}',
+	title_month: '{0} {1}',
+	title_week: 'minggu {0} dari {1}',
+	title_day: '{0}, {1} {2} {3}',
+
+	week:'Minggu {0}',
+	all_day:     'Semua hari',
+	time:        'Jam',
+	events:      'Jadwal',
+	before_time: 'Berakhir sebelum waktu',
+	after_time:  'Dimulai setelah waktu',
+
+	m0: 'Januari',
+	m1: 'Februari',
+	m2: 'Maret',
+	m3: 'April',
+	m4: 'Mei',
+	m5: 'Juni',
+	m6: 'Juli',
+	m7: 'Agustus',
+	m8: 'September',
+	m9: 'Oktober',
+	m10: 'November',
+	m11: 'Desember',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mar',
+	ms3: 'Apr',
+	ms4: 'Mei',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Ags',
+	ms8: 'Sep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Des',
+
+	d0: 'Minggu',
+	d1: 'Senin',
+	d2: 'Selasa',
+	d3: 'Rabu',
+	d4: 'Kamis',
+	d5: 'Jumat',
+	d6: 'Sabtu',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+	holidays: {
+		/* for 2015 */
+		'03-01-2015':     	'Maulid Nabi Muhammad SAW',
+		'19-01-2015':     	'Tahun Baru Imlek 2566 Kongzili',
+		'21-03-2015':     	'Hari Raya Nyepi Tahun Baru Saka 1937',
+		'16-05-2015':     	'Isra Mikraj Nabi Muhammad SAW',
+		'02-06-2015':     	'Hari Raya Waisak 2559',
+		'17-07-2015':     	'Hari Raya Idul Fitri 1436 Hijriah',
+		'18-07-2015':     	'Hari Raya Idul Fitri 1436 Hijriah',
+		'24-09-2015':     	'Hari Raya Idul Adha 1436 Hijriah',
+		'14-10-2015':     	'Tahun Baru Islam 1437 Hijriah',
+
+		'01-01':     				'Tahun Baru',
+		'01-05':     				'Hari Buruh Internasional',
+		'17-08':     				'Hari Kemerdekaan RI (Independence Day)',
+		'25-12':     				'Hari Raya Natal',
+
+		'easter-2': 				'Jumat Agung',
+		'easter': 					'Paskah',
+		'easter+39': 				'Kenaikan Yesus Kristus',
+		
+		/* for 2016 */
+		'08-02-2016':				'Tahun Baru Imlek 2567',
+		'09-03-2016':				'Hari Raya Nyepi Tahun Baru Saka 1938',
+		'06-05-2016':				'Isra Mikraj Nabi Muhammad SAW 1437 Hijriah',
+		'22-05-2016':				'Hari Raya Waisak 2560',
+		'06-07-2016':				'Hari Raya Idul Fitri 1437 Hijriah',
+		'07-07-2016':				'Hari Raya Idul Fitri 1437 Hijriah',
+		'12-09-2016':				'Hari Raya Idul Adha 1437 Hijriah',
+		'02-10-2016':				'Tahun Baru Islam 1438 Hijriah',
+		'12-12-2016':				'Maulid Nabi Muhammad SAW'
+		
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['it-IT'] = {
+	error_noview:     'Calendario: vista {0} non trovata',
+	error_dateformat: 'Calendario: formato data {0} non valido. Dovrebbe essere "now" o "yyyy-mm-dd"',
+	error_loadurl:    'Calendario: URL di caricamento degli eventi non impostato',
+	error_where:      'Calendario: direzione di spostamento {0} non valida. I valori validi sono "next" o "prev" o "today"',
+	error_timedevide: 'Calendario: Il divisore del tempo deve poter dividere 60 in un numero intero. Per esempio 10, 15, 30',
+
+	no_events_in_day: 'Nessun evento in questo giorno.',
+
+	title_year:  'Anno {0}',
+	title_month: '{0} {1}',
+	title_week:  'Settimana {0} del {1}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Settimana {0}',
+	all_day:     'Tutto il giorno',
+	time:        'Ora',
+	events:      'Eventi',
+	before_time: 'Evento antecedente',
+	after_time:  'Evento che prosegue',
+
+	m0:  'Gennaio',
+	m1:  'Febbraio',
+	m2:  'Marzo',
+	m3:  'Aprile',
+	m4:  'Maggio',
+	m5:  'Giugno',
+	m6:  'Luglio',
+	m7:  'Agosto',
+	m8:  'Settembre',
+	m9:  'Ottobre',
+	m10: 'Novembre',
+	m11: 'Dicembre',
+
+	ms0:  'Gen',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Apr',
+	ms4:  'Mag',
+	ms5:  'Giu',
+	ms6:  'Lug',
+	ms7:  'Ago',
+	ms8:  'Set',
+	ms9:  'Ott',
+	ms10: 'Nov',
+	ms11: 'Dic',
+
+	d0: 'Domenica',
+	d1: 'Lunedì',
+	d2: 'Martedì',
+	d3: 'Mercoledì',
+	d4: 'Giovedì',
+	d5: 'Venerdì',
+	d6: 'Sabato',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':    'Capodanno',
+		'06-01':    'Epifania',
+		'easter':   'Pasqua',
+		'easter+1': 'Lunedì dell’Angelo',
+		'25-04':    'Festa della Liberazione',
+		'01-05':    'Festa del Lavoro',
+		'02-06':    'Festa della Repubblica',
+		'15-08':    'Ferragosto',
+		'01-11':    'Ognissanti',
+		'08-12':    'Immacolata Concezione',
+		'25-12':    'Natale',
+		'26-12':    'Santo Stefano'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['ja-JP'] = {
+	error_noview: 'カレンダーのビューが見つかりません： {0}',
+	error_dateformat: '日付のフォーマットが間違っています：{0}。"now" か "yyyy-mm-dd" で指定して下さい。',
+	error_loadurl: 'カレンダーのイベントURLがセットされていません。',
+	error_where: 'カレンダーのナビゲーションが間違っています：{0}。"next" か "prev" か "today" でセットして下さい。',
+	error_timedevide: 'カレンダーの時間分割パラメーターは、10, 15, 30等の60を小数なしで割り切れる整数を指定して下さい。',
+
+	no_events_in_day: 'イベントはありません。',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}年',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{1}年{0}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: '{1}年{0}週目',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{3}年{2}{1}日({0})',
+
+	week:        '{0}週目',
+	all_day:     '終日',
+	time:        '時間',
+	events:      'イベント',
+	before_time: 'タイムラインの前に終了',
+	after_time:  'タイムラインの後に開始',
+
+	m0: '1月',
+	m1: '2月',
+	m2: '3月',
+	m3: '4月',
+	m4: '5月',
+	m5: '6月',
+	m6: '7月',
+	m7: '8月',
+	m8: '9月',
+	m9: '10月',
+	m10: '11月',
+	m11: '12月',
+
+	ms0: '1月',
+	ms1: '2月',
+	ms2: '3月',
+	ms3: '4月',
+	ms4: '5月',
+	ms5: '6月',
+	ms6: '7月',
+	ms7: '8月',
+	ms8: '9月',
+	ms9: '10月',
+	ms10: '11月',
+	ms11: '12月',
+
+	d0: '日',
+	d1: '月',
+	d2: '火',
+	d3: '水',
+	d4: '木',
+	d5: '金',
+	d6: '土',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 2,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01'). 
+	holidays: {
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['ko-KR'] = {
+	error_noview: '캘린더: {0} 볼 수 없습니다',
+	error_dateformat: '캘린더: 잘못된 날짜 형식 {0}. "now" 또는 "yyyy-mm-dd" 형식이어야 합니다',
+	error_loadurl: '캘린더: 이벤트 URL이 설정되지 않았습니다',
+	error_where: '캘린더: 잘못된 탐색 방향 {0}. 오직 "next" 또는 "prev" 또는 "today"만 가능합니다',
+	error_timedevide: '캘린더: 시간 분할 매개변수는 소수 없이 60을 분할합니다. 10, 15, 30과 같이 합니다',
+
+	no_events_in_day: '이 날에 이벤트가 없습니다.',
+
+	title_year: '{0}년',
+	title_month: '{1}년 {0}',
+	title_week: '{1}년 {0}째주',
+	title_day: '{3}년 {2} {1}일 {0}',
+
+	week:'주',
+	all_day:     '하루종일',
+	time:        '시간',
+	events:      '이벤트',
+	before_time: '타임라인 전에 끝남',
+	after_time:  '타임라인 전에 시작함',
+
+    m0: '1월',
+	m1: '2월',
+	m2: '3월',
+	m3: '4월',
+	m4: '5월',
+	m5: '6월',
+	m6: '7월',
+	m7: '8월',
+	m8: '9월',
+	m9: '10월',
+	m10: '11월',
+	m11: '12월',
+
+	ms0: '1월',
+	ms1: '2월',
+	ms2: '3월',
+	ms3: '4월',
+	ms4: '5월',
+	ms5: '6월',
+	ms6: '7월',
+	ms7: '8월',
+	ms8: '9월',
+	ms9: '10월',
+	ms10: '11월',
+	ms11: '12월',
+
+	d0: '일요일',
+	d1: '월요일',
+	d2: '화요일',
+	d3: '수요일',
+	d4: '목요일',
+	d5: '금요일',
+	d6: '토요일',
+
+	first_day: 2,
+
+	holidays: {
+	 	'01-01': '신정',
+	 	'01-03': '삼일절',
+	 	'05-05': '어린이날',
+	 	'06-06': '현충일',
+	 	'15-08': '광복절',
+	 	'03-10': '개천절',
+	 	'25-12': '크리스마스'
+	 }
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['ms-MY'] = {
+	error_noview: 'Kalendar: Paparan {0} tidak wujud',
+	error_dateformat: 'Kalendar: Format waktu salah {0}. Seharusnya "now" atau "yyyy-mm-dd"',
+	error_loadurl: 'Kalendar: alamat URL tidak wujud',
+	error_where: 'Kalendar: Arahan navigasi salah {0}. hanya arahan "next" atau "prev" ataupun "today" sahaja',
+	error_timedevide: 'Kalendar: Parameter masa perlu dibahagikan dengan nilai 60 tanpa nilai desimal. Seperti nilai 10, 15, 30',
+
+	no_events_in_day: 'Tiada acara untuk hari ini',
+
+	title_year: '{0}',
+
+	title_month: '{0} {1}',
+
+	title_week: 'minggu {0} daripada {1}',
+
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'Minggu {0}',
+	all_day:     'Sepanjang hari',
+	time:        'Waktu',
+	events:      'Acara',
+	before_time: 'Nerakhir sebelum waktu',
+	after_time:  'Bermula selepas waktu',
+
+	m0: 'Januari',
+	m1: 'Februari',
+	m2: 'Mac',
+	m3: 'April',
+	m4: 'Mei',
+	m5: 'Jun',
+	m6: 'Julai',
+	m7: 'Ogos',
+	m8: 'September',
+	m9: 'Oktober',
+	m10: 'November',
+	m11: 'Disember',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mac',
+	ms3: 'Apr',
+	ms4: 'Mei',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Ogs',
+	ms8: 'Sep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Dis',
+
+	d0: 'Ahad',
+	d1: 'Isnin',
+	d2: 'Selasa',
+	d3: 'Rabu',
+	d4: 'Khamis',
+	d5: 'Jumaat',
+	d6: 'Sabatu',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+ 
+	holidays: {
+		'18-07-2015':     	'Hari Raya Aidil Fitri 1436 Hijriah',
+
+		'01-01':     				'Sambutan Tahun Baru',
+		'01-05':     				'Hari Pekerja',
+		'31-08':     				'Hari Kemerdekaan Malaysia (Independence Day)'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['nl-NL'] = {
+	error_noview:     'Kalender: View {0} niet gevonden',
+	error_dateformat: 'Kalender: Verkeerde datum formaat {0}. Dit formaat moet "now" zijn of "yyyy-mm-dd"',
+	error_loadurl:    'Kalender: Agenda laad URL is niet gezet (loadUrl)',
+	error_where:      'Kalender: Verkeerde navigatie richting {0}. Kan alleen "next", "prev" of "today" zijn',
+	error_timedevide: 'Kalender: De tijd split parameter moet 60 kunnen verdelen naar een geheel getal (zonder decimalen). Bijvoorbeeld 10, 15, 30',
+
+	no_events_in_day: 'Geen evenementen gevonden op deze dag.',
+
+	title_year:  '{0}',
+	title_month: '{0} {1}',
+	title_week:  'week {0} van {1}',
+	title_day:   '{0} {1} {2}, {3}',
+
+	week:        'Week {0}',
+	all_day:     'De hele dag door',
+	time:        'Tijd',
+	events:      'Agenda-item',
+	before_time: 'Eindigd voor tijdlijn',
+	after_time:  'Start na tijdlijn',
+
+	m0:  'Januari',
+	m1:  'Februari',
+	m2:  'Maart',
+	m3:  'April',
+	m4:  'Mei',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'Augustus',
+	m8:  'September',
+	m9:  'Oktober',
+	m10: 'November',
+	m11: 'December',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mrt',
+	ms3:  'Apr',
+	ms4:  'Mei',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Zondag',
+	d1: 'Maandag',
+	d2: 'Dinsdag',
+	d3: 'Woensdag',
+	d4: 'Donderdag',
+	d5: 'Vrijdag',
+	d6: 'Zaterdag',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     'Nieuwjaarsdag',
+		'06-01':     'Drie koningen',
+		'easter-2':  'Goede vrijdag',
+		'easter':    '1e paasdag',
+		'easter+1':  '2e paasdag',
+		'26-04':     'Koningsdag',
+		'05-05':     'Bevrijdingsdag',
+		'easter+39': 'Hemelvaartsdag',
+		'easter+49': '1e pinksterdag',
+		'easter+50': '2e pinksterdag',
+		'25-12':     '1e kerstdag',
+		'26-12':     '2e kerstdag'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['no-NO'] = {
+	error_noview:     'Kalender: {0} ble ikke funnet',
+	error_dateformat: 'Kalender: Feil datoformat {0}. Må være "now" eller "åååå-mm-dd"',
+	error_loadurl:    'Kalender: urlen for events er ikke satt',
+	error_where:      'Kalender: Feil navigeringsrettning {0}. Kan kun være "next", "prev" eller "today"',
+	error_timedevide: 'Kalender: parameter for tidsavgrensning må dele 60 med et heltall. Til eksempel 10, 15, 30',
+
+	title_year:  'År {0}',
+	title_month: '{0} år {1}',
+	title_week:  '{0} uke år {1}',
+	title_day:   '{0} {1} {2} år {3}',
+
+	week:        'Uke {0}',
+	all_day:     'Hele dagen',
+	time:        'Tid',
+	events:      'Event',
+	before_time: 'Avsluttes før tidslinjen',
+	after_time:  'Starter etter tidslinjen',
+
+	m0:  'Januar',
+	m1:  'Februar',
+	m2:  'Mars',
+	m3:  'April',
+	m4:  'Mai',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'August',
+	m8:  'September',
+	m9:  'Oktober',
+	m10: 'November',
+	m11: 'December',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Apr',
+	ms4:  'Mai',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Søndag',
+	d1: 'Mandag',
+	d2: 'Tirsdag',
+	d3: 'Onsdag',
+	d4: 'Torsdag',
+	d5: 'Fredag',
+	d6: 'Lørdag',
+
+	easter:       'Påske',
+	easterMonday: 'Første påskedag',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['pl-PL'] = {
+	error_noview:     'Kalendarz: Widok {0} nie znaleziony',
+	error_dateformat: 'Kalendarz: Zły format daty {0}. Powinna być w formacie "now" lub "yyyy-mm-dd"',
+	error_loadurl:    'Kalendarz: Adres URL do ładowania wydarzeń nie ustawiony',
+	error_where:      'Kalendarz: Zły kierunek nawigacji {0}. Może być tylko "następny" or "poprzedni" or "dzisiaj"',
+	error_timedevide: 'Kalendarz: parametr do separatora czasu należy podzielić 60 przez liczbę całkowitą. Na przykład 10, 15, 30',
+
+	title_year:  'Rok {0}',
+	title_month: '{0} rok {1}',
+	title_week:  '{0} tydzień roku {1}',
+	title_day:   '{0} {1} {2} rok {3}',
+
+	week:        'Tydzień {0}',
+	all_day:     'Cały dzień',
+	time:        'Czas',
+	events:      'Rozwój',
+	before_time: 'Czasu, zanim taśma koniec',
+	after_time:  'Kończy się po taśmie tymczasowej',
+
+	m0:  'Styczeń',
+	m1:  'Luty',
+	m2:  'Marzec',
+	m3:  'Kwiecień',
+	m4:  'Maj',
+	m5:  'Czerwiec',
+	m6:  'Lipiec',
+	m7:  'Sierpień',
+	m8:  'Wrzesień',
+	m9:  'Październik',
+	m10: 'Listopad',
+	m11: 'Grudzień',
+
+	ms0:  'Sty',
+	ms1:  'Lut',
+	ms2:  'Mar',
+	ms3:  'Kwi',
+	ms4:  'Maj',
+	ms5:  'Cze',
+	ms6:  'Lip',
+	ms7:  'Sie',
+	ms8:  'Wrz',
+	ms9:  'Paź',
+	ms10: 'Lis',
+	ms11: 'Gru',
+
+	d0: 'Niedziela',
+	d1: 'Poniedziałek',
+	d2: 'Wtorek',
+	d3: 'Środa',
+	d4: 'Czwartek',
+	d5: 'Piątek',
+	d6: 'Sobota',
+
+	easter:       'Wielkanoc',
+	easterMonday: 'Poniedziałek wielkanocny',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     "Nowy Rok",
+		'06-01':     "Trzech Króli",
+		'easter':    "Niedziela Wielkanocna",
+		'easter+1':  "Poniedziałek Wielkanocny",
+		'01-05':     "Święto Pracy",
+		'03-05':     "Święto Konstytucji Trzeciego Maja",
+		'easter+49': "Zielone Świątki",
+		'easter+60': "Boże Ciało",
+		'15-08':     "Wniebowzięcie Najświętszej Maryi Panny",
+		'01-11':     "Wszystkich Świętych",
+		'11-11':     "Dzień Niepodległości",
+		'25-12':     "Pierwszy dzień Bożego Narodzenia",
+		'26-12':     "Drugi dzień Bożego Narodzenia"
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['pt-BR'] = {
+	error_noview:     'Calendar: View {0} not found',
+	error_dateformat: 'Calendar: Formato de data inválido {0}. Deve ser "now" ou "yyyy-mm-dd"',
+	error_loadurl:    'Calendar: URL de carregamento de eventos não está atribuida',
+	error_where:      'Calendar: Direção de navegação errada {0}. Só pode ser "next", "prev" ou "today"',
+	error_timedevide: 'Calendário: parâmetro para o separador de hora deve dividir 60 por um número inteiro. Por exemplo, 10, 15, 30',
+
+	title_year:  '{0}',
+	title_month: '{0} de {1}',
+	title_week:  '{1} - Semana {0}',
+	title_day:   '{0}, {1} de {2} de {3}',
+
+	week:        'Week {0}',
+	all_day:     'Durante todo o dia',
+	time:        'Tempo',
+	events:      'Desenvolvimentos',
+	before_time: 'Tempo antes da fita final',
+	after_time:  'End depois de uma fita temporária',
+
+	m0:  'Janeiro',
+	m1:  'Fevereiro',
+	m2:  'Março',
+	m3:  'Abril',
+	m4:  'Maio',
+	m5:  'Junho',
+	m6:  'Julho',
+	m7:  'Agosto',
+	m8:  'Setembro',
+	m9:  'Outubro',
+	m10: 'Novembro',
+	m11: 'Dezembro',
+
+	ms0:  'Jan',
+	ms1:  'Fev',
+	ms2:  'Mar',
+	ms3:  'Abr',
+	ms4:  'Mai',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Ago',
+	ms8:  'Set',
+	ms9:  'Out',
+	ms10: 'Nov',
+	ms11: 'Dez',
+
+	d0: 'Domingo',
+	d1: 'Segunda',
+	d2: 'Terça',
+	d3: 'Quarta',
+	d4: 'Quinta',
+	d5: 'Sexta',
+	d6: 'Sábado',
+
+	easter:       'Easter',
+	easterMonday: 'Easter Monday',
+
+	first_day: 2,
+
+	holidays: {
+		'01-01': "Ano Novo",
+		'21-04': "Dia de Tiradentes",
+		'01-05': "Dia do Trabalhador",
+		'07-09': "Dia da Independência",
+		'12-10': "Nossa Senhora Aparecida",
+		'02-11': "Dia de Finados",
+		'15-11': "Proclamação da República",
+		'25-12': "Natal"
+	}
+};
+
+//Language file: Romană Created by: Iulian Alexe (TotPe.Ro)
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['ro-RO'] = {
+	error_noview: 		'Calendar: View-ul {0} nu a fost găsit',
+	error_dateformat: 	'Calendar: Format dată greșit {0}. Ar trebui să fie "now" sau "yyyy-mm-dd"',
+	error_loadurl: 		'Calendar: URL eveniment nu este setat',
+	error_where: 		'Calendar: Direcție de navigare greșită {0}. Nu poate fi decât "next" sau "prev" sau "today"',
+	error_timedevide: 	'Calendar: Parametru pentru divizat timpul ar trebui să împartă la 60 fără zecimale. Ceva asemănător cu 10, 15, 30',
+
+	no_events_in_day: 'Nici un eveniment în această zi.',
+
+	title_year: 	'{0}',
+	title_month: 	'{0} {1}',
+	title_week: 	'luna {0} din {1}',
+	title_day: 		'{0} {1} {2}, {3}',
+
+	week:			'Luna {0}',
+	all_day:     	'Toată ziua',
+	time:        	'Ora',
+	events:      	'Evenimente',
+	before_time: 	'Se încheie înainte de cronologie',
+	after_time:  	'Începe după cronologie',
+
+	m0: 	'Ianuarie',
+	m1: 	'Februarie',
+	m2: 	'Martie',
+	m3: 	'Aprilie',
+	m4: 	'Mai',
+	m5: 	'Iunie',
+	m6: 	'Iulie',
+	m7: 	'August',
+	m8: 	'Septembrie',
+	m9: 	'Octobrie',
+	m10: 	'Noiembrie',
+	m11: 	'Decembrie',
+
+	ms0: 	'Ian',
+	ms1: 	'Feb',
+	ms2: 	'Mar',
+	ms3: 	'Apr',
+	ms4: 	'Mai',
+	ms5: 	'Iun',
+	ms6: 	'Iul',
+	ms7: 	'Aug',
+	ms8: 	'Sep',
+	ms9: 	'Oct',
+	ms10: 	'Nov',
+	ms11: 	'Dec',
+
+	d0: 'Duminică',
+	d1: 'Luni',
+	d2: 'Marți',
+	d3: 'Miercuri',
+	d4: 'Joi',
+	d5: 'Vineri',
+	d6: 'Sâmbătă',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     "Anul Nou",
+		'01-01':     "A DOUA ZI DE ANUL NOU",
+		'06-01':     "Botezul Domnului – Boboteaza",
+		'07-01':     "Soborul Sfântului Prooroc Ioan Botezătorul şi Înaintemergătorul Domnului",
+		'24-01':     "Ziua UNIRII PRINCIPATELOR ROMÂNE",
+		'02-02':     "Întâmpinarea Domnului",
+		'08-03':     "Ziua Internaţională a Femeii",
+		'09-03':     "Sfiinţii 40 de Mucenici",
+		'25-03':     "Buna-Vestire",
+		'04-04':     "Floriile",
+		'18-04':     "Vinerea Mare",
+		'easter':    "Paști",
+		'easter+1':  "A doua zi de Paşti",
+		'easter+2':  "A treia zi de Paşti",
+		'01-05':  	 "Ziua internaţională a muncii",
+		'24-05':  	 "Naşterea Sfântului Ioan Botezătorul",
+		'15-08':  	 "Adormirea Maicii Domnului",
+		'29-08':  	 "Tăierea Capului Sfântului Ioan Botezătorul",
+		'08-09':  	 "Naşterea Maicii Domnului",
+		'14-10':  	 "Sfânta Cuvioasă Parascheva",
+		'26-10':  	 "Sfântul Mare Mucenic Dimitrie, Izvorâtorul de Mir",
+		'27-10':  	 "Cuviosul Dimitrie cel Nou din Basarabi",
+		'08-11':  	 "Soborul Sfinţilor Arhangheli Mihail şi Gavriil",
+		'01-12':  	 "Ziua Naţională a României",
+		'25-12':  	 "Naşterea Domnului Nostru Iisus Hristos – Crăciunul",
+		'26-12':  	 "A doua zi de Crăciun; Soborul Maicii",
+		'27-12':  	 "Sfântul Întâiul Mucenic şi Arhidiacon Ştefan"
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['ru-RU'] = {
+	error_noview:     'Календарь: Шаблон вида {0} не найден.',
+	error_dateformat: 'Календарь: неверный формат даты {0}. Должно быть или "now" или "yyyy-mm-dd"',
+	error_loadurl:    'Календарь: не назначен URL для загрузки событий.',
+	error_where:      'Календарь: неправильная навигация {0}. Можно только "next", "prev" или "today"',
+	error_timedevide: 'Календарь: Параметер разделитель времени должен делить 60 на целое число. Например 10, 15, 30',
+
+	title_year:  '{0}',
+	title_month: '{0} {1}',
+	title_week:  '{0} неделя года {1}',
+	title_day:   '{0}, {1} {2} {3}',
+
+	week:        'Неделя {0}',
+	all_day:     'Весь день',
+	time:        'Время',
+	events:      'События',
+	before_time: 'Заканчиваются перед временной лентой',
+	after_time:  'Заканчиваются после временной ленты',
+
+	m0:  'Январь',
+	m1:  'Февраль',
+	m2:  'Март',
+	m3:  'Апрель',
+	m4:  'Май',
+	m5:  'Июнь',
+	m6:  'Июль',
+	m7:  'Август',
+	m8:  'Сентябрь',
+	m9:  'Октябрь',
+	m10: 'Ноябрь',
+	m11: 'Декабрь',
+
+	ms0:  'Янв',
+	ms1:  'Фев',
+	ms2:  'Мар',
+	ms3:  'Апр',
+	ms4:  'Май',
+	ms5:  'Июн',
+	ms6:  'Июл',
+	ms7:  'Авг',
+	ms8:  'Сен',
+	ms9:  'Окт',
+	ms10: 'Ноя',
+	ms11: 'Дек',
+
+	d0: 'Воскресенье',
+	d1: 'Понедельник',
+	d2: 'Вторник',
+	d3: 'Среда',
+	d4: 'Четверг',
+	d5: 'Пятница',
+	d6: 'Суббота',
+
+	easter:       'Пасха',
+	easterMonday: 'Пасхальный понедельник',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':       'Новый год',
+		'02-01>06-01': 'Новогодние каникулы',
+		'07-01':       'Рождество Христово',
+		'08-01':       'Новогодние каникулы',
+		'23-02':       'День защитника Отечества',
+		'08-03':       'Международный женский день',
+		'01-05':       'Праздник Весны и Труда',
+		'09-05':       'День Победы',
+		'12-06':       'День России',
+		'04-11':       'День народного единства'
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['sk-SR'] = {
+	error_noview: 'Calendar: View {0} not found',
+	error_dateformat: 'Calendar: Wrong date format {0}. Should be either "now" or "yyyy-mm-dd"',
+	error_loadurl: 'Calendar: Event URL is not set',
+	error_where: 'Calendar: Wrong navigation direction {0}. Can be only "next" or "prev" or "today"',
+	error_timedevide: 'Calendar: Time split parameter should divide 60 without decimals. Something like 10, 15, 30',
+
+	no_events_in_day: 'Dnes žiadne udalosti.',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'týždeň {0} of {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'Týždeň {0}',
+	all_day:     'Celý deň',
+	time:        'Čas',
+	events:      'Udalosti',
+	before_time: 'Pred rozvrhom',
+	after_time:  'Po rozvrhu',
+
+	m0: 'Január',
+	m1: 'Február',
+	m2: 'Marec',
+	m3: 'Apríl',
+	m4: 'Máj',
+	m5: 'Jún',
+	m6: 'Júl',
+	m7: 'August',
+	m8: 'September',
+	m9: 'Október',
+	m10: 'November',
+	m11: 'December',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mar',
+	ms3: 'Apr',
+	ms4: 'Maj',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Aug',
+	ms8: 'Sep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Nedeľa',
+	d1: 'Pondelok',
+	d2: 'Utorok',
+	d3: 'Streda',
+	d4: 'Štvrtok',
+	d5: 'Piatok',
+	d6: 'Sobota',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01'). 
+	holidays: {
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['sl-SL'] = {
+	error_noview: 'Koledar: Ne najdem pogleda {0}',
+	error_dateformat: 'Koledar: Napačna oblika datuma {0}. Mora biti bodisi "now" ali "yyyy-mm-dd"',
+	error_loadurl: 'Koledar: URL dogodek ni nastavljen',
+	error_where: 'Koledar: Napačna smer navigacije {0}. Lahko je le "next", "prev" ali "today"',
+	error_timedevide: 'Koledar: Time split parameter should divide 60 without decimals. Something like 10, 15, 30',
+
+	no_events_in_day: 'V tem dnevu ni dogodkov.',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'teden {0} v letu {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'Teden {0}',
+	all_day:     'Cel dan',
+	time:        'Čas',
+	events:      'Dogodki',
+	before_time: 'Ends before timeline',
+	after_time:  'Starts after timeline',
+
+	m0: 'Januar',
+	m1: 'Februar',
+	m2: 'Marec',
+	m3: 'April',
+	m4: 'Maj',
+	m5: 'Junij',
+	m6: 'Julij',
+	m7: 'Avgust',
+	m8: 'September',
+	m9: 'Oktober',
+	m10: 'November',
+	m11: 'December',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mar',
+	ms3: 'Apr',
+	ms4: 'Maj',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Avg',
+	ms8: 'Sep',
+	ms9: 'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Nedelja',
+	d1: 'Ponedeljek',
+	d2: 'Torek',
+	d3: 'Sreda',
+	d4: 'Četrtek',
+	d5: 'Petek',
+	d6: 'Sobota',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01'). 
+	holidays: {
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+window.calendar_languages['sv-SE'] = {
+	error_noview:     'Kalender: Vy {0} ej funnen',
+	error_dateformat: 'Kalender: Felaktigt datumformat {0}. Skall vara antingen "now" eller "yyyy-mm-dd"',
+	error_loadurl:    'Kalender: Laddnings-URL för händelser är ej satt',
+	error_where:      'Kalender: Felaktig navigeringsriktning {0}. Kan endast vara "next", "prev" eller "today"',
+	error_timedevide: 'Kalender: Parameter till tidsavgränsare måste dela 60 med ett heltal. Till exempel 10, 15, 30',
+
+	title_year:  '{0}',
+	title_month: '{0} {1}',
+	title_week:  'Vecka {0} {1}',
+	title_day:   '{0} {1} {2} {3}',
+
+	week:        'Vecka {0}',
+	all_day:     'Hela dagen',
+	time:        'Tid',
+	events:      'Händelser',
+	before_time: 'Slutar före tidsperiod',
+	after_time:  'Börjar efter tidsperiod',
+
+	m0:  'Januari',
+	m1:  'Februari',
+	m2:  'Mars',
+	m3:  'April',
+	m4:  'Maj',
+	m5:  'Juni',
+	m6:  'Juli',
+	m7:  'Augusti',
+	m8:  'September',
+	m9:  'Oktober',
+	m10: 'November',
+	m11: 'December',
+
+	ms0:  'Jan',
+	ms1:  'Feb',
+	ms2:  'Mar',
+	ms3:  'Apr',
+	ms4:  'Maj',
+	ms5:  'Jun',
+	ms6:  'Jul',
+	ms7:  'Aug',
+	ms8:  'Sep',
+	ms9:  'Okt',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Söndag',
+	d1: 'Måndag',
+	d2: 'Tisdag',
+	d3: 'Onsdag',
+	d4: 'Torsdag',
+	d5: 'Fredag',
+	d6: 'Lördag',
+
+	easter:       'Påsk',
+	easterMonday: 'Måndagen efter påsk',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01':     "Nyårsdagen",
+		'06-01':     "Trettondedag jul",
+		'easter-2':  "Långfredagen",
+		'easter':    "Påskdagen",
+		'easter+1':  "Annandag påsk",
+		'01-05':     "Första maj",
+		'easter+39': "Kristi himmelsfärdsdag",
+		'easter+49': "Pingstdagen",
+		'06-06':     "Sveriges nationaldag",
+		'25-12':     "Juldagen",
+		'26-12':     "Annandag jul"
+	}
+};
+
+// If you want to suggest a new language you can use this file as a template.
+// To reduce the file size you should remove the comment lines (the ones that start with // )
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+// Here you define the language and Country code. Replace en-US with your own.
+// First letters: the language code (lower case). See http://www.loc.gov/standards/iso639-2/php/code_list.php
+// Last letters: the Country code (upper case). See http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+window.calendar_languages['en-US'] = {
+	error_noview: 'Calendar: View {0} not found',
+	error_dateformat: 'Calendar: Wrong date format {0}. Should be either "now" or "yyyy-mm-dd"',
+	error_loadurl: 'Calendar: Event URL is not set',
+	error_where: 'Calendar: Wrong navigation direction {0}. Can be only "next" or "prev" or "today"',
+	error_timedevide: 'Calendar: Time split parameter should divide 60 without decimals. Something like 10, 15, 30',
+
+	no_events_in_day: 'No events in this day.',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'week {0} of {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'Week {0}',
+	all_day:     'All day',
+	time:        'Time',
+	events:      'Events',
+	before_time: 'Ends before timeline',
+	after_time:  'Starts after timeline',
+
+	m0: 'January',
+	m1: 'February',
+	m2: 'March',
+	m3: 'April',
+	m4: 'May',
+	m5: 'June',
+	m6: 'July',
+	m7: 'August',
+	m8: 'September',
+	m9: 'October',
+	m10: 'November',
+	m11: 'December',
+
+	ms0: 'Jan',
+	ms1: 'Feb',
+	ms2: 'Mar',
+	ms3: 'Apr',
+	ms4: 'May',
+	ms5: 'Jun',
+	ms6: 'Jul',
+	ms7: 'Aug',
+	ms8: 'Sep',
+	ms9: 'Oct',
+	ms10: 'Nov',
+	ms11: 'Dec',
+
+	d0: 'Sunday',
+	d1: 'Monday',
+	d2: 'Tuesday',
+	d3: 'Wednesday',
+	d4: 'Thursday',
+	d5: 'Friday',
+	d6: 'Saturday',
+
+	// Which is the first day of the week (2 for sunday, 1 for monday)
+	first_day: 2,
+	// Week numbering according to ISO 8601 (if false, week 1 starts with January 1st)
+	week_numbers_iso_8601: false,
+
+	// The list of the holidays.
+	// Each holiday has a date definition and a name (in your language)
+	// For instance:
+	// holidays: {
+	// 	'date': 'name',
+	// 	'date': 'name',
+	// 	...
+	//   'date': 'name' //No ending comma for the last holiday
+	// }
+	// The format of the date may be one of the following:
+	// # For a holiday recurring every year in the same day: 'dd-mm' (dd is the day of the month, mm is the month). For example: '25-12'.
+	// # For a holiday that exists only in one specific year: 'dd-mm-yyyy' (dd is the day of the month, mm is the month, yyyy is the year). For example: '31-01-2013'
+	// # For Easter: use simply 'easter'
+	// # For holidays that are based on the Easter date: 'easter+offset in days'.
+	//   Some examples:
+	//   - 'easter-2' is Good Friday (2 days before Easter)
+	//   - 'easter+1' is Easter Monday (1 day after Easter)
+	//   - 'easter+39' is the Ascension Day
+	//   - 'easter+49' is Pentecost
+	// # For holidays that are on a specific weekday after the beginning of a month: 'mm+n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Second (2) Monday (1) in October (10): '10+2*1'
+	// # For holidays that are on a specific weekday before the ending of a month: 'mm-n*w', where 'mm' is the month, 'n' is the ordinal position, 'w' is the weekday being 0: Sunday, 1: Monday, ..., 6: Saturnday
+	//   For example:
+	//   - Last (1) Saturnday (6) in Match (03): '03-1*6'
+	//   - Last (1) Monday (1) in May (05): '05-1*1'
+	// # You can also specify a holiday that lasts more than one day. To do that use the format 'start>end' where 'start' and 'end' are specified as above.
+	//   For example:
+	//   - From 1 January to 6 January: '01-01>06-01'
+	//   - Easter and the day after Easter: 'easter>easter+1'
+	//   Limitations: currently the multi-day holydays can't cross an year. So, for example, you can't specify a range as '30-12>01-01'; as a workaround you can specify two distinct holidays (for instance '30-12>31-12' and '01-01'). 
+	holidays: {
+	}
+};
+
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['th-TH'] = {
+	error_noview: 'ปฏิทิน: ไม่พบ View {0}',
+	error_dateformat: 'ปฏิทิน: รูปแบบวันที่ไม่ถูกต้อง {0}. ควรจะเป็นค่า "now" หรือ "yyyy-mm-dd"',
+	error_loadurl: 'ปฏิทิน: URL ของเหตุการณ์ไม่ได้ตั้งค่าไว้',
+	error_where: 'ปฏิทิน: เกิดข้อผิดพลาด {0}. สามารถเป็นได้แค่ค่า "ถัดไป" หรือ "ก่อนหน้า" หรือ "วันนี้" เท่านั้น',
+	error_timedevide: 'ปฏิทิน:  Time split parameter ควรนำไปหาร 60 ลงตัวเท่านั้น. อย่างเช่น 10, 15, 30',
+
+	no_events_in_day: 'วันนี้ไม่มีเหตุการณ์ใดๆ',
+
+	// {0} will be replaced with the year (example: 2013)
+	title_year: '{0}',
+	// {0} will be replaced with the month name (example: September)
+	// {1} will be replaced with the year (example: 2013)
+	title_month: '{0} {1}',
+	// {0} will be replaced with the week number (example: 37)
+	// {1} will be replaced with the year (example: 2013)
+	title_week: 'สัปดาห์ที่ {0} ของปี {1}',
+	// {0} will be replaced with the weekday name (example: Thursday)
+	// {1} will be replaced with the day of the month (example: 12)
+	// {2} will be replaced with the month name (example: September)
+	// {3} will be replaced with the year (example: 2013)
+	title_day: '{0} {1} {2}, {3}',
+
+	week:'สัปดาห์ที่ {0}',
+	all_day:     'ทุกวัน',
+	time:        'เวลา',
+	events:      'เหตุการณ์',
+	before_time: 'เริ่มก่อน Timeline',
+	after_time:  'เริ่มหลัง Timeline',
+
+	m0: 'มกราคม',
+	m1: 'กุมภาพันธ์',
+	m2: 'มีนาคม',
+	m3: 'เมษายน',
+	m4: 'พฤษภาคม',
+	m5: 'มิถุนายน',
+	m6: 'กรกฎาคม',
+	m7: 'สิงหาคม',
+	m8: 'กันยายน',
+	m9: 'ตุลาคม',
+	m10: 'พฤศจิกายน',
+	m11: 'ธันวาคม',
+
+	ms0: 'ม.ค.',
+	ms1: 'ก.พ.',
+	ms2: 'มี.ค.',
+	ms3: 'เม.ย.',
+	ms4: 'พ.ค.',
+	ms5: 'มิ.ย.',
+	ms6: 'ก.ค.',
+	ms7: 'ส.ค.',
+	ms8: 'ก.ย.',
+	ms9: 'ต.ค.',
+	ms10: 'พ.ย.',
+	ms11: 'ธ.ค.',
+
+	d0: 'อาทิตย์',
+	d1: 'จันทร์',
+	d2: 'อังคาร',
+	d3: 'พุธ',
+	d4: 'พฤหัสบดี',
+	d5: 'ศุกร์',
+	d6: 'เสาร์',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+	holidays: {
+	}
+};
+
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['tr-TR'] = {
+	error_noview: 'Takvim: Görünüm {0} bulunamadı',
+	error_dateformat: 'Takvim: Yanlış tarih formatı {0}. Şunlardan biri olmalı "now" veya "yyyy-mm-dd"',
+	error_loadurl: 'Takvim: Etkinlik bağlantısı belirtilmemiş',
+	error_where: 'Takvim: Yanlış gezinme yönü {0}. Sadece bunlardan biri olabilir "next" veya "prev" veya "today"',
+	error_timedevide: 'Takvim: Zaman bölme parametresi 60\'ı kalansız bölmelidir. 10, 15, 30 gibi',
+
+	no_events_in_day: 'Bugün etkinlik yok',
+
+	title_year: '{0}',
+	title_month: '{0} {1}',
+	title_week: '{1} {0}. Hafta',
+	title_day: '{0} {1} {2}, {3}',
+
+	week:        '{0}. Hafta',
+	all_day:     'Tüm gün',
+	time:        'Zaman',
+	events:      'Etkinlikler',
+	before_time: 'Zamanından önce biter',
+	after_time:  'Zamanından sonra başlar',
+
+	m0: 'Ocak',
+	m1: 'Şubat',
+	m2: 'Mart',
+	m3: 'Nisan',
+	m4: 'Mayıs',
+	m5: 'Haziran',
+	m6: 'Temmuz',
+	m7: 'Ağustos',
+	m8: 'Eylül',
+	m9: 'Ekim',
+	m10: 'Kasım',
+	m11: 'Aralık',
+
+	ms0: 'Oca',
+	ms1: 'Şub',
+	ms2: 'Mar',
+	ms3: 'Nis',
+	ms4: 'May',
+	ms5: 'Haz',
+	ms6: 'Tem',
+	ms7: 'Ağu',
+	ms8: 'Eyl',
+	ms9: 'Eki',
+	ms10: 'Kas',
+	ms11: 'Ara',
+
+	d0: 'Pazar',
+	d1: 'Pazartesi',
+	d2: 'Salı',
+	d3: 'Çarşamba',
+	d4: 'Perşembe',
+	d5: 'Cuma',
+	d6: 'Cumartesi',
+
+	first_day: 1,
+	week_numbers_iso_8601: true,
+
+	holidays: {
+		'01-01' : 'Yılbaşı',
+		'23-04' : 'Ulusal Egemenlik ve Çocuk Bayramı',
+		'01-05' : 'İşçi Bayramı',
+		'19-05' : 'Atatürk\'ü Anma, Gençlik ve Spor Bayramı',
+		'30-08' : 'Zafer Bayramı',
+		'29-10' : 'Cumhuriyet Bayramı'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['zh-CN'] = {
+	error_noview:     'Calendar: 没有发现视图 {0} ',
+	error_dateformat: 'Calendar: 日期格式不正确： {0}. 应当为 "now" 或者 "yyyy-mm-dd"',
+	error_loadurl:    'Calendar: 没有设置事件的 URL',
+	error_where:      'Calendar: 导航指示错误 {0}. 只能是 "next" 或 "prev" 或 "today"',
+	error_timedevide: 'Calendar: 时间分隔参数只能是被60整除的整数. 例如 10、15、30',
+
+	no_events_in_day: '今天没有事件。',
+
+	title_year:       '{0}',
+	title_month:      '{1} 年 {0}',
+	title_week:       '{1} 年 第 {0} 周 ',
+	title_day:        '{3} 年 {2} {1} 日， {0} ',
+
+	week:        '第{0}周',
+	all_day:     '全天',
+	time:        '时间',
+	events:      '事件',
+	before_time: '结束早于时间轴',
+	after_time:  '开始晚于时间轴',
+
+	m0:  '1 月',
+	m1:  '2 月',
+	m2:  '3 月',
+	m3:  '4 月',
+	m4:  '5 月',
+	m5:  '6 月',
+	m6:  '7 月',
+	m7:  '8 月',
+	m8:  '9 月',
+	m9:  '10 月',
+	m10: '11 月',
+	m11: '12 月',
+
+	ms0:  '1 月',
+	ms1:  '2 月',
+	ms2:  '3 月',
+	ms3:  '4 月',
+	ms4:  '5 月',
+	ms5:  '6 月',
+	ms6:  '7 月',
+	ms7:  '8 月',
+	ms8:  '9 月',
+	ms9:  '10 月',
+	ms10: '11 月',
+	ms11: '12 月',
+
+	d0:        '周日',
+	d1:        '周一',
+	d2:        '周二',
+	d3:        '周三',
+	d4:        '周四',
+	d5:        '周五',
+	d6:        '周六',
+
+	first_day: 2,
+
+	holidays:  {
+		'01-01': '元旦',
+		'08-03': '妇女节',
+		'01-05': '国际劳动节',
+		'04-05': '青年节',
+		'01-06': '儿童节',
+		'01-10': '国庆节'
+	}
+};
+
+if(!window.calendar_languages) {
+	window.calendar_languages = {};
+}
+
+window.calendar_languages['zh-TW'] = {
+	error_noview:     'Calendar: 找不到圖片 {0} ',
+	error_dateformat: 'Calendar: 日期格式錯誤： {0}. 應該以「now」表示，或「yyyy-mm-dd」',
+	error_loadurl:    'Calendar: 事件網址尚未設定',
+	error_where:      'Calendar: 錯誤的瀏覽方向 {0}。瀏覽方向只能是「下一個」或「上一個」或「今天」',
+	error_timedevide: 'Calendar: 時間分割的參數單位應該在 60 以內且無小數。例如說 10, 15, 30',
+
+	no_events_in_day: '今天沒有事件。',
+
+	title_year:       '{0}',
+	title_month:      '{1} 年 {0}',
+	title_week:       '{1} 年 第 {0} 周 ',
+	title_day:        '{3} 年 {2} {1} 日， {0} ',
+
+	week:        '第{0}周',
+	all_day:     '整天',
+	time:        '時間',
+	events:      '事件',
+	before_time: '時間軸結束前',
+	after_time:  '時間軸結束後',
+
+	m0:  '1 月',
+	m1:  '2 月',
+	m2:  '3 月',
+	m3:  '4 月',
+	m4:  '5 月',
+	m5:  '6 月',
+	m6:  '7 月',
+	m7:  '8 月',
+	m8:  '9 月',
+	m9:  '10 月',
+	m10: '11 月',
+	m11: '12 月',
+
+	ms0:  '1 月',
+	ms1:  '2 月',
+	ms2:  '3 月',
+	ms3:  '4 月',
+	ms4:  '5 月',
+	ms5:  '6 月',
+	ms6:  '7 月',
+	ms7:  '8 月',
+	ms8:  '9 月',
+	ms9:  '10 月',
+	ms10: '11 月',
+	ms11: '12 月',
+
+	d0:        '周日',
+	d1:        '周一',
+	d2:        '周二',
+	d3:        '周三',
+	d4:        '周四',
+	d5:        '周五',
+	d6:        '周六',
+
+	first_day: 2,
+
+	holidays:  {
+		'01-01': '元旦',
+        '10-10': '國慶日'
+	}
+};
+
 /* globals jQuery */
 
 (function ($) {
@@ -13308,4 +19088,78 @@ if (typeof jQuery === 'undefined') {
 
 })(jQuery, window, document);
 
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+
+//require('./bootstrap');
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+//Vue.component('example', require('./components/Example.vue'));
+
+// const app = new Vue({
+// 	el: '#app'
+// });
+
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+
+ //    var options = {
+	// 	events_source: 'events.json.php',
+	// 	view: 'month',
+	// 	tmpl_path: 'tmpls/',
+	// 	tmpl_cache: false,
+	// 	day: '2013-03-12',
+	// 	onAfterEventsLoad: function(events) {
+	// 		if(!events) {
+	// 			return;
+	// 		}
+	// 		var list = $('#eventlist');
+	// 		list.html('');
+
+	// 		$.each(events, function(key, val) {
+	// 			$(document.createElement('li'))
+	// 				.html('<a href="' + val.url + '">' + val.title + '</a>')
+	// 				.appendTo(list);
+	// 		});
+	// 	},
+	// 	onAfterViewLoad: function(view) {
+	// 		$('.page-header h3').text(this.getTitle());
+	// 		$('.btn-group button').removeClass('active');
+	// 		$('button[data-calendar-view="' + view + '"]').addClass('active');
+	// 	},
+	// 	classes: {
+	// 		months: {
+	// 			general: 'label'
+	// 		}
+	// 	}
+	// };
+
+
+    var options = {
+		view: 'week',
+		tmpl_path: '/tmpls/',
+		events_source: function () { return [];},
+		onAfterViewLoad: function(view) {
+			$('#calendar-title').text(this.getMonth());
+		},
+	};
+
+	var calendar = $('#calendar').calendar(options);
+
+	calendar.setLanguage('pt-BR');
+	calendar.view();
+
+
+
+});
 //# sourceMappingURL=app.js.map

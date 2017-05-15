@@ -32,7 +32,8 @@ Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 
 	Route::resource('users',         'Admin\UsersController'         );
 	Route::resource('products',      'Admin\ProductsController'      );
 	Route::resource('materias',      'Admin\MateriasController'      );
-	Route::resource('item-reserva',      'Admin\ItemReservasController'      );
+	Route::resource('item-reserva',  'Admin\ItemReservasController'  );
+	Route::resource('horarios',      'Admin\HorariosController'      );
 	Route::resource('turmas',        'Admin\TurmasController', ['parameters' => ['turmas' => 'turma']]);
 });
 
