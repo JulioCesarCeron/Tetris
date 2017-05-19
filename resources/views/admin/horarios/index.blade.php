@@ -36,8 +36,19 @@
                                 <td>Quarta</td>
                                 <td>Quinta</td>
                                 <td>Sexta</td>
-                                <td>Sábado</td>
+                                <td>Sábado</td>                            
                             </tr>
+                            @if($i == 1)
+                                <tr>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                    <td>-------</td>
+                                </tr>
+                            @endif
                         @endfor
                     </tbody>
                 </table>

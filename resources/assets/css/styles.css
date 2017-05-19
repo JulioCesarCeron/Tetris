@@ -54,3 +54,12 @@ html, body {
         text-align: center;
     }
 }
+
+.bt-white-style {
+    color: white!important;
+}
+
+.form-group {
+    margin: 0px;
+    padding: 0px;
+}

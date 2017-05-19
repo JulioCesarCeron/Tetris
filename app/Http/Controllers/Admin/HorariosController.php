@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Horario;
+use App\Materia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -24,7 +25,9 @@ class HorariosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('admin.horarios.save');
+        $dias =  array('first', 'seg_per', 'ter_per', 'quar_per', 'quin_per', 'sex_per', 'last');
+        $materias = Materia::all();
+        return view('admin.horarios.save', compact('materias', 'dias'));
     }
 
     /**
