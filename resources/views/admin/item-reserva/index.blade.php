@@ -60,7 +60,8 @@
                                     form(\FormBuilder::plain([
                                         'id'     => "item-delete-form-{$item->id}",
                                         'method' => 'DELETE',
-                                        'url'    => route('admin.item-reserva.destroy',['id' => $item->id])
+                                        'url'    => route('admin.item-reserva.destroy',['id' => $item->id]),
+                                        'style'  => "display: none;"
                                     ]));
                                 !!}
                             </td>

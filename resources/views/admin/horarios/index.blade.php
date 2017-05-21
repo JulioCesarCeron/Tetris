@@ -6,7 +6,7 @@
         <div class="bs-component">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Gerenciamento das materias semanais</h3>
+                    <h3 class="panel-title">Horários</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -22,36 +22,25 @@
             </div>
         </div>
 
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        @if (session('remove'))
+            <div class="alert alert-danger">
+                {{ session('remove') }}
+            </div>
+        @endif
+
         <div class="well well bs-component">
             <div class="content">
-                <p id="calendar-title"></p>
-                <div id="calendar"></div>
-                  <table class="table table-calendar">
-                    <tbody>
-                        @for ($i = 0; $i < 4; $i++)
-                            <tr>
-                                <td>Domingo</td>
-                                <td>Segunda</td>
-                                <td>Terça</td>
-                                <td>Quarta</td>
-                                <td>Quinta</td>
-                                <td>Sexta</td>
-                                <td>Sábado</td>                            
-                            </tr>
-                            @if($i == 1)
-                                <tr>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                    <td>-------</td>
-                                </tr>
-                            @endif
-                        @endfor
-                    </tbody>
-                </table>
+                @foreach($horarios as $horario)
+                    <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
+                        <span class="glyphicon glyphicon-th"></span>
+                    </a>
+                @endforeach
             </div>
         </div>
     </div>

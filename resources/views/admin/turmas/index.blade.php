@@ -70,7 +70,8 @@
                                     form(\FormBuilder::plain([
                                         'id'     => "turma-delete-form-{$turma->id}",
                                         'method' => 'DELETE',
-                                        'url'    => route('admin.turmas.destroy',['id' => $turma->id])
+                                        'url'    => route('admin.turmas.destroy',['id' => $turma->id]),
+                                        'style'  => "display: none;"
                                     ]));
                                 !!}
                             </td>

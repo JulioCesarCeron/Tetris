@@ -8,7 +8,6 @@
                 <h3 class="panel-title">Adicionar Matéria</h3>
             </div>
             <div class="panel-body">
-                {{--  <form method="post"> --}}
 
                 @if($materia)
                     <form method="PUT" action="{{url('admin/materias')}}" accept-charset="UTF-8">

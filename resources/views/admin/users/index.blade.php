@@ -65,7 +65,8 @@
                                     form(\FormBuilder::plain([
                                         'id'     => "user-delete-form-{$user->id}",
                                         'method' => 'DELETE',
-                                        'url'    => route('admin.users.destroy',['id' => $user->id])
+                                        'url'    => route('admin.users.destroy',['id' => $user->id]),
+                                        'style'  => "display: none;"
                                     ]));
                                 !!}
                             </td>

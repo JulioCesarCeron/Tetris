@@ -25,7 +25,7 @@ class AdicionaAlunoFormRequest extends FormRequest
     {
         return [
             'user_id'  => 'required',
-            'turma_id' => 'required',
+            'turma_id' => 'required',   
         ];
     }
 }

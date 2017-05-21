@@ -45,7 +45,8 @@
                                                 form(\FormBuilder::plain([
                                                     'id'     => "product-delete-form-{$product->id}",
                                                     'method' => 'DELETE',
-                                                    'url'    => route('admin.products.destroy',['id' => $product->id])
+                                                    'url'    => route('admin.products.destroy',['id' => $product->id]),
+                                                    'style'  => "display: none;"
                                                 ]));
                                             !!}
                                         </td>

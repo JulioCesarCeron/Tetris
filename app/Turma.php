@@ -16,8 +16,8 @@ class Turma extends Model {
     	return $this->hasMany('App\TurmaAluno');
     }
 
-    public function horarios() {
-        return $this->belongsTo('App\Horario');
+    public function horario() {
+        return $this->hasOne('App\Horario');
     }
 
     // public function alunos() {

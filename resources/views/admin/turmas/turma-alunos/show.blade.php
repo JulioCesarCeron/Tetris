@@ -55,7 +55,8 @@
                                         form(\FormBuilder::plain([
                                             'id'     => "turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}",
                                             'method' => 'DELETE',
-                                            'url'    => route('admin.turma-alunos.destroy',['id' => $turmaAlunos->get($countId++)->id], ['id' => $turma->id])
+                                            'url'    => route('admin.turma-alunos.destroy',['id' => $turmaAlunos->get($countId++)->id], ['id' => $turma->id]),
+                                            'style'  => "display: none;"
                                         ]));
                                     !!}
                                 </td>

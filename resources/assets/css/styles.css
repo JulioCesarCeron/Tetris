@@ -63,3 +63,20 @@ html, body {
     margin: 0px;
     padding: 0px;
 }
+
+.table-calendar {
+    margin-bottom: 50px;
+}
+
+.form-control-calendar {
+    padding-left: 22%;
+}
+
+.table-calendar > tbody > tr > td {
+    border-top: none;
+}
+
+.dia-per-calendario {
+    display: flex;
+    flex-direction: column;
+}

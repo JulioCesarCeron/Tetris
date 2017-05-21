@@ -12998,7 +12998,7 @@ hr.on-light {
 .cal-year-box,
 .cal-week-box {
   border-top: 1px solid #e1e1e1;
-  border-bottom: 1px solid #e1e1e1;
+  /*border-bottom: 1px solid #e1e1e1;*/
   border-right: 1px solid #e1e1e1;
   border-left: 1px solid #e1e1e1;
   border-radius: 2px;
@@ -13088,6 +13088,11 @@ a.cal-event-week {
   background-color: #b94a48;
 }
 
+.cal-week-box > hr {
+  margin-top: 0;
+  margin-bottom: 20px;
+} 
+
 html, body {
     background-color: #fff;
     color: #636b6f;
@@ -13143,5 +13148,31 @@ html, body {
         width: 14.285714285714285%;
         text-align: center;
     }
+}
+
+.bt-white-style {
+    color: white!important;
+}
+
+.form-group {
+    margin: 0px;
+    padding: 0px;
+}
+
+.table-calendar {
+    margin-bottom: 50px;
+}
+
+.form-control-calendar {
+    padding-left: 22%;
+}
+
+.table-calendar > tbody > tr > td {
+    border-top: none;
+}
+
+.dia-per-calendario {
+    display: flex;
+    flex-direction: column;
 }
 /*# sourceMappingURL=app.css.map */

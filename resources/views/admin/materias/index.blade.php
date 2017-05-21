@@ -63,7 +63,8 @@
                                         'class'    => "materia-submit-delete",
                                         'id'       => "materia-delete-form-{$materia->id}",
                                         'method'   => 'DELETE',
-                                        'url'      => route('admin.materias.destroy',['id' => $materia->id])
+                                        'url'      => route('admin.materias.destroy',['id' => $materia->id]),
+                                        'style'  => "display: none;"
                                     ]));
                                 !!}
                             </td>

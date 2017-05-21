@@ -13,4 +13,6 @@ class Materia extends Model {
     	return $this->belongsTo('App\User', 'professor_user_id');
     }
 
+  
+
 }
