@@ -69,7 +69,7 @@ class MateriasController extends Controller
     public function edit(Materia $materia) {
         $professors = User::where('type', 'professor')->get();
 
-        return view('admin.materias.update', compact('materia', 'professors'));
+        return view('admin.materias.save', compact('materia', 'professors'));
     }
 
     /**
@@ -83,7 +83,7 @@ class MateriasController extends Controller
         $form = $formBuilder->create(MateriaForm::class);
         $materia->fill($form->getFieldValues());
         $materia->save();
-        return redirect()->route('admin.materias.index');
+        return redirect()->route('admin.materias.index')->with('status', 'Matéria atualizada!');
     }
 
 

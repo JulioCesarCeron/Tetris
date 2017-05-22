@@ -10,7 +10,7 @@
             <div class="panel-body">
 
                 @if($materia)
-                    <form method="PUT" action="{{url('admin/materias')}}" accept-charset="UTF-8">
+                    <form method="POST" action="{{ route('admin.materias.update',['id' => $materia->id])}}" accept-charset="UTF-8">
                     <input name="_method" type="hidden" value="PUT">
                     <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                 @else
@@ -35,8 +35,6 @@
                                     @foreach($professors as $professor)
                                         <option value="{{$professor->id}}">{{$professor->name}}</option>
                                     @endforeach
-                                
-                                
                             </select>
                         </div>
                         <button class="form-control" type="submit">
