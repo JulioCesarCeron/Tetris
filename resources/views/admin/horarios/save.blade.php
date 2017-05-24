@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="well well bs-component">
-             <form method="POST" action="{{url('admin/horarios')}}" accept-charset="UTF-8">
+            <form method="POST" action="{{url('admin/horarios')}}" accept-charset="UTF-8">
                 <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                 <fieldset>
                     <div class="form-group" >

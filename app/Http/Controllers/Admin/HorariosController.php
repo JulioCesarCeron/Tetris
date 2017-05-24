@@ -87,7 +87,37 @@ class HorariosController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit(Horario $horario) {
+        $dias = $this->dias;
 
+        $materias = get_class_methods($horario);
+
+        $i = 0;
+        $materia_name[] = '';
+        $materia_id[] = '';
+        foreach ($materias as $key => $value) {
+            array_push($materia_name, $horario->$value->materia);
+            array_push($materia_id, $key);
+        
+            if ($i == 20){
+                break;
+            }
+            $i++;
+        }
+
+
+        $dia_per[]  = '';
+        foreach($horario->getAttributes() as $key => $value) {
+            array_push($dia_per, $key);
+        }
+        array_pop($dia_per);
+        array_pop($dia_per);
+
+
+
+
+        $turmas = Turma::all();
+        $materias = Materia::all();
+        return view('admin.horarios.update', compact('horario', 'materias', 'dias', 'turmas', 'dia_per', 'materia_name', 'materia_id'));
     }
 
     /**
