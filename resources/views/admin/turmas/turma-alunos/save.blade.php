@@ -3,7 +3,8 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
+        <div class="bs-component">
+            {!! Breadcrumbs::render('turmas-adicionar-aluno') !!}
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{$title}}</h3>

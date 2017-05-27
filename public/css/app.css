@@ -13185,4 +13185,8 @@ html, body {
     text-align: center;
     width: 100%;
 }
+
+.header {
+    margin-top: 0;
+}
 /*# sourceMappingURL=app.css.map */

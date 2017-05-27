@@ -2,7 +2,8 @@
 @section('title', 'Adicionar Aluno')
 
 @section('content')
-    <div class="container col-md-8 col-md-offset-2">
+    <div class="container">
+        {!! Breadcrumbs::render('turmas-adicionar-aluno-turma', $turma) !!}
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">Adicionar Aluno</h3>

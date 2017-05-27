@@ -36,7 +36,8 @@ class UsersController extends Controller
             'url' => route('admin.users.store')
         ]);
         $title = "Novo usuário";
-        return view('admin.users.save', compact('form', 'title'));
+        $breadcrumb = "create";
+        return view('admin.users.save', compact('form', 'title', 'breadcrumb'));
     }
 
     /**
@@ -61,7 +62,7 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(User $user) {
-        //
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -77,7 +78,8 @@ class UsersController extends Controller
             'model'  => $user
         ]);
         $title = "Editar Usuário";
-        return view('admin.users.save', compact('form', 'title'));
+        $breadcrumb = "edit";
+        return view('admin.users.save', compact('form', 'title', 'breadcrumb', 'user'));
     }
 
     /**

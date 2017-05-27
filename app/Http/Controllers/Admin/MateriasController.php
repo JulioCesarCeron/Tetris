@@ -31,7 +31,8 @@ class MateriasController extends Controller
     public function create() {
         $professors = User::where('type', 'professor')->get();
         $materia = "";
-        return view('admin.materias.save', compact('professors', 'materia'));
+        $breadcrumb = 'create';
+        return view('admin.materias.save', compact('professors', 'materia', 'breadcrumb'));
     }
 
     /**
@@ -68,8 +69,8 @@ class MateriasController extends Controller
      */
     public function edit(Materia $materia) {
         $professors = User::where('type', 'professor')->get();
-
-        return view('admin.materias.save', compact('materia', 'professors'));
+        $breadcrumb = 'edit';
+        return view('admin.materias.save', compact('materia', 'professors', 'breadcrumb'));
     }
 
     /**

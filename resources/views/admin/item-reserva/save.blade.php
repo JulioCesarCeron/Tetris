@@ -3,7 +3,12 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
+        <div class="bs-component">
+            @if($breadcrumb == 'create')
+                {!! Breadcrumbs::render('itens-reserva-create') !!}
+            @elseif($breadcrumb == 'edit')
+                {!! Breadcrumbs::render('itens-reserva-edit', $itemReserva) !!}
+            @endif
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{$title}}</h3>

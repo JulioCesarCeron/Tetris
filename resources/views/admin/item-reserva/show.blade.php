@@ -4,11 +4,7 @@
 @section('content')
     <div class="container">
         <div class="row">
-            {{--<ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Library</a></li>
-                <li class="breadcrumb-item active">Data</li>
-            </ol>--}}
+            {!! Breadcrumbs::render('itens-reserva-show', $itemReserva) !!}
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">ITEM</h3>

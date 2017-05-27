@@ -16,7 +16,7 @@ class ItemReservasController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $itens = ItemReserva::paginate(5);
+        $itens = ItemReserva::paginate(15);
         return view('admin.item-reserva.index', compact('itens'));
     }
 
@@ -31,7 +31,8 @@ class ItemReservasController extends Controller {
             'url' => route('admin.item-reserva.store')
         ]);
         $title = "Novo Item para reserva";
-        return view('admin.item-reserva.save', compact('form', 'title'));
+        $breadcrumb = 'create';
+        return view('admin.item-reserva.save', compact('form', 'title', 'breadcrumb'));
     }
 
     /**
@@ -75,7 +76,8 @@ class ItemReservasController extends Controller {
         'model'  => $itemReserva
         ]);
         $title = "Editar Item";
-        return view('admin.item-reserva.save', compact('form', 'title'));
+        $breadcrumb = 'edit';
+        return view('admin.item-reserva.save', compact('form', 'title', 'itemReserva', 'breadcrumb'));
     }
 
     /**

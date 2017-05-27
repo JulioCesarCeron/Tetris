@@ -2,11 +2,11 @@
 @section('title', 'Turma Alunos')
 
 @section('content')
-	<div class="container col-md-8 col-md-offset-2">
+	<div class="container">
+        {!! Breadcrumbs::render('turmas-alunos', $turma) !!}
 		<div class="well well bs-component">
 		    <div class="content">
-		        <h2 class="header"> Turma: {!! $turma->turma !!}</h2>
-		         <h2 class="header"> Serie: {!! $turma->serie !!}</h2>
+		        <h3 class="header"> Turma: {!! $turma->turma !!} - {!! $turma->serie !!}ª Série</h2>
 		    </div>           
 
             <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-raised btn-info">Aluno

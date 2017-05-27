@@ -4,6 +4,13 @@
 @section('content')
     <div class="container">
         <div class="row">
+            @if($breadcrumb == 'create')
+                {!! Breadcrumbs::render('users-create') !!}
+            @elseif($breadcrumb == 'edit')
+                {!! Breadcrumbs::render('user-edit', $user) !!}
+            @else
+                {!! Breadcrumbs::render('user_show', $user) !!}
+            @endif
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{$title}}</h3>

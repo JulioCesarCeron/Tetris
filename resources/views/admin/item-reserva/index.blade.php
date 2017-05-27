@@ -3,22 +3,14 @@
 
 @section('content')
     <div class="container">
-        <div class="bs-component">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Administração</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a href="{{ route('admin.item-reserva.create') }}" class="btn btn-raised btn-success">Item
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
+        {!! Breadcrumbs::render('itens-reserva') !!}
+        <div class="well well bs-component">
+            <div class="content">
+                <h3 class="header">Administração de Itens para reserva</h3>
             </div>
+            <a href="{{ route('admin.item-reserva.create') }}" class="btn btn-raised btn-success">Item
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
         </div>
         
         @if (session('status'))
@@ -73,7 +65,7 @@
                     @endforeach
                     </tbody>
                 </table>
-
+                {{ $itens->links() }}
             </div>
         </div>
     </div>

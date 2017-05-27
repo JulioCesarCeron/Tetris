@@ -1,26 +1,16 @@
 @extends('master')
-@section('title', 'Usuários')
-
+@section('title', 'Matérias')
 
 @section('content')
     <div class="container">
-    
-        <div class="bs-component">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Matérias</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
+        {!! Breadcrumbs::render('materias') !!}
+        <div class="well well bs-component">
+            <div class="content">
+                <h3 class="header">Administração de Matérias</h3>
             </div>
+            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
         </div>
         
         @if (session('status'))
@@ -43,6 +33,7 @@
                         <th style="width: 10px;">#</th>
                         <th>Matéria</th>
                         <th>Professor</th>
+                        <th>Ações</th>
                     </tr>
                     </thead>
                     <tbody>

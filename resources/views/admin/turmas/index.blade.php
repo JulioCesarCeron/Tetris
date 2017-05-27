@@ -3,27 +3,18 @@
 
 @section('content')
     <div class="container">
-        <div class="bs-component">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Turmas</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a href="{{ route('admin.turmas.create') }}" class="btn btn-raised btn-success">Turma
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-                            
-                            <a href="{{ route('admin.turma-alunos.create') }}" class="btn btn-info">Aluno
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-
-                        </div>
-                    </div>
-                    <br/>
-                </div>
+        {!! Breadcrumbs::render('turmas') !!}
+        <div class="well well bs-component">
+            <div class="content">
+                <h3 class="header">Administração de Turmas</h3>
             </div>
+            <a href="{{ route('admin.turmas.create') }}" class="btn btn-raised btn-success">Turma
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
+            
+            <a href="{{ route('admin.turma-alunos.create') }}" class="btn btn-raised btn-info">Aluno
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
         </div>
         
         @if (session('status'))
@@ -58,7 +49,7 @@
                                     {{ $turma->turma }}
                                 </a>
                             </td>
-                            <td>{{ $turma->serie }}</td>
+                            <td>{{ $turma->serie }}ª</td>
                             <td>
                                 <a href="{{ route('admin.turmas.edit',['id' => $turma->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>

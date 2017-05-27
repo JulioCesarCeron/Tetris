@@ -31,7 +31,8 @@ class TurmasController extends Controller {
             'url' => route('admin.turmas.store')
         ]);
         $title = "Nova Turma";
-        return view('admin.turmas.save', compact('form', 'title'));
+        $breadcrumb = 'create';
+        return view('admin.turmas.save', compact('form', 'title', 'breadcrumb'));
     }
 
     /**
@@ -74,7 +75,8 @@ class TurmasController extends Controller {
             'model'  => $turma
         ]);
         $title = "Editar Turma";
-        return view('admin.turmas.save', compact('form', 'title'));
+        $breadcrumb = 'edit';
+        return view('admin.turmas.save', compact('form', 'title', 'breadcrumb', 'turma'));
     }
 
     /**

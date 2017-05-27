@@ -1,26 +1,16 @@
 @extends('master')
 @section('title', 'Usuários')
 
-
 @section('content')
     <div class="container">
-    
-        <div class="bs-component">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Usuários</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">Usuário
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
+        {!! Breadcrumbs::render('users') !!}
+        <div class="well well bs-component">
+            <div class="content">
+                <h3 class="header">Administração de Usuários</h3>
             </div>
+            <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">Usuário
+                <span class='glyphicon glyphicon-plus'></span>
+            </a>
         </div>
         
         @if (session('status'))
@@ -29,7 +19,7 @@
             </div>
         @endif
 
-         @if (session('remove'))
+        @if (session('remove'))
             <div class="alert alert-danger">
                 {{ session('remove') }}
             </div>
@@ -51,7 +41,11 @@
                     @foreach($users as $user)
                         <tr>
                             <td>{{ $user->id  }}</td>
-                            <td>{{ $user->name }}</td>
+                            <td>
+                                <a href="{{ route('admin.users.show',['id' => $user->id]) }}">
+                                    {{ $user->name }}
+                                </a>
+                            </td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->type }}</td>
                             <td>

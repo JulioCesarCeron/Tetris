@@ -4,9 +4,10 @@
 @section('content')
     <div class="container">
         <div class="bs-component">
+            {!! Breadcrumbs::render('horarios') !!}
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Horários</h3>
+                    <h3 class="panel-title">Administração de Horários</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -20,6 +21,9 @@
                 </div>
             </div>
         </div>
+        
+
+
 
         @if (session('status'))
             <div class="alert alert-success">

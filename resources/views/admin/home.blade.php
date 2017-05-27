@@ -17,7 +17,6 @@
         <div class=" col-md-offset-2">
             <div class=" panel-default">
                 <div class="panel-heading">Painel Administrativo</div>
-
                 <div class="panel-body">
                     You are logged in!
                 </div>

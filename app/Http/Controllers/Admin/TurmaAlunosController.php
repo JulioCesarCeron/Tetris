@@ -35,8 +35,9 @@ class TurmaAlunosController extends Controller
             'method' => 'POST',
             'url' => route('admin.turma-alunos.store')
         ]);
-        $title = "Nova Turma";
-        return view('admin.turmas.turma-alunos.save', compact('form', 'title'));
+        $title = "Adicionar aluno";
+        $breadcrumb = 'create';
+        return view('admin.turmas.turma-alunos.save', compact('form', 'title', 'breadcrumb'));
     }
 
     /**
