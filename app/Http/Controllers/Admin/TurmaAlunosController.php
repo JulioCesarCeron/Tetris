@@ -76,13 +76,7 @@ class TurmaAlunosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(TurmaAluno $turmaAluno) {
-        // $form = \FormBuilder::create(TurmaAlunoForm::class, [
-        //     'method' => 'PUT',
-        //     'url'    => route('admin.turma-alunos.update', ['id' => $turmaAluno->turma_id]),
-        //     'model'  => $turmaAluno
-        // ]);
-        // $title = "Editar Turma";
-        // return view('admin.turmas.turma-alunos.save', compact('form', 'title'));
+
     }
 
     /**
@@ -93,10 +87,7 @@ class TurmaAlunosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(FormBuilder $formBuilder, TurmaAluno $turmaAluno) {
-        // $form = $formBuilder->create(TurmaForm::class);
-        // $turma->fill($form->getFieldValues());
-        // $turma->save();
-        // return redirect()->route('admin.turmas.index');
+
     }
 
     public function novoAluno($id) {

@@ -43,9 +43,17 @@
                         <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </a>
-                        <a href="" class="btn btn-raised btn-danger">
+                        <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
+                        {!! 
+                            form(\FormBuilder::plain([
+                                'id'     => "horario-delete-form-{$horario->id}",
+                                'method' => 'DELETE',
+                                'url'    => route('admin.horarios.destroy',['id' => $horario->id]),
+                                'style'  => "display: none;"
+                            ]));
+                        !!}
                     </div>
                 @endforeach
             </div>

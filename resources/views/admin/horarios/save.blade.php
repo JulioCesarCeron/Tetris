@@ -17,6 +17,7 @@
                 </div>
             </div>
         </div>
+
         <div class="well well bs-component">
             <form method="POST" action="{{url('admin/horarios')}}" accept-charset="UTF-8">
                 <input type="hidden" name="_token" value="{!! csrf_token() !!}">
@@ -63,7 +64,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="form-group" >
+                    <div class="form-group col-md-8 form-group-turma">
                         <label for="turma_id" class="control-label required">Turma</label>
                         <select class="form-control" id="turma_id" name="turma_id">
                             @foreach($turmas as $turma)

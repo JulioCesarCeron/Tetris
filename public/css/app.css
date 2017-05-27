@@ -13175,4 +13175,14 @@ html, body {
     display: flex;
     flex-direction: column;
 }
+
+.form-group-turma{
+    float: none;
+    margin: 0 auto;
+}
+
+.form-group-turma label{
+    text-align: center;
+    width: 100%;
+}
 /*# sourceMappingURL=app.css.map */

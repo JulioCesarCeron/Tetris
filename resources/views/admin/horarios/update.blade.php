@@ -22,72 +22,276 @@
             </div>
         </div>
         <div class="well well bs-component">
-        <form method="POST" action="{{ route('admin.horarios.update',['id' => $horario->id])}}" accept-charset="UTF-8">
-            <input name="_method" type="hidden" value="PUT">
-            <input type="hidden" name="_token" value="{!! csrf_token() !!}">
-            <fieldset>
-                <div class="form-group" >
-                    <div class="content">
-                        <p id="calendar-title"></p>
-                        <div id="calendar"></div>
-                        <table class="table table-calendar">
-                            <tbody>
-                                @for ($i = 0; $i < 4; $i++)
-                                    @php
-                                        $count = 3 + $i;
-                                    @endphp
+            <form method="POST" action="{{ route('admin.horarios.update',['id' => $horario->id])}}" accept-charset="UTF-8">
+                <input name="_method" type="hidden" value="PUT">
+                <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+                <fieldset>
+                    <div class="form-group">
+                        <div class="content">
+                            <div id="calendar"></div>
+                            <table class="table table-calendar">
+                                <tbody>
                                     <tr>
-                                        @for($j = 0; $j < 7; $j++)
-                                            @if($j == 0 || $j == 6)
-                                                <td></td>
-                                            @else
-                                                <td>
-                                                    <div class="form-group" >
-                                                        <label for="{{$dia_per[$count]}}" class="control-label required">{{$i+1}}° Período</label>
-                                                        <select class="form-control form-control-calendar" id="{{$dia_per[$count]}}" name="{{$dias[$j] . "_" . ($i+1)}}">
-                                                             <option selected="selected" value=" {{$materia_id[($count-1)]}}"> {{$materia_name[($count-1)]}}</option>
-                                                            @foreach($materias as $materia)
-                                                                <option value="{{$materia->id}}">{{$materia->materia}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                @php
-                                                    $count+=4;
-                                                @endphp
-                                            @endif
-                                        @endfor
+                                        <td></td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="seg_per_1" class="control-label required">1° Período</label>
+                                                <select class="form-control form-control-calendar" id="seg_per_1" name="seg_per_1">
+                                                    <option selected="selected" value="{{$horario->seg_per_1_materia->id}}">{{$horario->seg_per_1_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="ter_per_1" class="control-label required">1° Período</label>
+                                                <select class="form-control form-control-calendar" id="ter_per_1" name="ter_per_1">
+                                                    <option selected="selected" value="{{$horario->ter_per_1_materia->id}}">{{$horario->ter_per_1_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quar_per_1" class="control-label required">1° Período</label>
+                                                <select class="form-control form-control-calendar" id="quar_per_1" name="quar_per_1">
+                                                    <option selected="selected" value="{{$horario->quar_per_1_materia->id}}">{{$horario->quar_per_1_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quin_per_1" class="control-label required">1° Período</label>
+                                                <select class="form-control form-control-calendar" id="quin_per_1" name="quin_per_1">
+                                                    <option selected="selected" value="{{$horario->quin_per_1_materia->id}}">{{$horario->quin_per_1_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="sex_per_1" class="control-label required">1° Período</label>
+                                                <select class="form-control form-control-calendar" id="sex_per_1" name="sex_per_1">
+                                                    <option selected="selected" value="{{$horario->sex_per_1_materia->id}}">{{$horario->sex_per_1_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td></td>
                                     </tr>
-                                    @if($i == 1)
-                                        <tr>
-                                            @for($j = 0; $j < 7; $j++)
-                                                @if(!($j == 0 || $j == 6))
-                                                    <td>-------</td>
-                                                @else
-                                                    <td></td>
-                                                @endif
-                                            @endfor
-                                        </tr>
-                                    @endif
-                                @endfor
-                            </tbody>
-                        </table>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <div class="form-group">
+                                               <label for="seg_per_2" class="control-label required">2° Período</label>
+                                               <select class="form-control form-control-calendar" id="seg_per_2" name="seg_per_2">
+                                                    <option selected="selected" value="{{$horario->seg_per_2_materia->id}}">{{$horario->seg_per_2_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                               </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="ter_per_2" class="control-label required">2° Período</label>
+                                                <select class="form-control form-control-calendar" id="ter_per_2" name="ter_per_2">
+                                                    <option selected="selected" value="{{$horario->ter_per_2_materia->id}}">{{$horario->ter_per_2_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quar_per_2" class="control-label required">2° Período</label>
+                                                <select class="form-control form-control-calendar" id="quar_per_2" name="quar_per_2">
+                                                    <option selected="selected" value="{{$horario->quar_per_2_materia->id}}">{{$horario->quar_per_2_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quin_per_2" class="control-label required">2° Período</label>
+                                                <select class="form-control form-control-calendar" id="quin_per_2" name="quin_per_2">
+                                                    <option selected="selected" value="{{$horario->quin_per_2_materia->id}}">{{$horario->quin_per_2_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="sex_per_2" class="control-label required">2° Período</label>
+                                                <select class="form-control form-control-calendar" id="sex_per_2" name="sex_per_2">
+                                                    <option selected="selected" value="{{$horario->sex_per_2_materia->id}}">{{$horario->sex_per_2_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>-------</td>
+                                        <td>-------</td>
+                                        <td>-------</td>
+                                        <td>-------</td>
+                                        <td>-------</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="seg_per_3" class="control-label required">3° Período</label>
+                                                <select class="form-control form-control-calendar" id="seg_per_3" name="seg_per_3">
+                                                    <option selected="selected" value="{{$horario->seg_per_3_materia->id}}">{{$horario->seg_per_3_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="ter_per_3" class="control-label required">3° Período</label>
+                                                <select class="form-control form-control-calendar" id="ter_per_3" name="ter_per_3">
+                                                    <option selected="selected" value="{{$horario->ter_per_3_materia->id}}">{{$horario->ter_per_3_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quar_per_3" class="control-label required">3° Período</label>
+                                                <select class="form-control form-control-calendar" id="quar_per_3" name="quar_per_3">
+                                                    <option selected="selected" value="{{$horario->quar_per_3_materia->id}}">{{$horario->quar_per_3_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quin_per_3" class="control-label required">3° Período</label>
+                                                <select class="form-control form-control-calendar" id="quin_per_3" name="quin_per_3">
+                                                    <option selected="selected" value="{{$horario->quin_per_3_materia->id}}">{{$horario->quin_per_3_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="sex_per_3" class="control-label required">3° Período</label>
+                                                <select class="form-control form-control-calendar" id="sex_per_3" name="sex_per_3">
+                                                    <option selected="selected" value="{{$horario->sex_per_3_materia->id}}">{{$horario->sex_per_3_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="seg_per_4" class="control-label required">4° Período</label>
+                                                <select class="form-control form-control-calendar" id="seg_per_4" name="seg_per_4">
+                                                    <option selected="selected" value="{{$horario->seg_per_4_materia->id}}">{{$horario->seg_per_4_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="ter_per_4" class="control-label required">4° Período</label>
+                                                <select class="form-control form-control-calendar" id="ter_per_4" name="ter_per_4">
+                                                    <option selected="selected" value="{{$horario->ter_per_4_materia->id}}">{{$horario->ter_per_4_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quar_per_4" class="control-label required">4° Período</label>
+                                                <select class="form-control form-control-calendar" id="quar_per_4" name="quar_per_4">
+                                                    <option selected="selected" value="{{$horario->quar_per_4_materia->id}}">{{$horario->quar_per_4_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="quin_per_4" class="control-label required">4° Período</label>
+                                                <select class="form-control form-control-calendar" id="quin_per_4" name="quin_per_4">
+                                                    <option selected="selected" value="{{$horario->quin_per_4_materia->id}}">{{$horario->quin_per_4_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <label for="sex_per_4" class="control-label required">4° Período</label>
+                                                <select class="form-control form-control-calendar" id="sex_per_4" name="sex_per_4">
+                                                    <option selected="selected" value="{{$horario->sex_per_4_materia->id}}">{{$horario->sex_per_4_materia->materia}}</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{$materia->id}}">{{$materia->materia}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group" >
-                    <label for="turma_id" class="control-label required">Turma</label>
-                    <select class="form-control" id="turma_id" name="turma_id">
-                            <option selected="selected" value="">{{$horario->turma->turma}}</option>
-                        @foreach($turmas as $turma)
-                            <option value="{{$turma->id}}">{{$turma->turma}}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button class="btn btn-raised btn-success" type="submit">
-                    SALVAR
-                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
-                </button>
-            </fieldset>
-        </form>
+                    <div class="form-group col-md-8 form-group-turma">
+                        <label for="turma_id" class="control-label required">Turma</label>
+                        <select class="form-control" id="turma_id" name="turma_id">
+                            <option selected="selected" value="8">1B</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-raised btn-success" type="submit">
+                        SALVAR
+                        <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                    </button>
+                </fieldset>
+            </form>
+        </div>
     </div>
 @endsection

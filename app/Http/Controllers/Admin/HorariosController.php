@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Horario;
 use App\Materia;
 use App\Turma;
+use App\Forms\HorarioForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Kris\LaravelFormBuilder\FormBuilder;
 use App\Http\Requests\HorarioFormRequest;
 
 
@@ -29,7 +31,7 @@ class HorariosController extends Controller {
      */
     public function create() {
         $dias   =  $this->dias;
-        $turmas = Turma::all();
+        $turmas = Turma::doesntHave('horario')->get();
         $materias = Materia::all();
         return view('admin.horarios.save', compact('materias', 'dias', 'turmas'));
     }
@@ -87,37 +89,8 @@ class HorariosController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit(Horario $horario) {
-        $dias = $this->dias;
-
-        $materias = get_class_methods($horario);
-
-        $i = 0;
-        $materia_name[] = '';
-        $materia_id[] = '';
-        foreach ($materias as $key => $value) {
-            array_push($materia_name, $horario->$value->materia);
-            array_push($materia_id, $key);
-        
-            if ($i == 20){
-                break;
-            }
-            $i++;
-        }
-
-
-        $dia_per[]  = '';
-        foreach($horario->getAttributes() as $key => $value) {
-            array_push($dia_per, $key);
-        }
-        array_pop($dia_per);
-        array_pop($dia_per);
-
-
-
-
-        $turmas = Turma::all();
         $materias = Materia::all();
-        return view('admin.horarios.update', compact('horario', 'materias', 'dias', 'turmas', 'dia_per', 'materia_name', 'materia_id'));
+        return view('admin.horarios.update', compact('horario', 'materias'));
     }
 
     /**
@@ -127,9 +100,11 @@ class HorariosController extends Controller {
      * @param  \App\Horario  $horario
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Horario $horario)
-    {
-        //
+    public function update(FormBuilder $formBuilder, Horario $horario){
+        $form = $formBuilder->create(HorarioForm::class);
+        $horario->fill($form->getFieldValues());
+        $horario->save();
+        return redirect()->route('admin.horarios.index')->with('status', "Horário Editado com sucesso");
     }
 
     /**
@@ -138,8 +113,8 @@ class HorariosController extends Controller {
      * @param  \App\Horario  $horario
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Horario $horario)
-    {
-        //
+    public function destroy(Horario $horario) {
+        $horario->delete();
+        return redirect()->route('admin.horarios.index')->with('remove', 'Horário removido!');
     }
 }

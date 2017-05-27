@@ -57,8 +57,9 @@ class ItemReservasController extends Controller {
      * @param  \App\ItemReserva  $itemReserva
      * @return \Illuminate\Http\Response
      */
-    public function show(ItemReserva $itemReserva) {
-        //
+    public function show( $id ) {
+        $itemReserva = itemReserva::find( $id );
+        return view('admin.item-reserva.show', compact('itemReserva'));
     }
 
     /**

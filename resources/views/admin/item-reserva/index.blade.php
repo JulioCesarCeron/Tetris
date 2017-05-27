@@ -47,7 +47,11 @@
                     @foreach($itens as $item)
                         <tr>
                             <td>{{ $item->id    }}</td>
-                            <td>{{ $item->nome_item }}</td>
+                            <td>
+                                <a href="{{ route('admin.item-reserva.show', ['id' => $item->id]) }}" class="btn btn-raised btn-success">
+                                    {{ $item->nome_item }}
+                                </a>
+                            </td>
                             <th>{{ $item->quantidade }}</th>
                             <td>
                                 <a href="{{ route('admin.item-reserva.edit',['id' => $item->id]) }}">
