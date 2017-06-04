@@ -3,10 +3,10 @@
 
 @section('content')
 <div class="container">
-    <div class="row">
+    <div class="bs-component">
+        {!! Breadcrumbs::render('admin') !!}
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
                 <li><a href=" {{ url('admin/users')       }} ">Usuários</a></li>
                 <li><a href=" {{ url('admin/turmas')      }} ">Turmas</a></li>
                 <li><a href=" {{ url('admin/materias')    }} ">Materias</a></li>

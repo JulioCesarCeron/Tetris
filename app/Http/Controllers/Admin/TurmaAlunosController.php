@@ -32,12 +32,11 @@ class TurmaAlunosController extends Controller
     public function create() {
 
         $form = \FormBuilder::create(TurmaAlunoForm::class, [
-            'method' => 'POST',
+            'method' => 'MANDIOCA',
             'url' => route('admin.turma-alunos.store')
         ]);
         $title = "Adicionar aluno";
-        $breadcrumb = 'create';
-        return view('admin.turmas.turma-alunos.save', compact('form', 'title', 'breadcrumb'));
+        return view('admin.turmas.turma-alunos.save', compact('form', 'title'));
     }
 
     /**

@@ -9,6 +9,7 @@ elixir(function(mix) {
 		'../../../node_modules/font-awesome/css/font-awesome.css',
 		'bootstrap-material-design.css',
 		'../../../bower_components/bootstrap-calendar/css/calendar.css',
+		'../../../bower_components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css',
 		'styles.css',
 	], 'public/css/app.css');
 
@@ -19,6 +20,8 @@ elixir(function(mix) {
 		'../../../node_modules/underscore/underscore.js',
 		'../../../bower_components/bootstrap-calendar/js/calendar.js',
 		'../../../bower_components/bootstrap-calendar/js/language/',
+		'../../../node_modules/moment/moment.js',
+		'../../../bower_components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js',
 		'material.js',
 		'ripples.js',
 		'app.js',

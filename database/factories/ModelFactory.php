@@ -52,3 +52,37 @@ $factory->define(App\ItemReserva::class, function (Faker\Generator $faker) {
         'descricao'  => $faker->sentence(50),
     ];
 });
+
+$factory->define(App\Materia::class, function (Faker\Generator $faker) {
+    $nomeMateria = array("Matemática", "Geográfia", "História", "Filosofia", "Portugues", "Física", "Biologia"); 
+    return [
+        'materia'  => $nomeMateria[rand(0, 6)],
+        'professor_user_id' => rand(2, 8),
+    ];
+});
+
+$factory->define(App\Horario::class, function (Faker\Generator $faker) {
+    return [
+        'turma_id' => rand(1, 10),
+        'seg_per_1' => rand(1, 7),
+        'seg_per_2' => rand(1, 7),
+        'seg_per_3' => rand(1, 7),
+        'seg_per_4' => rand(1, 7),
+        'ter_per_1' => rand(1, 7),
+        'ter_per_2' => rand(1, 7),
+        'ter_per_3' => rand(1, 7),
+        'ter_per_4' => rand(1, 7),
+        'quar_per_1' => rand(1, 7),
+        'quar_per_2' => rand(1, 7),
+        'quar_per_3' => rand(1, 7),
+        'quar_per_4' => rand(1, 7),
+        'quin_per_1' => rand(1, 7),
+        'quin_per_2' => rand(1, 7),
+        'quin_per_3' => rand(1, 7),
+        'quin_per_4' => rand(1, 7),
+        'sex_per_1' => rand(1, 7),
+        'sex_per_2' => rand(1, 7),
+        'sex_per_3' => rand(1, 7),
+        'sex_per_4' => rand(1, 7),
+    ];
+});

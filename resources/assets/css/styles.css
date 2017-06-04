@@ -94,3 +94,26 @@ html, body {
 .header {
     margin-top: 0;
 }
+
+.table-acoes-right{
+    text-align: right;
+}
+
+@media only screen and (max-width: 590px){
+    .table-mobile{
+        display: none;
+    }
+
+    .well-none{
+        -webkit-box-shadow: none!important;
+        box-shadow: none!important;
+        padding: 0!important;
+    }
+    
+    .pagination{
+        margin: 0 auto;
+        margin-top: 30px;
+        margin-bottom: 60px;
+        display: block;
+    }
+}

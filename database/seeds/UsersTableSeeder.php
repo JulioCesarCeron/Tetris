@@ -15,11 +15,11 @@ class UsersTableSeeder extends Seeder
             'type'  => 'admin'
         ]);
 
-        factory(\App\User::class, 5)->create([
+        factory(\App\User::class, 7)->create([
             'type'  => 'professor'
         ]);
 
-        factory(\App\User::class, 10)->create([
+        factory(\App\User::class, 30)->create([
             'type'  => 'aluno'
         ]);
     }

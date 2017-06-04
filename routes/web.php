@@ -20,12 +20,9 @@ Auth::routes();
 Route::get('/home',      'HomeController@index');
 Route::get('/professor', 'HomeProfessorController@index');
 
+// ADMIN
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.'], function(){
 	Route::get('/admin', 'HomeAdminController@index');
-});
-
-Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], function(){
-	Route::get('/professor', 'HomeProfessorController@index');
 });
 
 Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
@@ -45,6 +42,17 @@ Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 
 		Route::get('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adiciona');
 		Route::post('turma-alunos/{id}/adiciona', 'Admin\TurmaAlunosController@adicionaStore');
 	});
+});
+
+
+
+//PROFESSOR
+Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], function(){
+	Route::get('/professor', 'HomeProfessorController@index');
+});
+
+Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'prefix' => 'professor'], function(){
+	Route::resource('conteudo-aula', 'Professor\ConteudoAulasController');
 });
 
 

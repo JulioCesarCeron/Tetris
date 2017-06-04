@@ -21,39 +21,6 @@
 
 
 $( document ).ready(function() {
-    console.log( "ready!" );
-
- //    var options = {
-	// 	events_source: 'events.json.php',
-	// 	view: 'month',
-	// 	tmpl_path: 'tmpls/',
-	// 	tmpl_cache: false,
-	// 	day: '2013-03-12',
-	// 	onAfterEventsLoad: function(events) {
-	// 		if(!events) {
-	// 			return;
-	// 		}
-	// 		var list = $('#eventlist');
-	// 		list.html('');
-
-	// 		$.each(events, function(key, val) {
-	// 			$(document.createElement('li'))
-	// 				.html('<a href="' + val.url + '">' + val.title + '</a>')
-	// 				.appendTo(list);
-	// 		});
-	// 	},
-	// 	onAfterViewLoad: function(view) {
-	// 		$('.page-header h3').text(this.getTitle());
-	// 		$('.btn-group button').removeClass('active');
-	// 		$('button[data-calendar-view="' + view + '"]').addClass('active');
-	// 	},
-	// 	classes: {
-	// 		months: {
-	// 			general: 'label'
-	// 		}
-	// 	}
-	// };
-
 
     var options = {
 		view: 'week',
@@ -69,6 +36,6 @@ $( document ).ready(function() {
 	calendar.setLanguage('pt-BR');
 	calendar.view();
 
-
+	$('#data_conteudo').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 
 });

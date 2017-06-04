@@ -3,12 +3,11 @@
 
 @section('content')
     <div class="container">
-
-
+        {!! Breadcrumbs::render('horarios-show', $horario) !!}
         <div class="well well bs-component">
             <div class="content">
                 <h2 class="header"> Turma: {{$horario->turma->turma}} </h2>
-                 <h2 class="header"> Serie: {{$horario->turma->serie}} </h2>
+                <h2 class="header"> Serie: {{$horario->turma->serie}} </h2>
             </div>           
         </div>
         

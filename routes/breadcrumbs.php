@@ -110,6 +110,11 @@ Breadcrumbs::register('horarios-edit', function($breadcrumbs, $horario) {
     $breadcrumbs->push('Editar horário Turma: ' . $horario->turma->turma, route('admin.horarios.edit', $horario->id));
 });
 
+Breadcrumbs::register('horarios-show', function($breadcrumbs, $horario) {
+    $breadcrumbs->parent('horarios');
+    $breadcrumbs->push('Horário Turma ' . $horario->turma->turma, route('admin.horarios.show', $horario->id));
+});
+
 
 /*
 Breadcrumbs::register('category', function($breadcrumbs, $category) {
