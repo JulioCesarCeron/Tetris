@@ -20,7 +20,7 @@ class HorariosController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $horarios = Horario::with('turma')->get();
+        $horarios = Horario::paginate(10);
         return view('admin.horarios.index', compact('horarios'));
     }
 

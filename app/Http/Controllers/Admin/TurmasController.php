@@ -16,7 +16,7 @@ class TurmasController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $turmas = Turma::paginate(20);
+        $turmas = Turma::paginate(10);
         return view('admin.turmas.index',compact('turmas'));
     }
 

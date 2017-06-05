@@ -34,7 +34,7 @@
                             <th style="width: 10px;">#</th>
                             <th>Nome</th>
                             <th>email</th>
-                            <th>Ações</th>
+                            <th class="table-text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,7 +47,7 @@
                                 <td>{{ $aluno->id    }}</td>
                                 <td>{{ $aluno->name }}</td>
                                 <td>{{ $aluno->email }}</td>
-                                <td>
+                                <td class="table-text-right">
                                     <a href="{{ route('admin.turma-alunos.destroy', ['id' => $aluno->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>

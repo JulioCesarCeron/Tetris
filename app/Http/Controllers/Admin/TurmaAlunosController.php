@@ -20,7 +20,7 @@ class TurmaAlunosController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $turmaAluno = TurmaAluno::paginate(20);
+        $turmaAluno = TurmaAluno::paginate(10);
         return view('admin.turmas.turma-alunos.index',compact('turmaAlunos'));
     }
 

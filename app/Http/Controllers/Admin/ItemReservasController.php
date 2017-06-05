@@ -16,7 +16,7 @@ class ItemReservasController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $itens = ItemReserva::paginate(15);
+        $itens = ItemReserva::paginate(10);
         return view('admin.item-reserva.index', compact('itens'));
     }
 

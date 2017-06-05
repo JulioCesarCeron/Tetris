@@ -33,6 +33,7 @@
                         <th style="width: 10px;">#</th>
                         <th>Item</th>
                         <th>Quantidade</th>
+                        <th class="table-text-right">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -40,12 +41,12 @@
                         <tr>
                             <td>{{ $item->id    }}</td>
                             <td>
-                                <a href="{{ route('admin.item-reserva.show', ['id' => $item->id]) }}" class="btn btn-raised btn-success">
+                                <a href="{{ route('admin.item-reserva.show', ['id' => $item->id]) }}">
                                     {{ $item->nome_item }}
                                 </a>
                             </td>
                             <th>{{ $item->quantidade }}</th>
-                            <td>
+                            <td class="table-text-right">
                                 <a href="{{ route('admin.item-reserva.edit',['id' => $item->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |

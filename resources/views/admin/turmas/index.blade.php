@@ -37,7 +37,7 @@
                         <th style="width: 10px;">#</th>
                         <th>Turma</th>
                         <th>Série</th>
-                        <th>Ações</th>
+                        <th class="table-text-right">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -50,7 +50,7 @@
                                 </a>
                             </td>
                             <td>{{ $turma->serie }}ª</td>
-                            <td>
+                            <td class="table-text-right">
                                 <a href="{{ route('admin.turmas.edit',['id' => $turma->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |

@@ -35,7 +35,7 @@
                             <th>Nome</th>
                             <th class="table-mobile">E-mail</th>
                             <th>Tipo</th>
-                            <th>Ações</th>
+                            <th class="table-text-right">Ações</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -49,7 +49,7 @@
                                 </td>
                                 <td class="table-mobile">{{ $user->email }}</td>
                                 <td>{{ $user->type }}</td>
-                                <td>
+                                <td class="table-text-right">
                                     <a href="{{ route('admin.users.edit',['id' => $user->id]) }}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a> |

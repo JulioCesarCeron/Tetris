@@ -33,7 +33,7 @@
                         <th style="width: 10px;">#</th>
                         <th>Matéria</th>
                         <th>Professor</th>
-                        <th>Ações</th>
+                        <th class="table-text-right">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -42,7 +42,7 @@
                             <td>{{ $materia->id  }}</td>
                             <td>{{ $materia->materia }}</td>
                             <td>{{ $materia->professor->name }}</td>
-                            <td>
+                            <td class="table-text-right">
                                 <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a> |
