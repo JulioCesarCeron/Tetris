@@ -15,6 +15,7 @@ class CreateConteudoAulasTable extends Migration
     {
         Schema::create('conteudo_aulas', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('professor_id');
             $table->integer('turma_id');
             $table->integer('materia_id');
             $table->date('data_conteudo');

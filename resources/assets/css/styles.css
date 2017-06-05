@@ -95,9 +95,10 @@ html, body {
     margin-top: 0;
 }
 
-.table-acoes-right{
+.table-text-right{
     text-align: right;
 }
+
 
 @media only screen and (max-width: 590px){
     .table-mobile{

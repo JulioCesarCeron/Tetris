@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="container">
+    {!! Breadcrumbs::render('professor') !!}
     <div class="bs-component">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">

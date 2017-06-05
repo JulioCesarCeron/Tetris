@@ -1,5 +1,7 @@
 <?php
 
+/****************ADMINISTRADORES*********************/
+
 Breadcrumbs::register('admin', function($breadcrumbs) {
     $breadcrumbs->push('Home', route('admin.'));
 });
@@ -115,6 +117,32 @@ Breadcrumbs::register('horarios-show', function($breadcrumbs, $horario) {
     $breadcrumbs->push('Horário Turma ' . $horario->turma->turma, route('admin.horarios.show', $horario->id));
 });
 
+/****************PROFESSORES*********************/
+
+Breadcrumbs::register('professor', function($breadcrumbs) {
+    $breadcrumbs->push('Home', route('professor.'));
+});
+
+//CONTEUDO AULA
+Breadcrumbs::register('conteudo-aula', function($breadcrumbs) {
+    $breadcrumbs->parent('professor');
+    $breadcrumbs->push('Conteúdos Aula', route('professor.conteudo-aula.index'));
+});
+
+Breadcrumbs::register('conteudo-aula-create', function($breadcrumbs) {
+    $breadcrumbs->parent('conteudo-aula');
+    $breadcrumbs->push('Novo Conteúdo', route('professor.conteudo-aula.create'));
+});
+
+Breadcrumbs::register('conteudo-aula-edit', function($breadcrumbs, $conteudoAula) {
+    $breadcrumbs->parent('conteudo-aula');
+    $breadcrumbs->push('Editar Conteúdo', route('professor.conteudo-aula.edit', ['id' => $conteudoAula->id ]));
+});
+
+Breadcrumbs::register('conteudo-aula-show', function($breadcrumbs, $conteudoAula) {
+    $breadcrumbs->parent('conteudo-aula');
+    $breadcrumbs->push('Mostrar Conteúdo', route('professor.conteudo-aula.show', ['id' => $conteudoAula->id ]));
+});
 
 /*
 Breadcrumbs::register('category', function($breadcrumbs, $category) {

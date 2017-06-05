@@ -13,7 +13,7 @@ class ConteudoAulaFormRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,6 +24,7 @@ class ConteudoAulaFormRequest extends FormRequest
     public function rules()
     {
         return [
+            'professor_id'  => 'required',
             'turma_id'      => 'required', 
             'materia_id'    => 'required', 
             'data_conteudo' => 'required', 
