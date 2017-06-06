@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], fun
 
 Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'prefix' => 'professor'], function(){
 	Route::resource('conteudo-aula', 'Professor\ConteudoAulasController');
+	Route::resource('avaliacao',     'Professor\AvaliacoesController');
 });
 
 

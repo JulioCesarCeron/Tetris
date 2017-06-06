@@ -8,6 +8,7 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li><a href=" {{ url('professor/conteudo-aula') }} ">Conteúdos Aula</a></li>
+                <li><a href=" {{ url('professor/avaliacao')     }} ">Avaliações</a></li>
             </ul>
         </div>
         <div class="col-md-offset-2 main">

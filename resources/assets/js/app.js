@@ -37,5 +37,6 @@ $( document ).ready(function() {
 	calendar.view();
 
 	$('#data_conteudo').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
+	$('#data_avaliacao').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 
 });

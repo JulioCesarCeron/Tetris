@@ -17,7 +17,7 @@ class ConteudoAulasController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $conteudoAulas = ConteudoAula::where('professor_id', \Auth::user()->id)->get();
+        $conteudoAulas = ConteudoAula::where('professor_id', \Auth::user()->id)->get()->sortByDesc('data_conteudo');;
         return view('professor.conteudo-aula.index', compact('conteudoAulas'));
     }
 
