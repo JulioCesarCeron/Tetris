@@ -144,6 +144,22 @@ Breadcrumbs::register('conteudo-aula-show', function($breadcrumbs, $conteudoAula
     $breadcrumbs->push('Mostrar Conteúdo', route('professor.conteudo-aula.show', ['id' => $conteudoAula->id ]));
 });
 
+//AVALIACAO
+Breadcrumbs::register('avaliacao', function($breadcrumbs) {
+    $breadcrumbs->parent('professor');
+    $breadcrumbs->push('Avaliações', route('professor.avaliacao.index'));
+});
+
+Breadcrumbs::register('avaliacao-create', function($breadcrumbs) {
+    $breadcrumbs->parent('avaliacao');
+    $breadcrumbs->push('Nova Avaliação', route('professor.avaliacao.create'));
+});
+
+Breadcrumbs::register('avaliacao-edit', function($breadcrumbs, $avaliacao) {
+    $breadcrumbs->parent('avaliacao');
+    $breadcrumbs->push('Editar Avaliação', route('professor.avaliacao.edit', ['id' => $avaliacao->id]));
+});
+
 /*
 Breadcrumbs::register('category', function($breadcrumbs, $category) {
     $breadcrumbs->parent('blog');

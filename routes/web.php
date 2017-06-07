@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'pref
 
 
 
+
 /** TESTAR ENVIO DE EMAIL
 Route::get('sendemail', function () {
     $data = array(

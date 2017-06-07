@@ -18,6 +18,8 @@ class Materia extends Model {
         return $this->hasManyThrough('App\Horario', 'App\Turma', 'id');
     }
 
-  
+    public function avaliacao(){
+        return $this->hasMany('App\Avaliacao');
+    }
 
 }

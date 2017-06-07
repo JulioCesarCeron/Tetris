@@ -11,4 +11,12 @@ class Avaliacao extends Model {
     protected $fillable = [
     	'professor_id', 'data_avaliacao', 'materia_id', 'turma_id', 'tipo_avaliacao'
     ];
+
+    public function materia() {
+    	return $this->belongsTo('App\Materia');
+    }
+
+    public function turma() {
+    	return $this->belongsTo('App\Turma');
+    }
 }

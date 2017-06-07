@@ -17,7 +17,7 @@ class AvaliacoesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $avaliacoes = Avaliacao::all();
+        $avaliacoes = Avaliacao::where('professor_id', \Auth::user()->id)->get();
         return view('professor.avaliacao.index', compact('avaliacoes'));
     }
 
@@ -29,10 +29,10 @@ class AvaliacoesController extends Controller
     public function create() {
         $breadcrumb = 'create';
         $title      = 'Nova Avaliação';
-        $avaliacoes = '';
+        $avaliacao = '';
         $turmas     = Turma::all();
         $materias   = Materia::where('professor_user_id', \Auth::user()->id)->get();
-        return view('professor.avaliacao.save', compact('breadcrumb', 'title', 'avaliacoes', 'turmas', 'materias'));
+        return view('professor.avaliacao.save', compact('breadcrumb', 'title', 'avaliacao', 'turmas', 'materias'));
     }
 
     /**
@@ -70,9 +70,12 @@ class AvaliacoesController extends Controller
      * @param  \App\Avaliacao  $avaliacao
      * @return \Illuminate\Http\Response
      */
-    public function edit(Avaliacao $avaliacao)
-    {
-        //
+    public function edit(Avaliacao $avaliacao) {
+        $breadcrumb = 'edit';
+        $title      = 'Editar Avaliação';
+        $turmas     = Turma::all();
+        $materias   = Materia::where('professor_user_id', \Auth::user()->id)->get();
+        return view('professor.avaliacao.save', compact('breadcrumb', 'title', 'turmas', 'materias', 'avaliacao'));
     }
 
     /**
@@ -82,9 +85,16 @@ class AvaliacoesController extends Controller
      * @param  \App\Avaliacao  $avaliacao
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Avaliacao $avaliacao)
-    {
-        //
+    public function update(AvaliacaoFormRequest $request, Avaliacao $avaliacao) {
+        $avaliacao->fill(array(
+                            'professor_id'   => $request->get('professor_id'),
+                            'data_avaliacao' => $request->get('data_avaliacao'),
+                            'materia_id'     => $request->get('materia_id'),
+                            'turma_id'       => $request->get('turma_id'),
+                            'tipo_avaliacao' => $request->get('tipo_avaliacao')
+                        ));
+        $avaliacao->save();
+        return redirect()->route('professor.avaliacao.index')->with('status', 'Avaliação atualizada com sucesso');
     }
 
     /**
@@ -93,8 +103,8 @@ class AvaliacoesController extends Controller
      * @param  \App\Avaliacao  $avaliacao
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Avaliacao $avaliacao)
-    {
-        //
+    public function destroy(Avaliacao $avaliacao) {
+        $avaliacao->delete();
+        return redirect()->route('professor.avaliacao.index')->with('remove', 'Avaliação removido!');
     }
 }
