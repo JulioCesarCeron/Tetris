@@ -52,8 +52,13 @@ Route::group(['middleware' => ['auth', 'professor'] , 'as' => 'professor.'], fun
 });
 
 Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'prefix' => 'professor'], function(){
-	Route::resource('conteudo-aula', 'Professor\ConteudoAulasController');
-	Route::resource('avaliacao',     'Professor\AvaliacoesController');
+	Route::resource('conteudo-aula',  'Professor\ConteudoAulasController');
+	Route::resource('avaliacao',      'Professor\AvaliacoesController');
+	Route::resource('notas',          'Professor\NotasController');
+
+	Route::group(['as' => 'notas.adiciona'], function(){
+		Route::get('notas/{avaliacao}/{aluno}/adiciona', 'Professor\NotasController@adicionaNota');
+	});
 });
 
 

@@ -31,7 +31,7 @@
                                     @if($avaliacao)
                                         <option selected value="{{$avaliacao->tipo_avaliacao}}">{{$avaliacao->tipo_avaliacao}}</option>
                                     @endif
-                                    <option  value="">Avaliação</option>
+                                    <option  selected disabled>Avaliação</option>
                                     <option  value="Prova">Prova</option>
                                     <option  value="Recuperação">Recuperação</option>
                                     <option  value="Trabalho">Trabalho</option>
@@ -54,7 +54,7 @@
                                     @if($avaliacao)
                                         <option selected value="{{$avaliacao->materia_id}}">{{$avaliacao->materia->materia}}</option>
                                     @else
-                                        <option selected value="">Matéria</option>
+                                        <option selected disabled>Matéria</option>
                                     @endif
                                     @if($materias)
                                         @foreach($materias as $materia)
@@ -72,7 +72,7 @@
                                     @if($avaliacao)
                                         <option selected value="{{$avaliacao->turma_id}}">{{$avaliacao->turma->turma}}</option>
                                     @else
-                                        <option selected value="">Turma</option>
+                                        <option selected disabled>Turma</option>
                                     @endif
                                     @foreach($turmas as $turma)
                                         <option value="{{$turma->id}}">{{$turma->turma}}</option>

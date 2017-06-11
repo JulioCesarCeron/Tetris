@@ -69,4 +69,8 @@ class User extends Authenticatable
         return $this->hasMany('App\Materia', 'professor_user_id');
     }
 
+    public function notas() {
+        return $this->hasMany('App\Nota', 'aluno_user_id');
+    }
+
 }

@@ -45,7 +45,7 @@
                                 <td class="text-center">{{ $avaliacao->data_avaliacao }} </td>
                                 <td class="text-center">{{ $avaliacao->tipo_avaliacao }} </td>
                                 <td class="text-center">{{ $avaliacao->materia->materia }} </td>
-                                <td class="table-text-right">{{$avaliacao->turma->turma}}</td>
+                                <td class="table-text-right">{{ $avaliacao->turma->turma }}</td>
                                 <td class="table-text-right">
                                     <a href="{{ route('professor.avaliacao.edit', ['id' => $avaliacao->id]) }}">
                                         <span class="glyphicon glyphicon-pencil"></span>

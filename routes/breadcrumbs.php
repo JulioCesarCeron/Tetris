@@ -160,6 +160,24 @@ Breadcrumbs::register('avaliacao-edit', function($breadcrumbs, $avaliacao) {
     $breadcrumbs->push('Editar Avaliação', route('professor.avaliacao.edit', ['id' => $avaliacao->id]));
 });
 
+//NOTAS
+Breadcrumbs::register('avaliacoes', function($breadcrumbs) {
+    $breadcrumbs->parent('professor');
+    $breadcrumbs->push('Avaliações', route('professor.notas.index'));
+});
+
+Breadcrumbs::register('avaliacao-turma', function($breadcrumbs, $avaliacao) {
+    $breadcrumbs->parent('avaliacoes');
+    $breadcrumbs->push( $avaliacao->tipo_avaliacao . " " . $avaliacao->materia->materia . " Turma:" . $avaliacao->turma->turma  , route('professor.notas.show', ['id' => $avaliacao->id]));
+});
+
+Breadcrumbs::register('adicionar-nota', function($breadcrumbs, $avaliacao, $aluno) {
+    $breadcrumbs->parent('avaliacao-turma', $avaliacao);
+    $breadcrumbs->push( "Adicionar nota", route('professor.notas.adiciona', ['avaliacao' => $avaliacao->id, 'aluno' => $aluno->id]));
+});
+
+
+
 /*
 Breadcrumbs::register('category', function($breadcrumbs, $category) {
     $breadcrumbs->parent('blog');

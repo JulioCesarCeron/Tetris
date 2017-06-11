@@ -54,7 +54,7 @@ $factory->define(App\ItemReserva::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Materia::class, function (Faker\Generator $faker) {
-    $nomeMateria = array("Matemática", "Geográfia", "História", "Filosofia", "Portugues", "Física", "Biologia"); 
+    $nomeMateria = array("Matemática", "Geografia", "História", "Filosofia", "Português", "Física", "Biologia"); 
     return [
         'materia'  => $nomeMateria[rand(0, 6)],
         'professor_user_id' => rand(2, 8),

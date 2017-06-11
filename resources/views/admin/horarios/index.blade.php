@@ -41,6 +41,7 @@
             <div class="content">
                 @foreach($horarios as $horario)
                     <div>
+                        {{$horario->seg_per_1_materia}}
                         <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
                             <span class="glyphicon glyphicon-th"></span>
                         </a>
