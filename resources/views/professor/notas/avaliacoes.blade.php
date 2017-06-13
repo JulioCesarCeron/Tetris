@@ -19,7 +19,13 @@
                         <th class="text-center" style="width: 10px;">Turma</th>
                         <th class="text-center">Materia</th>
                         <th class="text-center">Tipo Avaliação</th>
-                        <th class="table-text-right">Ações</th>
+                        <th class="text-center">Data</th>
+                        @if($route == "ver")
+                            <th class="table-text-right">Ver Notas</th>
+                        @else
+                            <th class="table-text-right">Inserir Notas</th>
+                        @endif
+
                     </tr>
                     </thead>
                     <tbody>
@@ -28,10 +34,22 @@
                                 <td class="text-center"> {{$avaliacao->turma->turma}} </td>
                                 <td class="text-center"> {{$avaliacao->materia->materia}} </td>
                                 <td class="text-center"> {{$avaliacao->tipo_avaliacao}} </td>
+                                <td class="text-center">
+                                    @php
+                                        $date = new DateTime($avaliacao->data_avaliacao);
+                                        echo $date->format('d/m/Y');
+                                    @endphp
+                                </td>
                                 <td class="table-text-right"> 
-                                    <a href=" {{route('professor.notas.show', ['id' => $avaliacao->id ])}} " class="btn btn-secondary">
-                                        <span class="glyphicon glyphicon-copy"></span>
-                                    </a>
+                                    @if($route == "ver")
+                                        <a href=" {{route('professor.notas.ver', ['id' => $avaliacao->id ])}} " class="btn btn-secondary">
+                                            <span class="glyphicon glyphicon-eye-open"></span>
+                                        </a>
+                                    @else
+                                        <a href=" {{route('professor.notas.show', ['id' => $avaliacao->id ])}} " class="btn btn-secondary">
+                                            <span class="glyphicon glyphicon-copy"></span>
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

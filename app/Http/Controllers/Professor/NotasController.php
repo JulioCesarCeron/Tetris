@@ -20,11 +20,29 @@ class NotasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        //$materias = Materia::where('professor_user_id', \Auth::user()->id)->with('horario')->get();
-        //$horario  = Horario::has('materia');
         $mat        = Materia::all();
         $avaliacoes = Avaliacao::where('professor_id', \Auth::user()->id)->get();   
-        return view('professor.notas.avaliacoes', compact('mat', 'avaliacoes'));
+        $route      = "inserir";
+        return view('professor.notas.avaliacoes', compact('mat', 'avaliacoes', 'route'));
+    }
+
+    public function verNotas() {
+        // $mat        = Materia::all();
+        // $avaliacoes = Avaliacao::where('professor_id', \Auth::user()->id)->get();
+        // $route      = "ver";   
+        // return view('professor.notas.avaliacoes', compact('mat', 'avaliacoes', 'route'));
+        
+        // $turmas = Avaliacao::where('professor_id', \Auth::user()->id)->get();
+        
+
+
+        $turmas = Avaliacao::distinct()->select('turma_id')->where('professor_id', \Auth::user()->id)->get();
+        return view('professor.notas.notas-turma', compact('turmas'));
+    }
+
+    public function verNotasAlunos($avaliacao_id) {
+        $notas = Nota::where('avaliacao_id', $avaliacao_id)->get();
+        return view('professor.notas.alunos-ver-notas', compact('notas'));
     }
 
     /**

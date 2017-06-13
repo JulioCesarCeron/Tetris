@@ -9,7 +9,8 @@
             <ul class="nav nav-sidebar">
                 <li><a href=" {{ url('professor/conteudo-aula') }} ">Conteúdos Aula</a></li>
                 <li><a href=" {{ url('professor/avaliacao')     }} ">Avaliações</a></li>
-                <li><a href=" {{ url('professor/notas')         }} ">Notas</a></li>
+                <li><a href=" {{ url('professor/notas')         }} ">Inserir Notas</a></li>
+                <li><a href=" {{ url('professor/ver-notas')         }} ">Ver Notas</a></li>
             </ul>
         </div>
         <div class="col-md-offset-2 main">
