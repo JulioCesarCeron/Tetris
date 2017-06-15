@@ -11,6 +11,7 @@ elixir(function(mix) {
 		'../../../bower_components/bootstrap-calendar/css/calendar.css',
 		'../../../bower_components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css',
 		'styles.css',
+		'tetris.css',
 	], 'public/css/app.css');
 
 

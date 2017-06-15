@@ -28,7 +28,7 @@
                 @endif
 
                 <div class="well well bs-component well-none">
-                    <table class="table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       table-striped table-stacked">
+                    <table class="table table-striped table-stacked">
                         <thead>
                         <tr>
                             <th style="width: 10px;">#</th>
@@ -50,10 +50,10 @@
                                 <td class="table-mobile">{{ $user->email }}</td>
                                 <td>{{ $user->type }}</td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('admin.users.edit',['id' => $user->id]) }}">
+                                    <a href="{{ route('admin.users.edit',['id' => $user->id]) }}" class="btn btn-raised btn-info">
                                         <span class="glyphicon glyphicon-pencil"></span>
-                                    </a> |
-                                    <a href="{{ route('admin.users.destroy', ['id' => $user->id]) }}" onclick="{{"event.preventDefault();document.getElementById('user-delete-form-{$user->id}').submit();"}}">
+                                    </a>
+                                    <a href="{{ route('admin.users.destroy', ['id' => $user->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('user-delete-form-{$user->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 

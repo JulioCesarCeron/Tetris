@@ -50,7 +50,7 @@ class ConteudoAulasController extends Controller {
                             'conteudo_aula' => $request->get('conteudo_aula'),
                         ));
         $conteudoAula->save();
-        return redirect()->route('professor.conteudo-aula.index')->with('status', 'Conteúdo criado com sucessor');
+        return redirect()->route('professor.conteudo-aula.index')->with('status', 'Conteúdo criado com sucesso');
     }
 
     /**

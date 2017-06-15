@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="container">
-        {{-- {!! Breadcrumbs::render('avaliacao-turma', $avaliacao) !!} --}}
+        {!! Breadcrumbs::render('ver-notas') !!}
         <div class="well well bs-component">
             <div class="content">
-                <h3 class="header">Administração de Notas</h3>
+                <h3 class="header">Ver notas por turma</h3>
             </div>
         </div>
 
@@ -33,7 +33,7 @@
                                 <td class="text-center"> {{$turma->turma->id}} </td>
                                 <td> {{$turma->turma->turma}} </td>
                                 <td class="table-text-right">  
-                                    <a href="{{route('professor.notas.ver', ['id' => $turma->turma->id])}} "> 
+                                    <a href="{{route('professor.notas.ver.turma', ['id' => $turma->turma->id])}} "> 
                                         <span class="glyphicon glyphicon-log-in"></span> 
                                     </a>
                                 </td>

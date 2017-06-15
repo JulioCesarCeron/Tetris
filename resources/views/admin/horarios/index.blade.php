@@ -39,28 +39,63 @@
 
         <div class="well well bs-component">
             <div class="content">
-                @foreach($horarios as $horario)
-                    <div>
-                        {{$horario->seg_per_1_materia}}
-                        <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
-                            <span class="glyphicon glyphicon-th"></span>
-                        </a>
-                        <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </a>
-                        <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </a>
-                        {!! 
-                            form(\FormBuilder::plain([
-                                'id'     => "horario-delete-form-{$horario->id}",
-                                'method' => 'DELETE',
-                                'url'    => route('admin.horarios.destroy',['id' => $horario->id]),
-                                'style'  => "display: none;"
-                            ]));
-                        !!}
-                    </div>
-                @endforeach
+                <table class="table horarios-table table-striped table-stacked">
+                    <thead>
+                    <tr>
+                        <th style="width: 10px;">#</th>
+                        <th>Horário</th>
+                        <th class="table-text-right">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($horarios as $horario)
+                        <tr>
+                            <td> {{$horario->id}} </td>
+                            <td>
+                                <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </a>
+                            </td>
+                            <td class="table-text-right">
+                                <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </a>
+                                <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </a>
+                                {!! 
+                                    form(\FormBuilder::plain([
+                                        'id'     => "horario-delete-form-{$horario->id}",
+                                        'method' => 'DELETE',
+                                        'url'    => route('admin.horarios.destroy',['id' => $horario->id]),
+                                        'style'  => "display: none;"
+                                    ]));
+                                !!}
+                            </td>
+                        </tr>
+                       {{--  <div>
+                            <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
+                                <span class="glyphicon glyphicon-th"></span>
+                            </a>
+                            <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info">
+
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                            <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                            {!! 
+                                form(\FormBuilder::plain([
+                                    'id'     => "horario-delete-form-{$horario->id}",
+                                    'method' => 'DELETE',
+                                    'url'    => route('admin.horarios.destroy',['id' => $horario->id]),
+                                    'style'  => "display: none;"
+                                ]));
+                            !!}
+                        </div> --}}
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

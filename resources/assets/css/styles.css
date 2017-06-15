@@ -99,6 +99,72 @@ html, body {
     text-align: right;
 }
 
+.table-text-left{
+    text-align: left;
+}
+
+.btn-salvar-center {
+    left: calc(50% - 66.5px);
+}
+
+.horarios-table > tbody > tr > td{
+    line-height: 2.2;
+}
+
+.pagination {
+    padding-left: calc(50% - 83px);
+}
+
+.pagination > li > a {
+    color: #009688;
+}
+
+.pagination > .active > span {
+    background-color: #009688;
+    border-color: #009688;
+}
+
+.pagination > .active > span:hover {
+    background-color: #009688;
+    border-color: #009688;   
+}
+
+.btn {
+    padding: 7px 15px;
+    margin: 0;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    left: 93%;
+    top: -8%;
+    display: none;
+    position: absolute;
+    float: right;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown a:hover {
+    background-color: #eee;
+}
 
 @media only screen and (max-width: 590px){
     .table-mobile{

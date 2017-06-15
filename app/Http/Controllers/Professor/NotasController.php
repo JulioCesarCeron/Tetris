@@ -27,24 +27,16 @@ class NotasController extends Controller
     }
 
     public function verNotas() {
-        // $mat        = Materia::all();
-        // $avaliacoes = Avaliacao::where('professor_id', \Auth::user()->id)->get();
-        // $route      = "ver";   
-        // return view('professor.notas.avaliacoes', compact('mat', 'avaliacoes', 'route'));
-        
-        // $turmas = Avaliacao::where('professor_id', \Auth::user()->id)->get();
-        
-
-
-        $turmas = Avaliacao::distinct()->select('turma_id')->where('professor_id', \Auth::user()->id)->get();
+        $turmas = Avaliacao::where('professor_id', \Auth::user()->id)->distinct()->select('turma_id')->get();
         return view('professor.notas.turma-notas', compact('turmas'));
     }
 
-    public function verNotasAlunos($avaliacao_id) {
-        $notas = Nota::where('avaliacao_id', $avaliacao_id)->get();
-        //$alunos    = Turma::find($avaliacao->turma_id)->users()->get();
-        $alunos = Turma::find($avaliacao_id)->users()->get();
-        return view('professor.notas.alunos-ver-notas', compact('notas', 'alunos'));
+    public function verNotasAlunos($turma_id) {
+        $turma  = Turma::find($turma_id);
+        $alunos  = $turma->users()->get();
+        $materia = User::find(\Auth::user()->id)->materias->first();
+        $avaliacoes = Avaliacao::where('turma_id', $turma_id)->get();
+        return view('professor.notas.alunos-ver-notas', compact('alunos', 'avaliacoes', 'materia', 'turma'));
     }
 
     /**

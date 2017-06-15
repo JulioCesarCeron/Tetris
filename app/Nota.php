@@ -12,4 +12,8 @@ class Nota extends Model {
     public function aluno(){
     	return $this->belongsTo('App\User', 'id');
     }
+
+    public function avaliacao(){
+    	return $this->belongsTo('App\Avaliacao');
+    }
 }

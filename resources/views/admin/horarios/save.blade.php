@@ -57,14 +57,14 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-8 form-group-turma">
-                                <label for="turma_id" class="control-label required">Turma</label>
+                                <label for="turma_id" class="control-label required" style="text-align: left;">Turma</label>
                                 <select class="form-control" id="turma_id" name="turma_id">
                                     @foreach($turmas as $turma)
                                         <option value="{{$turma->id}}">{{$turma->turma}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <button class="btn btn-raised btn-success" type="submit">
+                            <button class="btn-salvar-center btn btn-raised btn-success" type="submit">
                                 SALVAR
                                 <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                             </button>

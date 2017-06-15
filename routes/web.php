@@ -57,8 +57,11 @@ Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'pref
 	Route::resource('notas',          'Professor\NotasController');
 	
 	Route::group(['as' => 'notas.ver'], function(){	
-		Route::get('ver-notas',                'Professor\NotasController@verNotas');
-		Route::get('ver-notas/{avaliacao_id}', 'Professor\NotasController@verNotasAlunos');
+		Route::get('ver-notas', 'Professor\NotasController@verNotas');
+	});
+
+	Route::group(['as' => 'notas.ver.turma'], function(){	
+		Route::get('ver-notas/{turma_id}', 'Professor\NotasController@verNotasAlunos');
 	});
 
 	Route::group(['as' => 'notas.adiciona'], function(){

@@ -33,16 +33,13 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
+                   <div class='tetris'>
+                      <div class='block1'></div>
+                      <div class='block2'></div>
+                      <div class='block3'></div>
+                      <div class='block4'></div>
+                    </div>
+                </div> 
             </div>
         </div>
     </body>

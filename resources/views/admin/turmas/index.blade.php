@@ -51,10 +51,10 @@
                             </td>
                             <td>{{ $turma->serie }}ª</td>
                             <td class="table-text-right">
-                                <a href="{{ route('admin.turmas.edit',['id' => $turma->id]) }}">
+                                <a href="{{ route('admin.turmas.edit',['id' => $turma->id]) }}" class="btn btn-raised btn-info" >
                                     <span class="glyphicon glyphicon-pencil"></span>
-                                </a> |
-                                <a href="{{ route('admin.turmas.destroy', ['id' => $turma->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turma-delete-form-{$turma->id}').submit();"}}">
+                                </a>
+                                <a href="{{ route('admin.turmas.destroy', ['id' => $turma->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('turma-delete-form-{$turma->id}').submit();"}}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
                                 {!! 
