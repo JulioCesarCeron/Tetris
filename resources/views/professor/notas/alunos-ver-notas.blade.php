@@ -16,17 +16,29 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th class="text-center" style="width: 10px;">#</th>
+                        <th style="width: 10px;">#</th>
                         <th>Nome</th>
-                        <th class="table-text-right">Notas</th>
+                        {{-- <th class="table-text-right">Notas</th> --}}
+                        @php
+                            $numNotas = 1;
+                        @endphp
+                        @foreach($alunos->first()->notas as $aluno)
+                            <th>Nota {{$numNotas}} </th>
+                            @php
+                                $numNotas++; 
+                            @endphp
+                        @endforeach
+
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach($notas as $nota)
+                        @foreach($alunos as $aluno)
                             <tr>
-                                <td class="text-center"> {{$nota->aluno_user_id}} </td>
-                                <td> {{$nota->aluno->name}} </td>
-                                <td class="table-text-right"> {{$nota->nota}} </td>
+                                <td> {{$aluno->id}} </td>
+                                <td> {{$aluno->name}} </td>
+                                    @foreach($aluno->notas as $nota)
+                                        <td>{{$nota->nota}}</td>
+                                    @endforeach
                             </tr>
                         @endforeach
                     </tbody>

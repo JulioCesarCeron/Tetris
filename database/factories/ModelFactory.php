@@ -34,12 +34,23 @@ $factory->define(App\Product::class, function (Faker\Generator $faker) {
 $factory->define(App\Turma::class, function (Faker\Generator $faker) {
 
     $serie  = $faker->numberBetween(2,1,13);
-    $letter = chr(64+rand(1,6));;
+    $letter = chr(64+rand(1,6));
     $turma  = $serie . $letter;
 
     return [
         'serie' => $serie,
         'turma' => $turma,
+    ];
+});
+
+$factory->define(App\TurmaAluno::class, function (Faker\Generator $faker) {
+
+    $user_id  = $faker->numberBetween(9,25,13);
+    $turma_id = $faker->numberBetween(1,10,13);
+
+    return [
+        'user_id'  => $user_id,
+        'turma_id' => $turma_id,
     ];
 });
 

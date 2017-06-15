@@ -37,12 +37,14 @@ class NotasController extends Controller
 
 
         $turmas = Avaliacao::distinct()->select('turma_id')->where('professor_id', \Auth::user()->id)->get();
-        return view('professor.notas.notas-turma', compact('turmas'));
+        return view('professor.notas.turma-notas', compact('turmas'));
     }
 
     public function verNotasAlunos($avaliacao_id) {
         $notas = Nota::where('avaliacao_id', $avaliacao_id)->get();
-        return view('professor.notas.alunos-ver-notas', compact('notas'));
+        //$alunos    = Turma::find($avaliacao->turma_id)->users()->get();
+        $alunos = Turma::find($avaliacao_id)->users()->get();
+        return view('professor.notas.alunos-ver-notas', compact('notas', 'alunos'));
     }
 
     /**

@@ -33,7 +33,7 @@
                                 <td class="text-center"> {{$turma->turma->id}} </td>
                                 <td> {{$turma->turma->turma}} </td>
                                 <td class="table-text-right">  
-                                    <a href=""> 
+                                    <a href="{{route('professor.notas.ver', ['id' => $turma->turma->id])}} "> 
                                         <span class="glyphicon glyphicon-log-in"></span> 
                                     </a>
                                 </td>
