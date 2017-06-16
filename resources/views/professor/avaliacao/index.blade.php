@@ -52,10 +52,10 @@
                                 <td class="text-center">{{ $avaliacao->materia->materia }} </td>
                                 <td class="table-text-right">{{ $avaliacao->turma->turma }}</td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('professor.avaliacao.edit', ['id' => $avaliacao->id]) }}">
+                                    <a href="{{ route('professor.avaliacao.edit', ['id' => $avaliacao->id]) }}" class="btn btn-raised btn-info" title="Editar Avaliação">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a> 
-                                    <a href="{{ route('professor.avaliacao.destroy', ['id' => $avaliacao->id]) }}" onclick="{{"event.preventDefault();document.getElementById('avaliacao-delete-form-{$avaliacao->id}').submit();"}}">
+                                    <a href="{{ route('professor.avaliacao.destroy', ['id' => $avaliacao->id]) }}" class="btn btn-raised btn-danger" title="Remover Avaliação" onclick="{{"event.preventDefault();document.getElementById('avaliacao-delete-form-{$avaliacao->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 
