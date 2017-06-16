@@ -11,7 +11,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ route('admin.products.create') }}" class="btn btn-raised btn-success">
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-raised btn-success" title="Novo">
                                 <span class='glyphicon glyphicon-plus'></span>
                             </a>
                         </div>

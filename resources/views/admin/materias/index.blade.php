@@ -8,7 +8,7 @@
             <div class="content">
                 <h3 class="header">Administração de Matérias</h3>
             </div>
-            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success">Matéria
+            <a href="{{ route('admin.materias.create') }}" class="btn btn-raised btn-success" title="Nova Matéria">Matéria
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
         </div>
@@ -27,7 +27,7 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
@@ -43,10 +43,10 @@
                             <td>{{ $materia->materia }}</td>
                             <td>{{ $materia->professor->name }}</td>
                             <td class="table-text-right">
-                                <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}">
+                                <a href="{{ route('admin.materias.edit',['id' => $materia->id]) }}" class="btn btn-raised btn-info" title="Editar Matéria">
                                     <span class="glyphicon glyphicon-pencil"></span>
-                                </a> |
-                                <a href="{{ route('admin.materias.destroy', ['id' => $materia->id]) }}" onclick="{{"event.preventDefault();document.getElementById('materia-delete-form-{$materia->id}').submit();"}}">
+                                </a>
+                                <a href="{{ route('admin.materias.destroy', ['id' => $materia->id]) }}" class="btn btn-raised btn-danger" title="Remover Matéria" onclick="{{"event.preventDefault();document.getElementById('materia-delete-form-{$materia->id}').submit();"}}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
                                 {!! 
@@ -63,7 +63,7 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{-- {{ $materias->links() }} --}}
+                {{ $materias->links() }}
             </div>
         </div>
     </div>

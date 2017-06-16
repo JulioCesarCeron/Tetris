@@ -11,13 +11,12 @@
                     </button>
 
                     <!-- Branding Image -->
-                        
+                    <a class="navbar-brand" href="{{ url('/') }}"> {{ config('app.name', 'Tetris') }}</a>
                     @if (Auth::check() && Auth::user()->isAdmin())
                         <a class="navbar-brand" href="{{ url('/admin') }}">Home</a>
                     @elseif(Auth::check() && Auth::user()->isProfessor())
                         <a class="navbar-brand" href="{{ url('/professor') }}">Home</a>
                     @endif
-                    <a class="navbar-brand" href="{{ url('/') }}"> {{ config('app.name', 'Laravel') }}</a>
 
                 </div>
 
@@ -41,9 +40,7 @@
 
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
-                                        <a href="{{ route('logout') }}"
-                                            onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             Logout
                                         </a>
 

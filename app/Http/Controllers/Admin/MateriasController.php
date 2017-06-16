@@ -19,7 +19,7 @@ class MateriasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $materias = Materia::with('professor')->get();
+        $materias = Materia::paginate(10);
         return view('admin.materias.index', compact('materias'));
     }
 

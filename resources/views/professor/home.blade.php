@@ -17,13 +17,11 @@
                         <a href=" {{ url('professor/ver-notas')         }} ">Ver Notas</a>
                     </div>
                 </li>
-                <li><a href=" {{ url('professor/avaliacao')     }} ">Avaliações</a></li>
             </ul>
         </div>
         <div class="col-md-offset-2 main">
             <div class="panel panel-default">
                 <div class="panel-heading">Painel do Professor</div>
-
                 <div class="panel-body">
                     You are logged in!
                 </div>

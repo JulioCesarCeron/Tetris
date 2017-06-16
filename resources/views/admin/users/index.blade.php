@@ -10,7 +10,7 @@
                     <div class="content">
                         <h3 class="header">Administração de Usuários</h3>
                     </div>
-                    <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success">Usuário
+                    <a href="{{ route('admin.users.create') }}" class="btn btn-raised btn-success" title="Novo Usuário">Usuário
                         <span class='glyphicon glyphicon-plus'></span>
                     </a>
                 </div>
@@ -43,17 +43,17 @@
                             <tr>
                                 <td>{{ $user->id  }}</td>
                                 <td>
-                                    <a href="{{ route('admin.users.show',['id' => $user->id]) }}">
-                                        {{ $user->name }}
+                                    <a href="{{ route('admin.users.show',['id' => $user->id]) }}" title="Visualizar Usuário">
+                                        {{ $user->name }}    
                                     </a>
                                 </td>
                                 <td class="table-mobile">{{ $user->email }}</td>
                                 <td>{{ $user->type }}</td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('admin.users.edit',['id' => $user->id]) }}" class="btn btn-raised btn-info">
+                                    <a href="{{ route('admin.users.edit',['id' => $user->id]) }}" class="btn btn-raised btn-info" title="Editar Usuário">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
-                                    <a href="{{ route('admin.users.destroy', ['id' => $user->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('user-delete-form-{$user->id}').submit();"}}">
+                                    <a href="{{ route('admin.users.destroy', ['id' => $user->id]) }}" class="btn btn-raised btn-danger" title="Remover Usuário" onclick="{{"event.preventDefault();document.getElementById('user-delete-form-{$user->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 

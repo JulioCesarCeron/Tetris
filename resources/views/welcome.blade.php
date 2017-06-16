@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
 
-        <title>Laravel</title>
+        <title>Tetris</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -26,19 +26,14 @@
                     @endif
                     @if (!Auth::check())
                         <a href="{{ url('/login') }}">Login</a>
-                        <a href="{{ url('/register') }}">Register</a>
+                        {{-- <a href="{{ url('/register') }}">Register</a> --}}
                     @endif
                 </div>
             @endif
 
             <div class="content">
                 <div class="title m-b-md">
-                   <div class='tetris'>
-                      <div class='block1'></div>
-                      <div class='block2'></div>
-                      <div class='block3'></div>
-                      <div class='block4'></div>
-                    </div>
+                    <img class="image-home-logo" src="images/tetris.png" alt="tetris logo home">
                 </div> 
             </div>
         </div>

@@ -5,20 +5,13 @@
     <div class="container">
         <div class="bs-component">
             {!! Breadcrumbs::render('horarios') !!}
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Administração de Horários</h3>
+            <div class="well well bs-component">
+                <div class="content">
+                    <h3 class="header">Administração de Horários</h3>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                           <a href="{{ route('admin.horarios.create') }}" class="btn btn-raised btn-success">Horário
-                                <span class='glyphicon glyphicon-plus'></span>
-                            </a>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
+                <a href="{{ route('admin.horarios.create') }}" class="btn btn-raised btn-success" title="Novo Horário">Horário
+                    <span class='glyphicon glyphicon-plus'></span>
+                </a>
             </div>
         </div>
         
@@ -52,15 +45,15 @@
                         <tr>
                             <td> {{$horario->id}} </td>
                             <td>
-                                <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success">Turma {{$horario->turma->turma}}
+                                <a href="{{ route('admin.horarios.show', ['id' => $horario->id]) }}" class="btn btn-raised btn-success" title="Visualizar Horário">Turma {{$horario->turma->turma}}
                                     <span class="glyphicon glyphicon-th"></span>
                                 </a>
                             </td>
                             <td class="table-text-right">
-                                <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info">
+                                <a href="{{ route('admin.horarios.edit', ['id' => $horario->id]) }}" class="btn btn-raised btn-info" title="Editar Horário">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a>
-                                <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
+                                <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" title="Remover Horário" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </a>
                                 {!! 
@@ -81,7 +74,7 @@
 
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
-                            <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
+                            <a href="{{ route('admin.horarios.destroy', ['id' => $horario->id]) }}" class="btn btn-raised btn-danger" title="Remover" onclick="{{"event.preventDefault();document.getElementById('horario-delete-form-{$horario->id}').submit();"}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </a>
                             {!! 

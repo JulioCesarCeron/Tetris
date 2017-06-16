@@ -8,7 +8,7 @@
             <div class="content">
                 <h3 class="header">Administração de Avaliações</h3>
             </div>
-            <a href="{{ route('professor.avaliacao.create') }}" class="btn btn-raised btn-success">Avaliação
+            <a href="{{ route('professor.avaliacao.create') }}" class="btn btn-raised btn-success" title="Nova Avaliação">Avaliação
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
         </div>
@@ -42,7 +42,12 @@
                         @foreach($avaliacoes as $avaliacao)
                             <tr>
                                 <td>{{ $avaliacao->id }}</td>
-                                <td class="text-center">{{ $avaliacao->data_avaliacao }} </td>
+                                <td class="text-center"> 
+                                    @php
+                                        $date = new DateTime($avaliacao->data_avaliacao);
+                                        echo $date->format('d/m/Y');
+                                    @endphp
+                                </td>
                                 <td class="text-center">{{ $avaliacao->tipo_avaliacao }} </td>
                                 <td class="text-center">{{ $avaliacao->materia->materia }} </td>
                                 <td class="table-text-right">{{ $avaliacao->turma->turma }}</td>

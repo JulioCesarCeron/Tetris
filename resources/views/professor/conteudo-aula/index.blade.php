@@ -8,7 +8,7 @@
             <div class="content">
                 <h3 class="header">Administração de Conteúdos das Aulas</h3>
             </div>
-            <a href="{{ route('professor.conteudo-aula.create') }}" class="btn btn-raised btn-success">Conteudo
+            <a href="{{ route('professor.conteudo-aula.create') }}" class="btn btn-raised btn-success" title="Novo Conteúdo">Conteudo
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
         </div>
@@ -27,13 +27,13 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
                         <th class="text-center">Turma</th>
                         <th class="text-center">Materia</th>
-                        <th class="table-text-right">Data</th>
+                        <th class="text-center">Data</th>
                         <th class="table-text-right">Ações</th>
                     </tr>
                     </thead>
@@ -46,12 +46,17 @@
                                     <a href="{!! route('professor.conteudo-aula.show', [ 'id' => $conteudoAula->id]) !!}">
                                         {{ $conteudoAula->materia->materia }} </td>
                                     </a>
-                                <td class="table-text-right">{{$conteudoAula->data_conteudo}}</td>
+                                <td class="text-center">
+                                    @php
+                                        $date = new DateTime($conteudoAula->data_conteudo);
+                                        echo $date->format('d/m/Y');
+                                    @endphp
+                                </td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('professor.conteudo-aula.edit', ['id' => $conteudoAula->id]) }}">
+                                    <a href="{{ route('professor.conteudo-aula.edit', ['id' => $conteudoAula->id]) }}" class="btn btn-raised btn-info" title="Editar Conteúdo">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a> 
-                                    <a href="{{ route('professor.conteudo-aula.destroy', ['id' => $conteudoAula->id]) }}" onclick="{{"event.preventDefault();document.getElementById('conteudoAula-delete-form-{$conteudoAula->id}').submit();"}}">
+                                    <a href="{{ route('professor.conteudo-aula.destroy', ['id' => $conteudoAula->id]) }}" class="btn btn-raised btn-danger" title="Remover Conteúdo" onclick="{{"event.preventDefault();document.getElementById('conteudoAula-delete-form-{$conteudoAula->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 

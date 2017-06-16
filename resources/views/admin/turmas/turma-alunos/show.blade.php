@@ -9,7 +9,7 @@
 		        <h3 class="header"> Turma: {!! $turma->turma !!} - {!! $turma->serie !!}ª Série</h2>
 		    </div>           
 
-            <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-raised btn-info">Aluno
+            <a href="{{ route('admin.turma.turma-alunos.adiciona', ['id' => $turma->id]) }}" class="btn btn-raised btn-info" title="Adicionar Aluno">Aluno
                 <span class='glyphicon glyphicon-plus'></span>
             </a>
 		</div>
@@ -28,7 +28,7 @@
 
 		<div class="well well bs-component">
 		    <div class="content">
-				<table class="table ">
+				<table class="table table-striped table-stacked">
                     <thead>
                         <tr>
                             <th style="width: 10px;">#</th>
@@ -48,7 +48,7 @@
                                 <td>{{ $aluno->name }}</td>
                                 <td>{{ $aluno->email }}</td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('admin.turma-alunos.destroy', ['id' => $aluno->id]) }}" onclick="{{"event.preventDefault();document.getElementById('turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}').submit();"}}">
+                                    <a href="{{ route('admin.turma-alunos.destroy', ['id' => $aluno->id]) }}" class="btn btn-raised btn-danger" title="Remover Aluno" onclick="{{"event.preventDefault();document.getElementById('turmaAluno-delete-form-{$turmaAlunos->get($countId)->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                     {!! 

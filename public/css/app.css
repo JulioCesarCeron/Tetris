@@ -13306,6 +13306,15 @@ html, body {
     background-color: #eee;
 }
 
+.image-home-logo {
+    width: 100%;
+}
+
+.btn-itens {
+    max-width: 200px;
+    width: 100%;
+}
+
 @media only screen and (max-width: 590px){
     .table-mobile{
         display: none;
