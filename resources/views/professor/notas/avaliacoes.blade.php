@@ -13,19 +13,14 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th class="text-center" style="width: 10px;">Turma</th>
                         <th class="text-center">Materia</th>
                         <th class="text-center">Tipo Avaliação</th>
                         <th class="text-center">Data</th>
-                        @if($route == "ver")
-                            <th class="table-text-right">Ver Notas</th>
-                        @else
-                            <th class="table-text-right">Inserir Notas</th>
-                        @endif
-
+                        <th class="table-text-right">Inserir Notas</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,15 +36,9 @@
                                     @endphp
                                 </td>
                                 <td class="table-text-right"> 
-                                    @if($route == "ver")
-                                        <a href=" {{route('professor.notas.ver', ['id' => $avaliacao->id ])}} " class="btn btn-secondary">
-                                            <span class="glyphicon glyphicon-eye-open"></span>
-                                        </a>
-                                    @else
-                                        <a href=" {{route('professor.notas.show', ['id' => $avaliacao->id ])}} " class="btn btn-secondary">
-                                            <span class="glyphicon glyphicon-copy"></span>
-                                        </a>
-                                    @endif
+                                    <a href=" {{route('professor.notas.show', ['id' => $avaliacao->id ])}} " class="btn btn-padding btn-raised btn-info">
+                                        <span class="glyphicon glyphicon-log-in"></span>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

@@ -27,7 +27,7 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>

@@ -13,12 +13,11 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
                         <th>Nome</th>
-                        
                             @php
                                 $numNotas = 1;
                             @endphp
@@ -30,7 +29,6 @@
                                     @endphp
                                 @endif
                             @endforeach
-
                     </tr>
                     </thead>
                     <tbody>

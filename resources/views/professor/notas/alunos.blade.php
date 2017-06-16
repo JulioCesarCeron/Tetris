@@ -19,7 +19,7 @@
 
         <div class="well well bs-component">
             <div class="content">
-                <table class="table">
+                <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th class="text-center" style="width: 10px;">#</th>
@@ -42,8 +42,8 @@
                                     @if($posNota)
                                         Nota lançada
                                     @else
-                                        <a href="{{route('professor.notas.adiciona', ['avaliacao' => $avaliacao->id, 'aluno' => $aluno->id])}} "> 
-                                            <span class="glyphicon glyphicon-plus-sign"></span> 
+                                        <a href="{{route('professor.notas.adiciona', ['avaliacao' => $avaliacao->id, 'aluno' => $aluno->id])}} " class="btn btn-padding btn-raised btn-info"> 
+                                            <span class="glyphicon glyphicon-plus"></span> 
                                         </a>
                                     @endif
                                 </td>
