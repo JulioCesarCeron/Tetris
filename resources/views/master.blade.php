@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
 
-	<link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}">    
+	<link rel="stylesheet" type="text/css" href="{{ secure_asset('css/app.css') }}">    
     
 </head>
 
@@ -16,7 +16,7 @@
 	@yield('content')
 
 
-	<script src="{{ asset('js/app.js') }}"></script>
+	<script src="{{ secure_asset('js/app.js') }}"></script>
 
 	<script>
 	    $(document).ready(function() {
