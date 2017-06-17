@@ -3,8 +3,8 @@
     <title> @yield('title') </title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- Material Design fonts -->
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 	<link rel="stylesheet" type="text/css" href="{{ secure_asset('css/app.css') }}">    
     
