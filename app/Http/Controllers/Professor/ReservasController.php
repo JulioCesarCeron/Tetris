@@ -36,6 +36,10 @@ class ReservasController extends Controller
         return view('professor.reservas.save', compact('title', 'reservas', 'turmas', 'materias', 'itens'));
     }
 
+    public function calendario() {
+        return view('professor.reservas.calendario');
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -43,14 +47,10 @@ class ReservasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(ReservaFormRequest $request) {
-
-        $teste = Reserva::where('itemReserva_id', $request->get('itemReserva_id'))->where('data_reserva', $request->get('data_reserva'));
-
-        var_dump($teste);
-
-        die();
-
-
+        $reservaVerify = Reserva::where('data_reserva', $request->get('data_reserva'))->where('itemReserva_id', $request->get('itemReserva_id'))->with('turma')->get();
+        if(!empty($reservaVerify->first())){
+            return redirect()->route('professor.reservas.index')->with('existe', "Este item já foi reservado para esta data pelo Professor: " . $reservaVerify->first()->professor->name . " para a Turma " . $reservaVerify->first()->turma->turma);
+        }
         $reserva = new Reserva(array(
                         'itemReserva_id'    => $request->get('itemReserva_id'),
                         'professor_user_id' => $request->get('professor_user_id'),

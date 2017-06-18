@@ -12,6 +12,7 @@ elixir(function(mix) {
 		'../../../bower_components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css',
 		'styles.css',
 		'tetris.css',
+		'../../../bower_components/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.css'
 	], 'public/css/app.css');
 
 
@@ -30,8 +31,13 @@ elixir(function(mix) {
 
 
 	mix.copy('resources/assets/fonts/', 'public/fonts');
-	mix.copy('bower_components/bootstrap-calendar/tmpls/', 'public/tmpls')
+	mix.copy('bower_components/bootstrap-material-design/dist/fonts/Material-Design-Icons.eot', 'public/fonts');
+	mix.copy('bower_components/bootstrap-material-design/dist/fonts/Material-Design-Icons.ttf', 'public/fonts');
+	mix.copy('bower_components/bootstrap-material-design/dist/fonts/Material-Design-Icons.woff', 'public/fonts');
+	mix.copy('bower_components/bootstrap-calendar/tmpls/', 'public/tmpls');
 
 
+
+	mix.copy('bower_components/bootstrap-calendar/img/', 'public/img/');
 	//mix.sass('app.scss');
 });

@@ -20,4 +20,8 @@ class Reserva extends Model {
     public function turma() {
     	return $this->belongsTo('App\Turma');
     }
+
+    public function professor(){
+    	return $this->belongsTo('App\User', 'professor_user_id');
+    }
 }
