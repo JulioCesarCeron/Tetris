@@ -25,6 +25,13 @@
             </div>
         @endif
 
+        @if (session('existe'))
+            <div class="alert alert-warning">
+                <span class="glyphicon glyphicon-floppy-remove icon-existe" style="font-size: 20px;"></span>
+                {{ session('existe') }}
+            </div>
+        @endif
+
         <div class="well well bs-component">
             <div class="content">
                 <table class="table table-striped table-stacked">
@@ -34,16 +41,16 @@
                         <th class="text-center">Items</th>
                         <th class="text-center">Turma</th>
                         <th class="text-center">Data Reserva</th>
-                        <th class="text-center">Ações</th>
+                        <th class="table-text-right">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
                         @foreach($reservas as $reserva)
                             <tr>
                                 <td> {{$reserva->id}} </td>
-                                <td> {{$reserva->item->nome_item}} </td>
-                                <td> {{$reserva->turma->turma}} </td>
-                                <td> {{$reserva->data_reserva}} </td>
+                                <td class="text-center"> {{$reserva->item->nome_item}} </td>
+                                <td class="text-center"> {{$reserva->turma->turma}} </td>
+                                <td class="text-center"> {{$reserva->data_reserva}} </td>
                                 <td class="table-text-right">
                                     <a href="{{ route('professor.reservas.destroy', ['id' => $reserva->id]) }}" class="btn btn-raised btn-danger" title="Remover Avaliação" onclick="{{"event.preventDefault();document.getElementById('reserva-delete-form-{$reserva->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>
