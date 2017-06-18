@@ -56,29 +56,3 @@
         </div>
     </div>
 @endsection
-
-
-{{-- <form method="POST" action="http://127.0.0.1:8000/admin/users" accept-charset="UTF-8">
-   <input name="_token" type="hidden" value="4I3J0JIHSkiDPG9bx4Tg2GCVQagHwqU9kPRxwkPh">
-   <div class="form-group is-empty">
-      <label for="name" class="control-label">Name</label>
-      <input class="form-control" name="name" type="text" id="name">
-   </div>
-   <div class="form-group is-empty">
-      <label for="email" class="control-label">Email</label>
-      <input class="form-control" name="email" type="email" id="email">
-   </div>
-   <div class="form-group is-empty">
-      <label for="type" class="control-label">Type</label>
-      <select class="form-control" id="type" name="type">
-         <option value="" selected="selected">Tipo de usuário</option>
-         <option value="admin">Administrador</option>
-         <option value="professor">Professor</option>
-      </select>
-   </div>
-   <div class="form-group is-empty">
-      <label for="password" class="control-label">Password</label>
-      <input class="form-control" name="password" type="password" id="password">
-   </div>
-   <button class="form-control" type="submit"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
-</form> --}}

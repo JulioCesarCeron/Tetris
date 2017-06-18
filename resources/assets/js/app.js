@@ -38,5 +38,6 @@ $( document ).ready(function() {
 
 	$('#data_conteudo').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 	$('#data_avaliacao').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
+	$('#data_reserva').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 
 });
