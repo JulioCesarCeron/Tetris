@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reserva extends Model {
     protected $fillable = [
-    	'itemReserva_id', 'professor_user_id', 'turma_id', 'materia_id', 'data_reserva'
+    	'itemReserva_id', 'professor_user_id', 'turma_id', 'materia_id', 'data_reserva', 'title', 'url', 'class', 'start', 'end'
     ];
 
     public function item(){

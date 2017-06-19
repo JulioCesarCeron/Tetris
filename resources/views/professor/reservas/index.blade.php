@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="container">
-        {{-- {!! Breadcrumbs::render('avaliacao') !!} --}}
+        {!! Breadcrumbs::render('reservas') !!}
         <div class="well well bs-component">
             <div class="content">
                 <h3 class="header">Administração de Reservas</h3>
@@ -34,11 +34,17 @@
 
         <div class="well well bs-component">
             <div class="content">
+               <div id="calendar-reservas"></div>
+            </div>
+            <br>
+            <h3>Minhas Reservas</h3>
+            <hr style="border-color: #b3b2b2;">
+            <div class="content">
                 <table class="table table-striped table-stacked">
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
-                        <th class="text-center">Items</th>
+                        <th class="text-center">Item</th>
                         <th class="text-center">Turma</th>
                         <th class="text-center">Data Reserva</th>
                         <th class="table-text-right">Ações</th>
@@ -50,7 +56,12 @@
                                 <td> {{$reserva->id}} </td>
                                 <td class="text-center"> {{$reserva->item->nome_item}} </td>
                                 <td class="text-center"> {{$reserva->turma->turma}} </td>
-                                <td class="text-center"> {{$reserva->data_reserva}} </td>
+                                <td class="text-center">
+                                    @php
+                                        $date = new DateTime($reserva->data_reserva);
+                                        echo $date->format('d/m/Y');
+                                    @endphp
+                                </td>
                                 <td class="table-text-right">
                                     <a href="{{ route('professor.reservas.destroy', ['id' => $reserva->id]) }}" class="btn btn-raised btn-danger" title="Remover Avaliação" onclick="{{"event.preventDefault();document.getElementById('reserva-delete-form-{$reserva->id}').submit();"}}">
                                         <span class="glyphicon glyphicon-remove"></span>

@@ -58,7 +58,7 @@ class TurmasController extends Controller {
      * @param  \App\Turma  $turma
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
+    public function show() {
 
     }
 

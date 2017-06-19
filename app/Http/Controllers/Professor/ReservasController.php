@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Professor;
 
+use DateTime;
 use App\Reserva;
 use App\Turma;
+use App\User;
 use App\Materia;
 use App\ItemReserva;
 use Illuminate\Http\Request;
@@ -18,7 +20,7 @@ class ReservasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $reservas = Reserva::paginate(15);
+        $reservas = Reserva::where('professor_user_id', \Auth::user()->id)->get();
         return view('professor.reservas.index', compact('reservas'));
     }
 
@@ -36,10 +38,6 @@ class ReservasController extends Controller
         return view('professor.reservas.save', compact('title', 'reservas', 'turmas', 'materias', 'itens'));
     }
 
-    public function calendario() {
-        return view('professor.reservas.calendario');
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -51,12 +49,25 @@ class ReservasController extends Controller
         if(!empty($reservaVerify->first())){
             return redirect()->route('professor.reservas.index')->with('existe', "Este item já foi reservado para esta data pelo Professor: " . $reservaVerify->first()->professor->name . " para a Turma " . $reservaVerify->first()->turma->turma);
         }
+        $item      = ItemReserva::find($request->get('itemReserva_id'));
+        $turma     = Turma::find($request->get('turma_id'));
+        $professor = User::find($request->get('professor_user_id'));
+        $title     = $item->first()->nome_item . " reservado para a Turma:" . $turma->first()->turma . " pelo Professor: " . $professor->first()->name;
+
+        $start = strtotime($request->get('data_reserva') . " 14:00:00") * 1000;
+        $end   = strtotime($request->get('data_reserva') . " 14:00:00") * 1000;
+
         $reserva = new Reserva(array(
                         'itemReserva_id'    => $request->get('itemReserva_id'),
                         'professor_user_id' => $request->get('professor_user_id'),
                         'turma_id'          => $request->get('turma_id'),
                         'materia_id'        => $request->get('materia_id'),
                         'data_reserva'      => $request->get('data_reserva'),
+                        'title'             => $title,
+                        'url'               => $request->get('url'),
+                        'class'             => $request->get('class'),
+                        'start'             => $start,
+                        'end'               => $end,
                     ));
         $reserva->save();
         return redirect()->route('professor.reservas.index')->with('status', 'Reserva criada com sucesso');

@@ -40,15 +40,6 @@
                             </div>
 
                             <div class="form-group" >
-                                <label for="data_avaliacao" class="control-label required is-empty">Data</label>
-                                @if($avaliacao)
-                                    <input type="date" class="form-control" name="data_avaliacao" id="data_avaliacao" value="{{$avaliacao->data_avaliacao}}"/>
-                                @else
-                                    <input type="date" class="form-control" name="data_avaliacao" id="data_avaliacao" value=""/>
-                                @endif
-                            </div>
-
-                            <div class="form-group" >
                                 <label for="materia_id" class="control-label required">Materia</label>
                                 <select class="form-control" id="materia_id" name="materia_id">
                                     @if($avaliacao)
@@ -78,6 +69,15 @@
                                         <option value="{{$turma->id}}">{{$turma->turma}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <div class="form-group" >
+                                <label for="data_avaliacao" class="control-label required is-empty">Data</label>
+                                @if($avaliacao)
+                                    <input type="date" class="form-control" name="data_avaliacao" id="data_avaliacao" value="{{$avaliacao->data_avaliacao}}"/>
+                                @else
+                                    <input type="date" class="form-control" name="data_avaliacao" id="data_avaliacao" value=""/>
+                                @endif
                             </div>
 
                             <button class="form-control" type="submit">

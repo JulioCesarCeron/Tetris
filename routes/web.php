@@ -56,10 +56,8 @@ Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'pref
 	Route::resource('avaliacao',      'Professor\AvaliacoesController');
 	Route::resource('notas',          'Professor\NotasController');
 	Route::resource('reservas',       'Professor\ReservasController');
-	
-	Route::group(['as' => 'reserva.calendario'], function(){	
-		Route::get('reserva-calendario', 'Professor\ReservasController@calendario');
-	});
+	Route::resource('presencas',      'Professor\PresencasController');
+
 
 	Route::group(['as' => 'notas.ver'], function(){	
 		Route::get('ver-notas', 'Professor\NotasController@verNotas');

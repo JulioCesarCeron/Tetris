@@ -24782,8 +24782,6 @@ var getJSON = function(url, callback) {
 };
 
 
-	var MEUOVOESQUERDODEOCULOS; 
-
 
 $( document ).ready(function() {
 
@@ -24805,14 +24803,6 @@ $( document ).ready(function() {
 	$('#data_avaliacao').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 	$('#data_reserva').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 
-
-
- 
-  
-
-
-
-
     fetch('/api/agenda').then(res => res.json()).then((out) => {
   		console.log('Checkout this JSON! ', out.result);
    
@@ -24820,23 +24810,6 @@ $( document ).ready(function() {
 	        view: 'month',
 	        tmpl_path: '/tmpls/',
 	        events_source: out.result,
-	        // events_source: [
-	        // {
-	        //     "end": 1498359600000, // Milliseconds
-	        //     "class": "event-important",
-	        //     "start": 1497754800000, // Milliseconds
-	        //     "url": "http://example.com",
-	        //     "title": "Item: teste, Professor: teste, Turma: teste",
-	        //     "id": 293,
-	        // },
-	        // {
-	        //     "end": 1498359600000, // Milliseconds
-	        //     "start": 1497754800000, // Milliseconds
-	        //     "class": "event-important",
-	        //     "url": "javascript:void(0)",
-	        //     "title": "Item: teste, Professor: teste, Turma: teste",
-	        //     "id": 23,
-	        // }],
 	        onAfterViewLoad: function(view) {
 	            $('#calendar-title').text(this.getMonth());
 	        },
@@ -24847,8 +24820,5 @@ $( document ).ready(function() {
 	    calendarReserva.setLanguage('pt-BR');
 	    calendarReserva.view();
 	 }).catch(err => console.error(err));
-
-
-    
 });
 //# sourceMappingURL=app.js.map

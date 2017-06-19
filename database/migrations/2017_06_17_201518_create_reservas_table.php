@@ -20,6 +20,11 @@ class CreateReservasTable extends Migration
             $table->integer("turma_id");
             $table->integer("materia_id");
             $table->date("data_reserva");
+            $table->string("title");
+            $table->string("url");
+            $table->string("class");
+            $table->string("start");
+            $table->string("end");
             $table->timestamps();
         });
     }

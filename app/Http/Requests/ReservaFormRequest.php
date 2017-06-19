@@ -29,6 +29,11 @@ class ReservaFormRequest extends FormRequest
             'turma_id'          => 'required',
             'materia_id'        => 'required',
             'data_reserva'      => 'required',
+            'title'             => 'required',
+            'url'               => 'required',
+            'class'             => 'required',
+            'start'             => 'required',
+            'end'               => 'required',
         ];
     }
 }

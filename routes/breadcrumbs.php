@@ -194,8 +194,19 @@ Breadcrumbs::register('professor', function($breadcrumbs) {
             $breadcrumbs->parent('ver-notas');
             $breadcrumbs->push('Turma ' . $turma->turma, route('professor.notas.ver.turma', ['turma_id' => $turma->id]));
         });
-
     //NOTAS
+    
+    //RESERVAS
+        Breadcrumbs::register('reservas', function($breadcrumbs) {
+            $breadcrumbs->parent('professor');
+            $breadcrumbs->push('Reservas', route('professor.reservas.index'));
+        });
+
+        Breadcrumbs::register('reservas-nova-reserva', function($breadcrumbs) {
+            $breadcrumbs->parent('reservas');
+            $breadcrumbs->push('Nova Reserva', route('professor.reservas.index'));
+        });
+    //RESERVAS
 
 
 

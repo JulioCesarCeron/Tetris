@@ -3,6 +3,7 @@
 
 @section('content')
     <div class="container">
+        {!! Breadcrumbs::render('reservas-nova-reserva') !!}
         <div class="bs-component">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -12,6 +13,14 @@
                     <form method="POST" action="{{url('professor/reservas')}}" accept-charset="UTF-8">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <input type="hidden" name="professor_user_id" id="professor_user_id" value="{{ Auth::User()->id }}">
+
+
+                        <input type="hidden" name="title" id="title" value="title">
+                        <input type="hidden" name="url"   id="url"   value="javascript:void(0)}">
+                        <input type="hidden" name="class" id="class" value="event-important">
+                        
+
+                        
                         <fieldset>
                             <div class="form-group" >
                                 <label for="itemReserva_id" class="control-label required">Item</label>
@@ -43,6 +52,8 @@
                             <div class="form-group" >
                                 <label for="data_reserva" class="control-label required is-empty">Data</label>
                                 <input type="date" class="form-control" name="data_reserva" id="data_reserva" value=""/>
+                                <input type="hidden" name="start" id="start" value="0000000">
+                                <input type="hidden" name="end"   id="end"   value="0000000">
                             </div>
                             <button class="form-control" type="submit">
                                 <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
