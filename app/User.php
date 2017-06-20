@@ -73,4 +73,8 @@ class User extends Authenticatable
         return $this->hasMany('App\Nota', 'aluno_user_id');
     }
 
+    public function presenca(){
+        return $this->hasMany('App\Presenca', 'aluno_user_id');
+    }
+
 }

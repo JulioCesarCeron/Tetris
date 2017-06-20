@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="container">
-        {{-- {!! Breadcrumbs::render('avaliacao') !!} --}}
+        {!! Breadcrumbs::render('presencas') !!}
         <div class="well well bs-component">
             <div class="content">
                 <h3 class="header">Administração de Presenças</h3>
@@ -40,7 +40,7 @@
                                 <td class="text-center">{{ $turma->turma }}</td>
                                 <td class="text-center">{{ $turma->serie }}ª</td>
                                 <td class="table-text-right">
-                                    <a href="{{ route('professor.presencas.show', ['id' => $turma->id]) }}" class="btn btn-raised btn-info" title="Selecionar Turma" >
+                                    <a href="{{ route('professor.presencas.materias', ['id' => $turma->id]) }}" class="btn btn-raised btn-info" title="Selecionar Turma" >
                                         <span class="glyphicon glyphicon-log-in"></span>
                                     </a>
                                 </td>

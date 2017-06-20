@@ -18,7 +18,7 @@
             <div class=" panel-default">
                 <div class="panel-heading">Painel Administrativo</div>
                 <div class="panel-body">
-                    You are logged in!
+                    <h3>Bem vindo Professor {{\Auth::user()->name}} !</h3>
                 </div>
             </div>
         </div>

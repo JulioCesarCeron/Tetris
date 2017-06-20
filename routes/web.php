@@ -58,6 +58,13 @@ Route::group(['middleware' => ['auth', 'professor'], 'as' => 'professor.', 'pref
 	Route::resource('reservas',       'Professor\ReservasController');
 	Route::resource('presencas',      'Professor\PresencasController');
 
+	Route::group(['as' => 'presencas.materias'], function(){	
+		Route::get('presencas/turma/{turma_id}', 'Professor\PresencasController@materias');
+	});
+
+	Route::group(['as' => 'presencas.alunos'], function(){	
+		Route::get('presencas/turma/{turma_id}/{materia_id}', 'Professor\PresencasController@alunos');
+	});	
 
 	Route::group(['as' => 'notas.ver'], function(){	
 		Route::get('ver-notas', 'Professor\NotasController@verNotas');

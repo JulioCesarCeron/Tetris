@@ -7,6 +7,7 @@ use App\Turma;
 use App\Materia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PresencaFormRequest;
 
 class PresencasController extends Controller
 {
@@ -18,6 +19,19 @@ class PresencasController extends Controller
     public function index() {
         $turmas = Turma::all();
         return view('professor.presencas.index', compact('turmas'));
+    }
+
+    public function materias($turma_id){
+        $materias = Materia::where('professor_user_id', \Auth::user()->id)->get();
+        $turma    = Turma::find($turma_id);
+        return view('professor.presencas.materias', compact('materias', 'turma_id', 'turma'));
+    }
+
+    public function alunos($turma_id, $materia_id){
+        $alunos  = Turma::find($turma_id)->users()->get();
+        $turma   = Turma::find($turma_id); 
+        $materia = Materia::find($materia_id);
+        return view('professor.presencas.alunos', compact('alunos', 'turma_id', 'materia_id', 'materia', 'turma'));
     }
 
     /**
@@ -36,9 +50,16 @@ class PresencasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(PresencaFormRequest $request) {
+        $nota = new Presenca(array(
+                            'materia_id'    => $request->get('materia_id'),
+                            'presenca'      => $request->get('presenca'),
+                            'turma_id'      => $request->get('turma_id'),
+                            'aluno_user_id' => $request->get('aluno_user_id'),
+                            'data_presenca' => $request->get('data_presenca'),
+                        ));
+        $nota->save();
+        return redirect()->route('professor.presencas.alunos', ['turma_id' => $request->get('turma_id'), 'materia_id' => $request->get('materia_id')]);
     }
 
     /**

@@ -207,6 +207,23 @@ Breadcrumbs::register('professor', function($breadcrumbs) {
             $breadcrumbs->push('Nova Reserva', route('professor.reservas.index'));
         });
     //RESERVAS
+    
+    //PRESENÇAS
+        Breadcrumbs::register('presencas', function($breadcrumbs) {
+            $breadcrumbs->parent('professor');
+            $breadcrumbs->push('Presenças', route('professor.presencas.index'));
+        });
+
+        Breadcrumbs::register('presencas-turmas', function($breadcrumbs, $turma) {
+            $breadcrumbs->parent('presencas');
+            $breadcrumbs->push('Turma ' . $turma->turma, route('professor.presencas.materias', ['id' => $turma->id]));
+        });
+
+        Breadcrumbs::register('presencas-alunos', function($breadcrumbs, $turma, $materia) {
+            $breadcrumbs->parent('presencas-turmas', $turma);
+            $breadcrumbs->push('Alunos da Matéria: ' . $materia->materia, route('professor.presencas.alunos', ['turma_id' => $turma->id, 'materia_id' => $materia->id]));
+        });
+    //PRESENÇAS
 
 
 

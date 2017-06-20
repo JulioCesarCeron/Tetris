@@ -1,21 +1,15 @@
-
 @extends('master')
 @section('title', 'Usuários')
 
 @section('content')
     <div class="container">
-        {!! Breadcrumbs::render('ver-notas') !!}
+        {!! Breadcrumbs::render('presencas-turmas', $turma) !!}
         <div class="well well bs-component">
             <div class="content">
-                <h3 class="header">Ver notas por turma</h3>
+                <h3 class="header">Administração de Presenças</h3>
             </div>
         </div>
-
-        @if (session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-        @endif
+        
 
         <div class="well well bs-component">
             <div class="content">
@@ -23,18 +17,18 @@
                     <thead>
                     <tr>
                         <th style="width: 10px;">#</th>
-                        <th>Turma</th>
+                        <th >Materia</th>
                         <th class="table-text-right">Selecionar</th>
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach($turmas as $turma)
+                         @foreach($materias as $materia)
                             <tr>
-                                <td> {{$turma->turma->id}} </td>
-                                <td> {{$turma->turma->turma}} </td>
-                                <td class="table-text-right">  
-                                    <a href="{{route('professor.notas.ver.turma', ['id' => $turma->turma->id])}} " class="btn btn-padding btn-raised btn-info"> 
-                                        <span class="glyphicon glyphicon-eye-open"></span> 
+                                <td> {{$materia->id}} </td>
+                                <td> {{$materia->materia}} </td>
+                                <td class="table-text-right">
+                                    <a href="{{ route('professor.presencas.alunos', ['turma_id' => $turma_id, 'materia_id' => $materia->id]) }}" class="btn btn-raised btn-info" title="Remover Avaliação" >
+                                        <span class="glyphicon glyphicon-log-in"></span>
                                     </a>
                                 </td>
                             </tr>

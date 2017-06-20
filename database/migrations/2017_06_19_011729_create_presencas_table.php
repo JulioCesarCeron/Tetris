@@ -19,6 +19,7 @@ class CreatePresencasTable extends Migration
             $table->integer('presenca');
             $table->integer('turma_id');
             $table->integer('aluno_user_id');
+            $table->date('data_presenca');
             $table->timestamps();
         });
     }

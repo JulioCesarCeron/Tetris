@@ -18,17 +18,17 @@
                     <tr>
                         <th style="width: 10px;">#</th>
                         <th>Nome</th>
-                            @php
-                                $numNotas = 1;
-                            @endphp
-                            @foreach($avaliacoes as $aval)
-                                @if($aval->materia->id == $materia->id)
-                                    <th>Nota {{$numNotas}} </th>
-                                    @php
-                                        $numNotas++; 
-                                    @endphp
-                                @endif
-                            @endforeach
+                        @php
+                            $numNotas = 1;
+                        @endphp
+                        @foreach($avaliacoes as $aval)
+                            @if($aval->materia->id == $materia->id)
+                                <th>Nota {{$numNotas}} </th>
+                                @php
+                                    $numNotas++; 
+                                @endphp
+                            @endif
+                        @endforeach
                     </tr>
                     </thead>
                     <tbody>
@@ -36,11 +36,11 @@
                             <tr>
                                 <td> {{$aluno->id}} </td>
                                 <td> {{$aluno->name}} </td>
-                                    @foreach($aluno->notas as $nota)
-                                        @if($nota->avaliacao->materia->id == $materia->id)
-                                            <td>{{$nota->nota}}</td>
-                                        @endif
-                                    @endforeach
+                                @foreach($aluno->notas as $nota)
+                                    @if($nota->avaliacao->materia->id == $materia->id)
+                                        <td>{{$nota->nota}}</td>
+                                    @endif
+                                @endforeach
                             </tr>
                         @endforeach
                     </tbody>
