@@ -7,11 +7,14 @@
         {!! Breadcrumbs::render('admin') !!}
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href=" {{ url('admin/users')       }} ">Usuários</a></li>
-                <li><a href=" {{ url('admin/turmas')      }} ">Turmas</a></li>
-                <li><a href=" {{ url('admin/materias')    }} ">Materias</a></li>
-                <li><a href=" {{ url('admin/item-reserva')}} ">Itens Reserva</a></li>
-                <li><a href=" {{ url('admin/horarios')    }} ">Horários</a></li>
+                <li><a href=" {{ url('admin/users')        }} ">Usuários</a></li>
+                <li><a href=" {{ url('admin/turmas')       }} ">Turmas</a></li>
+                <li><a href=" {{ url('admin/materias')     }} ">Materias</a></li>
+                <li><a href=" {{ url('admin/item-reserva') }} ">Itens Reserva</a></li>
+                <li><a href=" {{ url('admin/conteudo-aula')}} ">Conteúdos Aula</a></li>
+                <li><a href=" {{ url('admin/avaliacao')    }} ">Avaliações</a></li>
+                <li><a href=" {{ url('admin/reservas')     }} ">Reservas</a></li>
+                <li><a href=" {{ url('admin/horarios')     }} ">Horários</a></li>
             </ul>
         </div>
         <div class=" col-md-offset-2">
