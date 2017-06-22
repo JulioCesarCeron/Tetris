@@ -16,11 +16,11 @@
                 <div class="panel-body">
                     
                     @if($conteudoAula)
-                        <form method="POST" action="{{ route('professor.conteudo-aula.update',['id' => $conteudoAula->id])}}" accept-charset="UTF-8">
+                        <form method="POST" action="{{ route('admin.conteudo-aula.update',['id' => $conteudoAula->id])}}" accept-charset="UTF-8">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                     @else
-                        <form method="POST" action="{{url('professor/conteudo-aula')}}" accept-charset="UTF-8">
+                        <form method="POST" action="{{url('admin/conteudo-aula')}}" accept-charset="UTF-8">
                     @endif
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <input type="hidden" name="professor_id" id="professor_id" value="{{ Auth::User()->id }}">

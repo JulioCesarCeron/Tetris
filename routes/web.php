@@ -31,6 +31,9 @@ Route::group(['middleware' => ['auth', 'admin'] , 'as' => 'admin.', 'prefix' => 
 	Route::resource('materias',      'Admin\MateriasController'      );
 	Route::resource('item-reserva',  'Admin\ItemReservasController'  );
 	Route::resource('horarios',      'Admin\HorariosController'      );
+	Route::resource('conteudo-aula', 'Admin\ConteudoAulasController' );
+	Route::resource('avaliacao',     'Admin\AvaliacoesController'    );
+	Route::resource('reservas',      'Admin\ReservasController'      );
 	Route::resource('turmas',        'Admin\TurmasController', ['parameters' => ['turmas' => 'turma']]);
 });
 

@@ -12,6 +12,10 @@ class Avaliacao extends Model {
     	'professor_id', 'data_avaliacao', 'materia_id', 'turma_id', 'tipo_avaliacao'
     ];
 
+    public function professor() {
+        return $this->belongsTo('App\User', 'professor_id');
+    }   
+
     public function materia() {
     	return $this->belongsTo('App\Materia');
     }

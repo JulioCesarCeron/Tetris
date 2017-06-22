@@ -122,6 +122,52 @@
                 $breadcrumbs->push('Horário Turma ' . $horario->turma->turma, route('admin.horarios.show', $horario->id));
             });
         //HORARIOS
+        
+        //CONTEUDO AULA
+            Breadcrumbs::register('admin-conteudo-aula', function($breadcrumbs) {
+                $breadcrumbs->parent('admin');
+                $breadcrumbs->push('Conteúdos Aula', route('admin.conteudo-aula.index'));
+            });
+
+            Breadcrumbs::register('admin-conteudo-aula-create', function($breadcrumbs) {
+                $breadcrumbs->parent('admin-conteudo-aula');
+                $breadcrumbs->push('Novo Conteúdo', route('admin.conteudo-aula.create'));
+            });
+
+            Breadcrumbs::register('admin-conteudo-aula-edit', function($breadcrumbs, $conteudoAula) {
+                $breadcrumbs->parent('admin-conteudo-aula');
+                $breadcrumbs->push('Editar Conteúdo', route('admin.conteudo-aula.edit', ['id' => $conteudoAula->id ]));
+            });
+
+            Breadcrumbs::register('admin-conteudo-aula-show', function($breadcrumbs, $conteudoAula) {
+                $breadcrumbs->parent('admin-conteudo-aula');
+                $breadcrumbs->push('Mostrar Conteúdo', route('admin.conteudo-aula.show', ['id' => $conteudoAula->id ]));
+            });
+        //CONTEUDO AULA
+        
+        //AVALIACAO
+            Breadcrumbs::register('admin-avaliacao', function($breadcrumbs) {
+                $breadcrumbs->parent('admin');
+                $breadcrumbs->push('Avaliações', route('admin.avaliacao.index'));
+            });
+
+            Breadcrumbs::register('admin-avaliacao-create', function($breadcrumbs) {
+                $breadcrumbs->parent('admin-avaliacao');
+                $breadcrumbs->push('Nova Avaliação', route('admin.avaliacao.create'));
+            });
+
+            Breadcrumbs::register('admin-avaliacao-edit', function($breadcrumbs, $avaliacao) {
+                $breadcrumbs->parent('admin-avaliacao');
+                $breadcrumbs->push('Editar Avaliação', route('admin.avaliacao.edit', ['id' => $avaliacao->id]));
+            });
+        //AVALIACAO
+        
+        //RESERVAS
+            Breadcrumbs::register('admin-reservas', function($breadcrumbs) {
+                $breadcrumbs->parent('admin');
+                $breadcrumbs->push('Reservas', route('admin.reservas.index'));
+            });
+        //RESERVAS
 /****************ADMINISTRADORES*********************/
 
 /****************PROFESSORES*********************/

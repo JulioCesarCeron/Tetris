@@ -24804,7 +24804,7 @@ $( document ).ready(function() {
 	$('#data_reserva').bootstrapMaterialDatePicker({ weekStart : 0, time: false });
 
     fetch('/api/agenda').then(res => res.json()).then((out) => {
-  		console.log('Checkout this JSON! ', out.result);
+  		//console.log('Checkout this JSON! ', out.result);
    
 	    var optionsReserva = {
 	        view: 'month',
