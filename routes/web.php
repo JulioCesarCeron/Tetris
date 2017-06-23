@@ -21,11 +21,11 @@ Route::get('/home',      'HomeController@index');
 Route::get('/professor', 'HomeProfessorController@index');
 
 // ADMIN
-Route::group(['middleware' => ['cors', 'auth', 'admin'] , 'as' => 'admin.'], function(){
+Route::group(['middleware' => [ 'auth', 'admin'] , 'as' => 'admin.'], function(){
 	Route::get('/admin', 'HomeAdminController@index');
 });
 
-Route::group(['middleware' => [ 'cors','auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
+Route::group(['middleware' => [ 'auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin'], function(){
 	Route::resource('users',         'Admin\UsersController'         );
 	Route::resource('products',      'Admin\ProductsController'      );
 	Route::resource('materias',      'Admin\MateriasController'      );
@@ -38,7 +38,7 @@ Route::group(['middleware' => [ 'cors','auth', 'admin'] , 'as' => 'admin.', 'pre
 });
 
 	
-Route::group(['middleware' => ['cors', 'auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin/turmas'], function(){
+Route::group(['middleware' => [ 'auth', 'admin'] , 'as' => 'admin.', 'prefix' => 'admin/turmas'], function(){
 	Route::resource('turma-alunos', 'Admin\TurmaAlunosController');
 
 	Route::group(['as' => 'turma.turma-alunos.adiciona'], function(){
@@ -50,11 +50,11 @@ Route::group(['middleware' => ['cors', 'auth', 'admin'] , 'as' => 'admin.', 'pre
 
 
 //PROFESSOR
-Route::group(['middleware' => ['cors', 'auth', 'professor'] , 'as' => 'professor.'], function(){
+Route::group(['middleware' => [ 'auth', 'professor'] , 'as' => 'professor.'], function(){
 	Route::get('/professor', 'HomeProfessorController@index');
 });
 
-Route::group(['middleware' => ['cors', 'auth', 'professor'], 'as' => 'professor.', 'prefix' => 'professor'], function(){
+Route::group(['middleware' => [ 'auth', 'professor'], 'as' => 'professor.', 'prefix' => 'professor'], function(){
 	Route::resource('conteudo-aula',  'Professor\ConteudoAulasController');
 	Route::resource('avaliacao',      'Professor\AvaliacoesController');
 	Route::resource('notas',          'Professor\NotasController');

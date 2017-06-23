@@ -70,6 +70,5 @@ class Kernel extends HttpKernel
         'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin'      => \App\Http\Middleware\AdminAuthenticatedMiddleware::class,
         'professor'  => \App\Http\Middleware\ProfessorAuthenticatedMiddleware::class,
-        'cors'       => \App\Http\Middleware\Cors::class,
     ];
 }
