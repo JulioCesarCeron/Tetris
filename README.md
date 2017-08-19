@@ -15,7 +15,7 @@ Tetris é um projeto demonstrativo de um portal escolar, desenvolvido para a dis
 - Bootstrap v3.3
 
 
-## Projeto
+## Link para acessar o Projeto
 - http://tetris-system.herokuapp.com/
 
 Login:
