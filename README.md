@@ -1,48 +1,12 @@
 # Tetris
 
 
-<p align="center"><svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="600.000000pt" height="278.000000pt" viewBox="0 0 600.000000 278.000000"
- preserveAspectRatio="xMidYMid meet">
-
-<g transform="translate(0.000000,278.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M1840 2440 l0 -160 40 0 c22 0 40 -4 40 -10 0 -5 -18 -10 -40 -10
-l-40 0 0 -160 0 -160 40 0 40 0 0 -170 0 -170 290 0 290 0 0 160 0 160 -50 0
-c-27 0 -50 5 -50 10 0 6 23 10 50 10 l50 0 0 160 0 160 -50 0 -50 0 0 170 0
-170 -280 0 -280 0 0 -160z"/>
-<path d="M1280 1600 l0 -170 -60 0 -60 0 0 -160 0 -160 60 0 c33 0 60 -4 60
--10 0 -6 -83 -10 -230 -10 l-230 0 0 -160 0 -160 70 0 c40 0 70 -4 70 -10 0
--6 -87 -10 -240 -10 l-240 0 0 -160 0 -160 670 0 670 0 0 160 0 160 -30 0
-c-16 0 -30 5 -30 10 0 6 14 10 30 10 l30 0 0 160 0 160 -30 0 c-16 0 -30 5
--30 10 0 6 14 10 30 10 l30 0 0 160 0 160 -30 0 c-16 0 -30 5 -30 10 0 6 14
-10 30 10 l30 0 0 160 0 160 -270 0 -270 0 0 -170z m530 10 l0 -150 -25 0 -25
-0 0 150 0 150 25 0 25 0 0 -150z m-530 -340 l0 -150 -55 0 -55 0 0 150 0 150
-55 0 55 0 0 -150z m530 0 l0 -150 -25 0 -25 0 0 150 0 150 25 0 25 0 0 -150z
-m0 -340 l0 -150 -25 0 -25 0 0 150 0 150 25 0 25 0 0 -150z"/>
-<path d="M1840 1270 l0 -160 40 0 c22 0 40 -4 40 -10 0 -5 -18 -10 -40 -10
-l-40 0 0 -160 0 -160 40 0 c22 0 40 -4 40 -10 0 -5 -18 -10 -40 -10 l-40 0 0
--160 0 -160 330 0 330 0 0 160 0 160 -50 0 -50 0 0 45 0 45 1355 0 1355 0 45
-21 c59 28 88 69 93 134 6 73 -16 115 -79 149 l-49 27 0 70 c0 66 1 69 19 59
-39 -20 67 -12 87 26 l19 36 -29 23 c-16 13 -49 28 -72 34 -30 8 -543 11 -1673
-11 l-1631 0 0 -160z m80 0 l0 -150 -35 0 -35 0 0 150 0 150 35 0 35 0 0 -150z
-m0 -340 l0 -150 -35 0 -35 0 0 150 0 150 35 0 35 0 0 -150z m0 -340 l0 -150
--35 0 -35 0 0 150 0 150 35 0 35 0 0 -150z m570 0 l0 -150 -45 0 -45 0 0 150
-0 150 45 0 45 0 0 -150z"/>
-<path d="M430 260 l0 -60 985 0 985 0 0 60 0 60 -985 0 -985 0 0 -60z"/>
-<path d="M2410 255 c0 -42 3 -55 15 -55 11 0 15 11 15 39 0 22 3 46 6 55 4 12
-0 16 -15 16 -19 0 -21 -6 -21 -55z"/>
-<path d="M2461 266 c-18 -21 -4 -55 25 -62 32 -8 56 13 52 45 -2 21 -9 27 -34
-29 -18 2 -36 -3 -43 -12z"/>
-</g>
-</svg></p>
+<p align="center"><img src="http://tetris-system.herokuapp.com/images/tetris.png"></p>
 
 
 
 ## Sobre o Projeto
-Tetris é um projeto demonstrativo de um portal escolar, desenvolvido para a disciplina de Engenharia de Software III, do curso de Ciência de computação da URI - Campus Erechim. 
-
-
+Tetris é um projeto demonstrativo de um portal escolar, desenvolvido para a disciplina de Engenharia de Software III, do curso de Ciência de computação da URI - Ca<img src="http://tetris-system.herokuapp.com/images/tetris.png">
 ## Tecnologias
 - php v7.1
 - Laravel v5.4
