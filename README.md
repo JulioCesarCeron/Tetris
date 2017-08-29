@@ -6,7 +6,7 @@
 
 
 ## Sobre o Projeto
-Tetris é um projeto demonstrativo de um portal escolar, desenvolvido para a disciplina de Engenharia de Software III, do curso de Ciência de computação da URI - Ca<img src="http://tetris-system.herokuapp.com/images/tetris.png">
+Tetris é um projeto demonstrativo de um portal escolar, desenvolvido para a disciplina de Engenharia de Software III, do curso de Ciência de computação da URI - Campus Erechim.
 ## Tecnologias
 - php v7.1
 - Laravel v5.4
