@@ -1,7 +1,9 @@
 # Tetris
 
 
-<p align="center"><img src="http://tetris-system.herokuapp.com/images/tetris.png"></p>
+Inline-style: 
+![alt text](https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png "Tetris")
+
 
 
 
