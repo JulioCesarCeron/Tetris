@@ -3,7 +3,7 @@
 
 ![alt text] https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png | width=100
 
-<img src=" https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png" alt="Tetris" width="250" height="auto">
+<img src="https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png" alt="Tetris" width="250" height="auto">
 
 
 
