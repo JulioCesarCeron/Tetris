@@ -1,7 +1,7 @@
 # Tetris
 
 
-![alt text](https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png | width=100)
+![alt text] https://github.com/JulioCesarCeron/Tetris/blob/master/public/images/tetris.png | width=100
 
 
 
