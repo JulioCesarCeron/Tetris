@@ -29,7 +29,7 @@ elixir(function(mix) {
 		'app.js',
 	], 'public/js/app.js');
 
-
+    mix.copy('resources/assets/js/cfdg/index.js', 'public/js/cfdg/')
 	mix.copy('resources/assets/fonts/', 'public/fonts');
 	mix.copy('bower_components/bootstrap-material-design/dist/fonts/Material-Design-Icons.eot', 'public/fonts');
 	mix.copy('bower_components/bootstrap-material-design/dist/fonts/Material-Design-Icons.ttf', 'public/fonts');
