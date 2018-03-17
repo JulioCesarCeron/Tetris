@@ -32,11 +32,11 @@
                 margin-right: 30px;
             }
         </style>
-        <script src="{{ secure_asset('js/cfdg/index.js') }}"></script>
+        <script src="{{ secure_asset    ('js/cfdg/index.js') }}"></script>
     </head>
     <body>
             <canvas></canvas>       
-        <div class="flex-center position-ref full-height">
+        <div class="flex-center position-ref full-height" style="background: #ffffffd4;">
             @if (Route::has('login'))
                 <div class="top-right links">
                     @if (Auth::check() && Auth::user()->isAdmin())
@@ -51,7 +51,7 @@
                 </div>
             @endif
 
-            <div class="content" style="background: #ffffffd4;">
+            <div class="content">
                 <div class="title m-b-md">
                     <img class="image-home-logo" src="images/tetris.png" alt="tetris logo home">
                 </div> 
